@@ -1,0 +1,50 @@
+export const nutrientSeedData = [
+  // Macronutrients
+  { name: "Protein", unit: "g", category: "macro" as const, displayOrder: 1, dailyValue: 50, usdaNutrientId: 1003 },
+  { name: "Total Fat", unit: "g", category: "macro" as const, displayOrder: 2, dailyValue: 78, usdaNutrientId: 1004 },
+  { name: "Total Carbohydrate", unit: "g", category: "macro" as const, displayOrder: 3, dailyValue: 275, usdaNutrientId: 1005 },
+  { name: "Dietary Fiber", unit: "g", category: "macro" as const, displayOrder: 4, dailyValue: 28, usdaNutrientId: 1079 },
+  { name: "Total Sugars", unit: "g", category: "macro" as const, displayOrder: 5, dailyValue: null, usdaNutrientId: 2000 },
+  { name: "Added Sugars", unit: "g", category: "macro" as const, displayOrder: 6, dailyValue: 50, usdaNutrientId: 1235 },
+  { name: "Saturated Fat", unit: "g", category: "macro" as const, displayOrder: 7, dailyValue: 20, usdaNutrientId: 1258 },
+  { name: "Trans Fat", unit: "g", category: "macro" as const, displayOrder: 8, dailyValue: null, usdaNutrientId: 1257 },
+  { name: "Monounsaturated Fat", unit: "g", category: "macro" as const, displayOrder: 9, dailyValue: null, usdaNutrientId: 1292 },
+  { name: "Polyunsaturated Fat", unit: "g", category: "macro" as const, displayOrder: 10, dailyValue: null, usdaNutrientId: 1293 },
+  { name: "Cholesterol", unit: "mg", category: "macro" as const, displayOrder: 11, dailyValue: 300, usdaNutrientId: 1253 },
+
+  // Vitamins
+  { name: "Vitamin A", unit: "mcg", category: "vitamin" as const, displayOrder: 20, dailyValue: 900, usdaNutrientId: 1106 },
+  { name: "Vitamin C", unit: "mg", category: "vitamin" as const, displayOrder: 21, dailyValue: 90, usdaNutrientId: 1162 },
+  { name: "Vitamin D", unit: "mcg", category: "vitamin" as const, displayOrder: 22, dailyValue: 20, usdaNutrientId: 1114 },
+  { name: "Vitamin E", unit: "mg", category: "vitamin" as const, displayOrder: 23, dailyValue: 15, usdaNutrientId: 1109 },
+  { name: "Vitamin K", unit: "mcg", category: "vitamin" as const, displayOrder: 24, dailyValue: 120, usdaNutrientId: 1185 },
+  { name: "Thiamin (B1)", unit: "mg", category: "vitamin" as const, displayOrder: 25, dailyValue: 1.2, usdaNutrientId: 1165 },
+  { name: "Riboflavin (B2)", unit: "mg", category: "vitamin" as const, displayOrder: 26, dailyValue: 1.3, usdaNutrientId: 1166 },
+  { name: "Niacin (B3)", unit: "mg", category: "vitamin" as const, displayOrder: 27, dailyValue: 16, usdaNutrientId: 1167 },
+  { name: "Pantothenic Acid (B5)", unit: "mg", category: "vitamin" as const, displayOrder: 28, dailyValue: 5, usdaNutrientId: 1170 },
+  { name: "Vitamin B6", unit: "mg", category: "vitamin" as const, displayOrder: 29, dailyValue: 1.7, usdaNutrientId: 1175 },
+  { name: "Biotin (B7)", unit: "mcg", category: "vitamin" as const, displayOrder: 30, dailyValue: 30, usdaNutrientId: 1176 },
+  { name: "Folate (B9)", unit: "mcg", category: "vitamin" as const, displayOrder: 31, dailyValue: 400, usdaNutrientId: 1177 },
+  { name: "Vitamin B12", unit: "mcg", category: "vitamin" as const, displayOrder: 32, dailyValue: 2.4, usdaNutrientId: 1178 },
+  { name: "Choline", unit: "mg", category: "vitamin" as const, displayOrder: 33, dailyValue: 550, usdaNutrientId: 1180 },
+
+  // Minerals
+  { name: "Calcium", unit: "mg", category: "mineral" as const, displayOrder: 40, dailyValue: 1300, usdaNutrientId: 1087 },
+  { name: "Iron", unit: "mg", category: "mineral" as const, displayOrder: 41, dailyValue: 18, usdaNutrientId: 1089 },
+  { name: "Magnesium", unit: "mg", category: "mineral" as const, displayOrder: 42, dailyValue: 420, usdaNutrientId: 1090 },
+  { name: "Phosphorus", unit: "mg", category: "mineral" as const, displayOrder: 43, dailyValue: 1250, usdaNutrientId: 1091 },
+  { name: "Potassium", unit: "mg", category: "mineral" as const, displayOrder: 44, dailyValue: 4700, usdaNutrientId: 1092 },
+  { name: "Sodium", unit: "mg", category: "mineral" as const, displayOrder: 45, dailyValue: 2300, usdaNutrientId: 1093 },
+  { name: "Zinc", unit: "mg", category: "mineral" as const, displayOrder: 46, dailyValue: 11, usdaNutrientId: 1095 },
+  { name: "Copper", unit: "mg", category: "mineral" as const, displayOrder: 47, dailyValue: 0.9, usdaNutrientId: 1098 },
+  { name: "Manganese", unit: "mg", category: "mineral" as const, displayOrder: 48, dailyValue: 2.3, usdaNutrientId: 1101 },
+  { name: "Selenium", unit: "mcg", category: "mineral" as const, displayOrder: 49, dailyValue: 55, usdaNutrientId: 1103 },
+  { name: "Chromium", unit: "mcg", category: "mineral" as const, displayOrder: 50, dailyValue: 35, usdaNutrientId: 1096 },
+  { name: "Molybdenum", unit: "mcg", category: "mineral" as const, displayOrder: 51, dailyValue: 45, usdaNutrientId: 1102 },
+  { name: "Iodine", unit: "mcg", category: "mineral" as const, displayOrder: 52, dailyValue: 150, usdaNutrientId: 1100 },
+
+  // Other
+  { name: "Water", unit: "g", category: "other" as const, displayOrder: 60, dailyValue: null, usdaNutrientId: 1051 },
+  { name: "Caffeine", unit: "mg", category: "other" as const, displayOrder: 61, dailyValue: null, usdaNutrientId: 1057 },
+  { name: "Alcohol", unit: "g", category: "other" as const, displayOrder: 62, dailyValue: null, usdaNutrientId: 1018 },
+];

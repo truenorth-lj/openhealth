@@ -1,5 +1,5 @@
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -12,7 +12,7 @@
 /coverage
 
 # next.js
-/.next/
+.next/
 /out/
 
 # production
@@ -44,3 +44,12 @@ next-env.d.ts
 
 # scraped data
 scripts/output/
+
+# turborepo
+.turbo/
+
+# expo
+.expo/
+ios/
+android/
+expo-env.d.ts
