@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { createFoodSchema, createFoodFromBarcodeSchema } from "@open-health/shared/schemas";
+import { NUTRIENT_IDS } from "@open-health/shared/constants";
 import { publicProcedure, protectedProcedure, router } from "../trpc";
 import { foods, foodNutrients, nutrientDefinitions, foodServings } from "@/server/db/schema";
 import { eq, sql, desc } from "drizzle-orm";
@@ -151,5 +153,107 @@ export const foodRouter = router({
         .limit(input.limit);
 
       return recent;
+    }),
+
+  createCustomFood: protectedProcedure
+    .input(createFoodSchema)
+    .mutation(async ({ ctx, input }) => {
+      const [food] = await ctx.db
+        .insert(foods)
+        .values({
+          name: input.name,
+          brand: input.brand,
+          barcode: input.barcode,
+          source: "user",
+          servingSize: String(input.servingSize),
+          servingUnit: input.servingUnit,
+          householdServing: input.householdServing,
+          calories: String(input.calories),
+          isPublic: true,
+          createdBy: ctx.user.id,
+        })
+        .returning();
+
+      if (input.nutrients?.length) {
+        await ctx.db.insert(foodNutrients).values(
+          input.nutrients.map((n) => ({
+            foodId: food.id,
+            nutrientId: n.nutrientId,
+            amount: String(n.amount),
+          }))
+        );
+      }
+
+      if (input.alternateServings?.length) {
+        await ctx.db.insert(foodServings).values(
+          input.alternateServings.map((s) => ({
+            foodId: food.id,
+            label: s.label,
+            grams: String(s.grams),
+          }))
+        );
+      }
+
+      return { success: true, foodId: food.id };
+    }),
+
+  createFoodFromBarcode: protectedProcedure
+    .input(createFoodFromBarcodeSchema)
+    .mutation(async ({ ctx, input }) => {
+      const existing = await ctx.db.query.foods.findFirst({
+        where: eq(foods.barcode, input.barcode),
+      });
+
+      if (existing) {
+        return { success: true, foodId: existing.id };
+      }
+
+      const [food] = await ctx.db
+        .insert(foods)
+        .values({
+          name: input.name,
+          brand: input.brand,
+          barcode: input.barcode,
+          source: "openfoodfacts",
+          sourceId: input.barcode,
+          servingSize: String(input.servingSize),
+          servingUnit: input.servingUnit,
+          calories: String(input.calories),
+          isPublic: true,
+          createdBy: ctx.user.id,
+          metadata: input.imageUrl ? { imageUrl: input.imageUrl } : undefined,
+        })
+        .returning();
+
+      const nutrients: { foodId: string; nutrientId: number; amount: string }[] = [
+        { foodId: food.id, nutrientId: NUTRIENT_IDS.protein, amount: String(input.protein) },
+        { foodId: food.id, nutrientId: NUTRIENT_IDS.totalFat, amount: String(input.fat) },
+        { foodId: food.id, nutrientId: NUTRIENT_IDS.totalCarbs, amount: String(input.carbs) },
+      ];
+
+      if (input.fiber != null) {
+        nutrients.push({ foodId: food.id, nutrientId: NUTRIENT_IDS.fiber, amount: String(input.fiber) });
+      }
+      if (input.sugar != null) {
+        nutrients.push({ foodId: food.id, nutrientId: NUTRIENT_IDS.sugar, amount: String(input.sugar) });
+      }
+      if (input.saturatedFat != null) {
+        nutrients.push({ foodId: food.id, nutrientId: NUTRIENT_IDS.saturatedFat, amount: String(input.saturatedFat) });
+      }
+      if (input.transFat != null) {
+        nutrients.push({ foodId: food.id, nutrientId: NUTRIENT_IDS.transFat, amount: String(input.transFat) });
+      }
+      if (input.cholesterol != null) {
+        nutrients.push({ foodId: food.id, nutrientId: NUTRIENT_IDS.cholesterol, amount: String(input.cholesterol) });
+      }
+      if (input.sodium != null) {
+        nutrients.push({ foodId: food.id, nutrientId: NUTRIENT_IDS.sodium, amount: String(input.sodium) });
+      }
+
+      if (nutrients.length > 0) {
+        await ctx.db.insert(foodNutrients).values(nutrients);
+      }
+
+      return { success: true, foodId: food.id };
     }),
 });
