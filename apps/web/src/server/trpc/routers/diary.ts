@@ -1,8 +1,10 @@
 import { z } from "zod";
+import { logFoodSchema, copyMealSchema, removeEntrySchema } from "@open-health/shared/schemas";
 import { protectedProcedure, router } from "../trpc";
-import { diaryEntries } from "@/server/db/schema";
+import { diaryEntries, quickFoods } from "@/server/db/schema";
 import { foods } from "@/server/db/schema";
 import { eq, and, sql } from "drizzle-orm";
+import { calculateNutrition } from "@/server/services/nutrition";
 
 export const diaryRouter = router({
   getDay: protectedProcedure
@@ -80,5 +82,91 @@ export const diaryRouter = router({
         .orderBy(diaryEntries.date);
 
       return summary;
+    }),
+
+  logFood: protectedProcedure
+    .input(logFoodSchema)
+    .mutation(async ({ ctx, input }) => {
+      const nutrition = await calculateNutrition(input.foodId, input.servingQty);
+
+      await ctx.db.insert(diaryEntries).values({
+        userId: ctx.user.id,
+        date: input.date,
+        mealType: input.mealType,
+        foodId: input.foodId,
+        servingQty: String(input.servingQty),
+        servingId: input.servingId,
+        calories: String(nutrition.calories),
+        proteinG: String(nutrition.proteinG),
+        carbsG: String(nutrition.carbsG),
+        fatG: String(nutrition.fatG),
+        fiberG: String(nutrition.fiberG),
+      });
+
+      await ctx.db
+        .insert(quickFoods)
+        .values({
+          userId: ctx.user.id,
+          foodId: input.foodId,
+          useCount: 1,
+        })
+        .onConflictDoUpdate({
+          target: [quickFoods.userId, quickFoods.foodId],
+          set: {
+            useCount: sql`${quickFoods.useCount} + 1`,
+            lastUsedAt: sql`now()`,
+          },
+        });
+
+      return { success: true };
+    }),
+
+  removeEntry: protectedProcedure
+    .input(removeEntrySchema)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .delete(diaryEntries)
+        .where(
+          and(eq(diaryEntries.id, input.entryId), eq(diaryEntries.userId, ctx.user.id))
+        );
+
+      return { success: true };
+    }),
+
+  copyMealToDate: protectedProcedure
+    .input(copyMealSchema)
+    .mutation(async ({ ctx, input }) => {
+      const entries = await ctx.db
+        .select()
+        .from(diaryEntries)
+        .where(
+          and(
+            eq(diaryEntries.userId, ctx.user.id),
+            eq(diaryEntries.date, input.fromDate),
+            eq(diaryEntries.mealType, input.mealType)
+          )
+        );
+
+      if (entries.length === 0) {
+        return { success: false, error: "No entries found" };
+      }
+
+      for (const entry of entries) {
+        await ctx.db.insert(diaryEntries).values({
+          userId: ctx.user.id,
+          date: input.toDate,
+          mealType: entry.mealType,
+          foodId: entry.foodId,
+          servingQty: entry.servingQty,
+          servingId: entry.servingId,
+          calories: entry.calories,
+          proteinG: entry.proteinG,
+          carbsG: entry.carbsG,
+          fatG: entry.fatG,
+          fiberG: entry.fiberG,
+        });
+      }
+
+      return { success: true };
     }),
 });

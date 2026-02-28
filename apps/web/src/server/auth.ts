@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { bearer } from "better-auth/plugins";
 import { db } from "./db";
 import { users, sessions, accounts, verifications } from "./db/schema";
 
@@ -13,6 +14,7 @@ export const auth = betterAuth({
       verification: verifications,
     },
   }),
+  plugins: [bearer()],
   emailAndPassword: {
     enabled: true,
   },

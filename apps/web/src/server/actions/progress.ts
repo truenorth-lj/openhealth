@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { logWeightSchema } from "@open-health/shared/schemas";
+import { logWeightSchema, logMeasurementsSchema } from "@open-health/shared/schemas";
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import { weightLogs, bodyMeasurements } from "@/server/db/schema";
@@ -37,18 +37,6 @@ export async function logWeight(input: z.infer<typeof logWeightSchema>) {
   revalidatePath("/progress");
   return { success: true };
 }
-
-const logMeasurementsSchema = z.object({
-  date: z.string(),
-  waistCm: z.number().positive().optional(),
-  hipCm: z.number().positive().optional(),
-  chestCm: z.number().positive().optional(),
-  armCm: z.number().positive().optional(),
-  thighCm: z.number().positive().optional(),
-  neckCm: z.number().positive().optional(),
-  bodyFatPct: z.number().min(0).max(100).optional(),
-  note: z.string().max(500).optional(),
-});
 
 export async function logMeasurements(
   input: z.infer<typeof logMeasurementsSchema>

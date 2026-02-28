@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { NUTRIENT_IDS, type OpenFoodFactsResult } from "@open-health/shared";
+import { createFoodFromBarcodeSchema } from "@open-health/shared/schemas";
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import { foods, foodNutrients } from "@/server/db/schema";
@@ -73,25 +74,6 @@ export async function lookupOpenFoodFacts(
     imageUrl: p.image_url || undefined,
   };
 }
-
-const createFoodFromBarcodeSchema = z.object({
-  barcode: z.string().min(1),
-  name: z.string().min(1).max(500),
-  brand: z.string().max(255).optional(),
-  servingSize: z.number().positive(),
-  servingUnit: z.string().min(1).max(50),
-  calories: z.number().min(0),
-  protein: z.number().min(0),
-  fat: z.number().min(0),
-  carbs: z.number().min(0),
-  fiber: z.number().min(0).optional(),
-  sugar: z.number().min(0).optional(),
-  saturatedFat: z.number().min(0).optional(),
-  transFat: z.number().min(0).optional(),
-  cholesterol: z.number().min(0).optional(),
-  sodium: z.number().min(0).optional(),
-  imageUrl: z.string().optional(),
-});
 
 async function getSession() {
   const session = await auth.api.getSession({ headers: await headers() });
