@@ -7,7 +7,7 @@
     "dev:web": "turbo dev --filter=@open-health/web",
     "dev:mobile": "turbo dev --filter=@open-health/mobile",
     "build": "turbo build --filter=@open-health/web",
-    "start": "node apps/web/.next/standalone/apps/web/server.js",
+    "start": "cd apps/web && npm start",
     "lint": "turbo lint"
   },
   "devDependencies": {
