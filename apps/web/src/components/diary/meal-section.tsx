@@ -26,6 +26,7 @@ const mealIcons: Record<MealType, string> = {
 
 interface DiaryEntry {
   id: string;
+  foodId: string;
   foodName: string;
   foodBrand: string | null;
   servingQty: string;
@@ -115,14 +116,14 @@ function EntryRow({ entry }: { entry: DiaryEntry }) {
         isPending ? "opacity-50" : ""
       }`}
     >
-      <div className="flex-1 min-w-0">
+      <Link href={`/food/${entry.foodId}`} className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate">{entry.foodName}</p>
         <p className="text-xs text-muted-foreground">
           {entry.servingQty} x {entry.foodServingSize}
           {entry.foodServingUnit}
           {entry.foodBrand ? ` \u00B7 ${entry.foodBrand}` : ""}
         </p>
-      </div>
+      </Link>
       <div className="flex items-center gap-2 ml-2">
         <span className="text-sm font-medium tabular-nums">
           {Math.round(Number(entry.calories || 0))}
