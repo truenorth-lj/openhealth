@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc-client";
 import { useSession } from "@/lib/auth-client";
+import { NUTRIENT_IDS } from "@open-health/shared/constants";
 
 const categoryLabels: Record<string, string> = {
   macro: "巨量營養素",
@@ -46,12 +47,18 @@ export default function FoodDetailPage() {
     servingUnit: "",
     householdServing: "",
     calories: "",
+    protein: "",
+    carbs: "",
+    fat: "",
+    fiber: "",
   });
 
   const isOwner = !!(session?.user?.id && food?.createdBy && session.user.id === food.createdBy);
 
   function startEditing() {
     if (!food) return;
+    const findNut = (name: string) =>
+      food.nutrients.find((n) => n.name.toLowerCase().includes(name))?.amount ?? "0";
     setEditForm({
       name: food.name,
       brand: food.brand ?? "",
@@ -60,6 +67,10 @@ export default function FoodDetailPage() {
       servingUnit: food.servingUnit,
       householdServing: food.householdServing ?? "",
       calories: String(food.calories),
+      protein: findNut("protein"),
+      carbs: findNut("carbohydrate"),
+      fat: findNut("fat") !== "0" ? findNut("fat") : findNut("lipid"),
+      fiber: findNut("fiber"),
     });
     setValidationError(undefined);
     setIsEditing(true);
@@ -74,6 +85,16 @@ export default function FoodDetailPage() {
       return;
     }
     setValidationError(undefined);
+    const protein = Number(editForm.protein) || 0;
+    const carbs = Number(editForm.carbs) || 0;
+    const fat = Number(editForm.fat) || 0;
+    const fiber = Number(editForm.fiber) || 0;
+    const nutrients = [
+      { nutrientId: NUTRIENT_IDS.protein, amount: protein },
+      { nutrientId: NUTRIENT_IDS.totalCarbs, amount: carbs },
+      { nutrientId: NUTRIENT_IDS.totalFat, amount: fat },
+      { nutrientId: NUTRIENT_IDS.fiber, amount: fiber },
+    ];
     updateMutation.mutate({
       id: food.id,
       name: editForm.name,
@@ -83,6 +104,7 @@ export default function FoodDetailPage() {
       servingUnit: editForm.servingUnit,
       householdServing: editForm.householdServing || null,
       calories,
+      nutrients,
     });
   }
 
@@ -200,7 +222,7 @@ export default function FoodDetailPage() {
         </div>
       ) : (
         food.description && (
-          <p className="text-sm text-muted-foreground mb-4 px-1">{food.description}</p>
+          <p className="text-sm text-muted-foreground mb-4 px-1 whitespace-pre-wrap">{food.description}</p>
         )
       )}
 
@@ -260,12 +282,21 @@ export default function FoodDetailPage() {
             </>
           )}
         </div>
-        <div className="grid grid-cols-4 gap-2 text-center">
-          <MacroItem label="蛋白質" value={proteinG} unit="g" />
-          <MacroItem label="碳水" value={carbsG} unit="g" />
-          <MacroItem label="脂肪" value={fatG} unit="g" />
-          <MacroItem label="纖維" value={fiberG} unit="g" />
-        </div>
+        {isEditing ? (
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <EditableMacro label="蛋白質" value={editForm.protein} onChange={(v) => setEditForm((f) => ({ ...f, protein: v }))} />
+            <EditableMacro label="碳水" value={editForm.carbs} onChange={(v) => setEditForm((f) => ({ ...f, carbs: v }))} />
+            <EditableMacro label="脂肪" value={editForm.fat} onChange={(v) => setEditForm((f) => ({ ...f, fat: v }))} />
+            <EditableMacro label="纖維" value={editForm.fiber} onChange={(v) => setEditForm((f) => ({ ...f, fiber: v }))} />
+          </div>
+        ) : (
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <MacroItem label="蛋白質" value={proteinG} unit="g" />
+            <MacroItem label="碳水" value={carbsG} unit="g" />
+            <MacroItem label="脂肪" value={fatG} unit="g" />
+            <MacroItem label="纖維" value={fiberG} unit="g" />
+          </div>
+        )}
       </div>
 
       {/* Errors */}
@@ -329,6 +360,31 @@ function MacroItem({
         {Math.round(Number(value ?? 0))}{unit}
       </p>
       <p className="text-xs text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+function EditableMacro({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-center gap-0.5">
+        <Input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-16 text-center text-lg font-semibold px-1 h-8"
+        />
+        <span className="text-sm font-semibold">g</span>
+      </div>
+      <p className="text-xs text-muted-foreground mt-1">{label}</p>
     </div>
   );
 }
