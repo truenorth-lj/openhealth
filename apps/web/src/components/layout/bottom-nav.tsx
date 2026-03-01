@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, TrendingUp, Menu } from "lucide-react";
+import { BookOpen, TrendingUp, MessageSquare, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/diary", label: "日記", icon: BookOpen },
   { href: "/progress", label: "進度", icon: TrendingUp },
+  { href: "/chat", label: "AI", icon: MessageSquare },
   { href: "/settings", label: "更多", icon: Menu },
 ];
 

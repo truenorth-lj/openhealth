@@ -20,6 +20,7 @@
     "huberman": "tsx scripts/huberman-digest.ts"
   },
   "dependencies": {
+    "@ai-sdk/react": "^3.0.107",
     "@danielxceron/youtube-transcript": "^1.2.6",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
@@ -29,6 +30,7 @@
     "@trpc/client": "^11.0.0",
     "@trpc/react-query": "^11.0.0",
     "@trpc/server": "^11.0.0",
+    "ai": "^6.0.105",
     "better-auth": "^1.4.19",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -49,6 +51,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
+    "vercel-minimax-ai-provider": "^0.0.2",
     "zod": "^4.3.6",
     "zustand": "^5.0.11"
   },
