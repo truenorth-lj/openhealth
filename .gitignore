@@ -53,3 +53,7 @@ scripts/output/
 ios/
 android/
 expo-env.d.ts
+**/dist/
+
+# claude code
+.claude/worktrees/
