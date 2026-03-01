@@ -312,7 +312,7 @@ export default function ChatPage() {
                   </div>
                   <div
                     className={cn(
-                      "max-w-[85%] rounded-2xl px-4 py-2 text-sm",
+                      "max-w-[85%] overflow-hidden rounded-2xl px-4 py-2 text-sm",
                       isUser
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted"
@@ -321,8 +321,17 @@ export default function ChatPage() {
                     {isUser ? (
                       <p>{textContent}</p>
                     ) : (
-                      <div className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      <div className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_table]:w-full [&_table]:text-xs [&_table]:border-collapse [&_th]:border [&_th]:border-border/50 [&_th]:px-2 [&_th]:py-1 [&_th]:text-left [&_th]:font-medium [&_td]:border [&_td]:border-border/50 [&_td]:px-2 [&_td]:py-1 [&_.table-wrapper]:overflow-x-auto">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            table: ({ children }) => (
+                              <div className="table-wrapper overflow-x-auto">
+                                <table>{children}</table>
+                              </div>
+                            ),
+                          }}
+                        >
                           {textContent}
                         </ReactMarkdown>
                       </div>
