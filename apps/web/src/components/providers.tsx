@@ -3,7 +3,16 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
+import { ThemeProvider } from "next-themes";
 import { trpc } from "@/lib/trpc-client";
+
+// Workaround: React 18/19 types mismatch in monorepo causes children prop errors
+const Theme = ThemeProvider as React.FC<{
+  children: React.ReactNode;
+  attribute: string;
+  defaultTheme: string;
+  enableSystem: boolean;
+}>;
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -29,8 +38,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </trpc.Provider>
+    <Theme attribute="class" defaultTheme="dark" enableSystem={false}>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </trpc.Provider>
+    </Theme>
   );
 }
