@@ -1,19 +1,21 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   User,
   Target,
-  Bell,
   Droplets,
   Timer,
   Trophy,
   Dumbbell,
   LogOut,
   ChevronRight,
+  Bell,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -22,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 const menuItems = [
   { href: "/settings/profile", label: "個人資料", icon: User, implemented: true },
@@ -33,9 +36,16 @@ const menuItems = [
   { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: false },
 ];
 
+const themeOptions = [
+  { value: "light", label: "淺色", icon: Sun },
+  { value: "dark", label: "深色", icon: Moon },
+  { value: "system", label: "系統", icon: Monitor },
+] as const;
+
 export default function SettingsPage() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
   const handleSignOut = async () => {
     await signOut();
@@ -43,50 +53,75 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="px-4 py-4 space-y-4">
-      <h1 className="text-xl font-bold">更多</h1>
+    <div className="px-4 py-6 space-y-6">
+      <h1 className="text-xl font-light tracking-wide">更多</h1>
 
       {session?.user && (
-        <Card>
-          <CardContent className="flex items-center gap-3 py-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-              <User className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="font-medium">{session.user.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {session.user.email}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center gap-3 py-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-black/[0.06] dark:border-white/[0.06]">
+            <User className="h-5 w-5 text-neutral-400" strokeWidth={1.5} />
+          </div>
+          <div>
+            <p className="text-sm font-light">{session.user.name}</p>
+            <p className="text-xs text-neutral-400 dark:text-neutral-600">
+              {session.user.email}
+            </p>
+          </div>
+        </div>
       )}
 
-      <Card>
-        <CardContent className="p-0">
+      {/* Theme selector */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          外觀
+        </p>
+        <div className="flex gap-2">
+          {themeOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => setTheme(option.value)}
+              className={cn(
+                "flex flex-1 items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-light transition-all duration-300",
+                theme === option.value
+                  ? "border-foreground/20 text-foreground"
+                  : "border-black/[0.06] dark:border-white/[0.06] text-neutral-400 dark:text-neutral-600 hover:text-foreground hover:border-foreground/10"
+              )}
+            >
+              <option.icon className="h-4 w-4" strokeWidth={1.5} />
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Menu items */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          設定
+        </p>
+        <div className="border-t border-black/[0.06] dark:border-white/[0.06]">
           <TooltipProvider>
-            {menuItems.map((item, index) => {
-              const className = `flex items-center justify-between px-4 py-3 transition-colors ${
-                index !== menuItems.length - 1 ? "border-b" : ""
-              } ${
+            {menuItems.map((item) => {
+              const itemClass = cn(
+                "flex items-center justify-between px-1 py-3.5 border-b border-black/[0.06] dark:border-white/[0.06] transition-all duration-300",
                 item.implemented
-                  ? "hover:bg-muted/50 cursor-pointer"
-                  : "opacity-50 cursor-not-allowed"
-              }`;
+                  ? "hover:pl-2 cursor-pointer"
+                  : "opacity-40 cursor-not-allowed"
+              );
 
               const content = (
                 <>
                   <div className="flex items-center gap-3">
-                    <item.icon className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{item.label}</span>
+                    <item.icon className="h-4 w-4 text-neutral-400 dark:text-neutral-600" strokeWidth={1.5} />
+                    <span className="text-sm font-light">{item.label}</span>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
                 </>
               );
 
               if (item.implemented) {
                 return (
-                  <Link key={item.href} href={item.href} className={className}>
+                  <Link key={item.href} href={item.href} className={itemClass}>
                     {content}
                   </Link>
                 );
@@ -95,7 +130,7 @@ export default function SettingsPage() {
               return (
                 <Tooltip key={item.href}>
                   <TooltipTrigger asChild>
-                    <div className={className}>{content}</div>
+                    <div className={itemClass}>{content}</div>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>敬請期待</p>
@@ -104,18 +139,17 @@ export default function SettingsPage() {
               );
             })}
           </TooltipProvider>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {session?.user && (
-        <Button
-          variant="outline"
-          className="w-full text-destructive hover:text-destructive"
+        <button
           onClick={handleSignOut}
+          className="flex w-full items-center justify-center gap-2 py-3 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-destructive"
         >
-          <LogOut className="h-4 w-4 mr-2" />
+          <LogOut className="h-4 w-4" strokeWidth={1.5} />
           登出
-        </Button>
+        </button>
       )}
     </div>
   );

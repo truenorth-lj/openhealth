@@ -4,9 +4,7 @@ import { useState, useTransition, useEffect } from "react";
 import { ArrowLeft, LogOut, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { signOut, useSession } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc-client";
 import { updateProfile } from "@/server/actions/profile";
@@ -24,7 +22,6 @@ export default function ProfilePage() {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [activityLevel, setActivityLevel] = useState("moderately_active");
 
-  // Pre-fill when data loads
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
     if (!initialized && session?.user && profile !== undefined) {
@@ -65,42 +62,53 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="px-4 py-4 space-y-4">
+    <div className="px-4 py-6 space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/settings">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+        <Link
+          href="/settings"
+          className="p-2 text-neutral-400 transition-all duration-300 hover:text-foreground"
+        >
+          <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-bold">個人資料</h1>
+        <h1 className="text-xl font-light tracking-wide">個人資料</h1>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">基本資料</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">名稱</label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
+      {/* Basic info */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          基本資料
+        </p>
+        <div className="space-y-4 border-t border-black/[0.06] dark:border-white/[0.06] pt-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-light text-neutral-500">名稱</label>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="border-black/[0.06] dark:border-white/[0.06] font-light"
+            />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">電子郵件</label>
-            <Input defaultValue={session?.user?.email || ""} disabled />
+          <div className="space-y-1.5">
+            <label className="text-xs font-light text-neutral-500">電子郵件</label>
+            <Input
+              defaultValue={session?.user?.email || ""}
+              disabled
+              className="border-black/[0.06] dark:border-white/[0.06] font-light"
+            />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">身體資料</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* Body info */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          身體資料
+        </p>
+        <div className="space-y-4 border-t border-black/[0.06] dark:border-white/[0.06] pt-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-medium">性別</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-light text-neutral-500">性別</label>
               <select
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="flex h-10 w-full rounded-md border border-black/[0.06] dark:border-white/[0.06] bg-background px-3 py-2 text-sm font-light"
                 value={sex}
                 onChange={(e) => setSex(e.target.value)}
               >
@@ -110,29 +118,31 @@ export default function ProfilePage() {
                 <option value="other">其他</option>
               </select>
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium">身高 (cm)</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-light text-neutral-500">身高 (cm)</label>
               <Input
                 type="number"
                 placeholder="170"
                 value={heightCm}
                 onChange={(e) => setHeightCm(e.target.value)}
+                className="border-black/[0.06] dark:border-white/[0.06] font-light"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-medium">出生日期</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-light text-neutral-500">出生日期</label>
               <Input
                 type="date"
                 value={dateOfBirth}
                 onChange={(e) => setDateOfBirth(e.target.value)}
+                className="border-black/[0.06] dark:border-white/[0.06] font-light"
               />
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium">活動量</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-light text-neutral-500">活動量</label>
               <select
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="flex h-10 w-full rounded-md border border-black/[0.06] dark:border-white/[0.06] bg-background px-3 py-2 text-sm font-light"
                 value={activityLevel}
                 onChange={(e) => setActivityLevel(e.target.value)}
               >
@@ -144,30 +154,33 @@ export default function ProfilePage() {
               </select>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Button className="w-full" onClick={handleSave} disabled={isPending}>
+      <button
+        className="w-full py-2.5 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-md transition-all duration-300 hover:border-foreground/20 disabled:opacity-30"
+        onClick={handleSave}
+        disabled={isPending}
+      >
         {isPending ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          <span className="flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
             儲存中...
-          </>
+          </span>
         ) : saved ? (
           "已儲存"
         ) : (
           "儲存"
         )}
-      </Button>
+      </button>
 
-      <Button
-        variant="outline"
-        className="w-full text-destructive hover:text-destructive"
+      <button
         onClick={handleSignOut}
+        className="flex w-full items-center justify-center gap-2 py-2.5 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-destructive"
       >
-        <LogOut className="h-4 w-4 mr-2" />
+        <LogOut className="h-4 w-4" strokeWidth={1.5} />
         登出
-      </Button>
+      </button>
     </div>
   );
 }

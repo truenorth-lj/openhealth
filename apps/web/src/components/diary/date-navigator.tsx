@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { format, addDays, subDays, isToday } from "date-fns";
 import { zhTW } from "date-fns/locale";
 
@@ -22,31 +21,37 @@ export function DateNavigator({ date, onDateChange }: DateNavigatorProps) {
   const today = isToday(date);
 
   return (
-    <div className="flex items-center justify-between px-4 py-3">
-      <Button variant="ghost" size="icon" onClick={goBack}>
-        <ChevronLeft className="h-5 w-5" />
-      </Button>
+    <div className="flex items-center justify-between px-4 py-4">
+      <button
+        onClick={goBack}
+        className="p-2 text-neutral-400 transition-all duration-300 hover:text-foreground"
+      >
+        <ChevronLeft className="h-5 w-5" strokeWidth={1.5} />
+      </button>
 
       <div className="flex flex-col items-center">
         <button
           onClick={goToday}
-          className="text-base font-semibold hover:text-primary transition-colors"
+          className="text-base font-light tracking-wide transition-all duration-300 hover:opacity-60"
         >
           {label}
         </button>
         {!today && (
           <button
             onClick={goToday}
-            className="text-xs text-primary hover:underline mt-0.5"
+            className="text-xs font-light text-neutral-400 transition-all duration-300 hover:text-foreground mt-0.5"
           >
             回到今天
           </button>
         )}
       </div>
 
-      <Button variant="ghost" size="icon" onClick={goForward}>
-        <ChevronRight className="h-5 w-5" />
-      </Button>
+      <button
+        onClick={goForward}
+        className="p-2 text-neutral-400 transition-all duration-300 hover:text-foreground"
+      >
+        <ChevronRight className="h-5 w-5" strokeWidth={1.5} />
+      </button>
     </div>
   );
 }

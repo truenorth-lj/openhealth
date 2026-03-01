@@ -5,9 +5,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc-client";
 import { updateGoals } from "@/server/actions/goals";
 
@@ -22,7 +20,6 @@ export default function GoalsPage() {
   const [fatG, setFatG] = useState("");
   const [fiberG, setFiberG] = useState("");
 
-  // Pre-fill when data loads
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
     if (!initialized && goals !== undefined) {
@@ -56,78 +53,86 @@ export default function GoalsPage() {
   };
 
   return (
-    <div className="px-4 py-4 space-y-4">
+    <div className="px-4 py-6 space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/settings">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+        <Link
+          href="/settings"
+          className="p-2 text-neutral-400 transition-all duration-300 hover:text-foreground"
+        >
+          <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-bold">目標設定</h1>
+        <h1 className="text-xl font-light tracking-wide">目標設定</h1>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">每日卡路里目標</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">目標卡路里 (kcal)</label>
+      {/* Calorie target */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          每日卡路里目標
+        </p>
+        <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-light text-neutral-500">目標卡路里 (kcal)</label>
             <Input
               type="number"
               placeholder="2000"
               value={calorieTarget}
               onChange={(e) => setCalorieTarget(e.target.value)}
+              className="border-black/[0.06] dark:border-white/[0.06] font-light"
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">巨量營養素目標 (g)</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* Macro targets */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          巨量營養素目標 (g)
+        </p>
+        <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-4 space-y-4">
           <div className="grid grid-cols-4 gap-3">
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-blue-500">蛋白質</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-light text-blue-500">蛋白質</label>
               <Input
                 type="number"
                 placeholder="150"
                 value={proteinG}
                 onChange={(e) => setProteinG(e.target.value)}
+                className="border-black/[0.06] dark:border-white/[0.06] font-light"
               />
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-amber-500">碳水</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-light text-amber-500">碳水</label>
               <Input
                 type="number"
                 placeholder="250"
                 value={carbsG}
                 onChange={(e) => setCarbsG(e.target.value)}
+                className="border-black/[0.06] dark:border-white/[0.06] font-light"
               />
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-rose-500">脂肪</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-light text-rose-500">脂肪</label>
               <Input
                 type="number"
                 placeholder="67"
                 value={fatG}
                 onChange={(e) => setFatG(e.target.value)}
+                className="border-black/[0.06] dark:border-white/[0.06] font-light"
               />
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-emerald-500">纖維</label>
+            <div className="space-y-1.5">
+              <label className="text-xs font-light text-emerald-500">纖維</label>
               <Input
                 type="number"
                 placeholder="28"
                 value={fiberG}
                 onChange={(e) => setFiberG(e.target.value)}
+                className="border-black/[0.06] dark:border-white/[0.06] font-light"
               />
             </div>
           </div>
           {calorieTarget && proteinG && carbsG && fatG && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs font-light text-neutral-400">
               巨量營養素合計:{" "}
               {Math.round(
                 Number(proteinG) * 4 +
@@ -137,19 +142,23 @@ export default function GoalsPage() {
               kcal (目標: {calorieTarget} kcal)
             </p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Button className="w-full" onClick={handleSave} disabled={isPending}>
+      <button
+        className="w-full py-2.5 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-md transition-all duration-300 hover:border-foreground/20 disabled:opacity-30"
+        onClick={handleSave}
+        disabled={isPending}
+      >
         {isPending ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          <span className="flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
             儲存中...
-          </>
+          </span>
         ) : (
           "儲存目標"
         )}
-      </Button>
+      </button>
     </div>
   );
 }

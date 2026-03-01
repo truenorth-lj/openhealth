@@ -12,23 +12,23 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-40 border-b border-black/[0.06] dark:border-white/[0.06] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-14 max-w-lg items-center justify-between px-4">
-          <Link href="/diary" className="text-lg font-bold text-primary">
-            Open Health
+          <Link href="/diary" className="text-base font-light tracking-[0.3em] text-foreground transition-all duration-300 hover:opacity-60">
+            OH
           </Link>
 
           {session?.user ? (
             <Link
               href="/settings/profile"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-black/[0.06] dark:border-white/[0.06] text-neutral-500 transition-all duration-300 hover:text-foreground"
             >
               <User className="h-4 w-4" />
             </Link>
           ) : (
             <button
               onClick={() => setShowLogin(true)}
-              className="text-sm font-medium text-primary hover:underline"
+              className="text-sm font-light text-neutral-500 transition-all duration-300 hover:text-foreground"
             >
               登入
             </button>

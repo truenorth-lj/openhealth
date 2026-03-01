@@ -11,7 +11,6 @@ import { MealSection } from "@/components/diary/meal-section";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { trpc } from "@/lib/trpc-client";
-import { Button } from "@/components/ui/button";
 
 const mealTypes = ["breakfast", "lunch", "dinner", "snack"] as const;
 
@@ -71,7 +70,7 @@ function DiaryContent() {
   };
 
   return (
-    <div className="pb-4">
+    <div className="pb-6">
       <DateNavigator date={date} onDateChange={handleDateChange} />
 
       <DailySummary
@@ -87,7 +86,7 @@ function DiaryContent() {
         fiberTarget={fiberTarget}
       />
 
-      <div className="space-y-2 mt-2">
+      <div className="mt-4 border-t border-black/[0.06] dark:border-white/[0.06]">
         {mealTypes.map((meal) => (
           <MealSection
             key={meal}
@@ -106,9 +105,9 @@ function DiaryContent() {
         className="fixed bottom-20 right-4 z-50"
         onClick={handleFabClick}
       >
-        <Button size="icon" className="h-14 w-14 rounded-full shadow-lg">
-          <Plus className="h-6 w-6" />
-        </Button>
+        <button className="flex h-12 w-12 items-center justify-center rounded-full border border-black/[0.06] dark:border-white/[0.06] bg-background text-foreground shadow-sm transition-all duration-300 hover:shadow-md hover:border-foreground/20">
+          <Plus className="h-5 w-5" strokeWidth={1.5} />
+        </button>
       </Link>
 
       <LoginDialog
@@ -123,11 +122,11 @@ export default function DiaryPage() {
   return (
     <Suspense
       fallback={
-        <div className="px-4 py-4 space-y-3">
-          <div className="h-10 animate-pulse rounded-lg bg-muted" />
-          <div className="h-24 animate-pulse rounded-lg bg-muted" />
+        <div className="px-4 py-6 space-y-4">
+          <div className="h-10 animate-pulse rounded bg-neutral-100 dark:bg-neutral-900" />
+          <div className="h-24 animate-pulse rounded bg-neutral-100 dark:bg-neutral-900" />
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-20 animate-pulse rounded-lg bg-muted" />
+            <div key={i} className="h-16 animate-pulse rounded bg-neutral-100 dark:bg-neutral-900" />
           ))}
         </div>
       }

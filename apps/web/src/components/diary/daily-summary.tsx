@@ -1,7 +1,5 @@
 "use client";
 
-import { Progress } from "@/components/ui/progress";
-
 interface DailySummaryProps {
   calories: number;
   protein: number;
@@ -28,56 +26,63 @@ export function DailySummary({
   fiberTarget,
 }: DailySummaryProps) {
   const remaining = calorieTarget - calories;
+  const caloriePercent = Math.min((calories / calorieTarget) * 100, 100);
 
   return (
-    <div className="mx-4 rounded-xl bg-card border p-4 space-y-4">
+    <div className="mx-4 space-y-5 py-2">
       {/* Calorie Summary */}
-      <div className="flex items-center justify-between">
-        <div className="text-center">
-          <p className="text-2xl font-bold">{Math.round(calories)}</p>
-          <p className="text-xs text-muted-foreground">已攝取</p>
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-3xl font-extralight tabular-nums">{Math.round(calories)}</p>
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">已攝取</p>
         </div>
-        <div className="text-center">
+        <div className="text-right">
           <p
-            className={`text-2xl font-bold ${
+            className={`text-3xl font-extralight tabular-nums ${
               remaining >= 0 ? "text-primary" : "text-destructive"
             }`}
           >
             {Math.round(remaining)}
           </p>
-          <p className="text-xs text-muted-foreground">剩餘</p>
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">剩餘</p>
         </div>
-        <div className="text-center">
-          <p className="text-2xl font-bold text-muted-foreground">
+        <div className="text-right">
+          <p className="text-3xl font-extralight tabular-nums text-neutral-300 dark:text-neutral-700">
             {calorieTarget}
           </p>
-          <p className="text-xs text-muted-foreground">目標</p>
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">目標</p>
         </div>
       </div>
 
-      <Progress value={calories} max={calorieTarget} />
+      {/* Minimal progress bar */}
+      <div className="h-px bg-neutral-200 dark:bg-neutral-800 relative">
+        <div
+          className="absolute left-0 top-0 h-px bg-primary transition-all duration-500"
+          style={{ width: `${caloriePercent}%` }}
+        />
+      </div>
 
       {/* Macro Summary */}
-      <div className="grid grid-cols-4 gap-2">
-        <MacroBar
+      <div className="grid grid-cols-4 gap-4">
+        <MacroItem
           label="蛋白質"
           current={protein}
           target={proteinTarget}
           color="bg-blue-500"
         />
-        <MacroBar
+        <MacroItem
           label="碳水"
           current={carbs}
           target={carbsTarget}
           color="bg-amber-500"
         />
-        <MacroBar
+        <MacroItem
           label="脂肪"
           current={fat}
           target={fatTarget}
           color="bg-rose-500"
         />
-        <MacroBar
+        <MacroItem
           label="纖維"
           current={fiber}
           target={fiberTarget}
@@ -88,7 +93,7 @@ export function DailySummary({
   );
 }
 
-function MacroBar({
+function MacroItem({
   label,
   current,
   target,
@@ -99,19 +104,20 @@ function MacroBar({
   target: number;
   color: string;
 }) {
+  const percent = Math.min((current / target) * 100, 100);
+
   return (
-    <div className="space-y-1">
-      <div className="flex justify-between text-xs">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium">
-          {current.toFixed(0)}/{target}g
-        </span>
+    <div className="space-y-1.5">
+      <p className="text-[10px] text-neutral-400 dark:text-neutral-600">{label}</p>
+      <p className="text-sm font-light tabular-nums">
+        {current.toFixed(0)}<span className="text-neutral-300 dark:text-neutral-700">/{target}g</span>
+      </p>
+      <div className="h-px bg-neutral-200 dark:bg-neutral-800 relative">
+        <div
+          className={`absolute left-0 top-0 h-px ${color} transition-all duration-500`}
+          style={{ width: `${percent}%` }}
+        />
       </div>
-      <Progress
-        value={current}
-        max={target}
-        indicatorClassName={color}
-      />
     </div>
   );
 }

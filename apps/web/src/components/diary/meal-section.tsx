@@ -1,7 +1,6 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { removeEntry } from "@/server/actions/diary";
 import { useTransition } from "react";
@@ -62,19 +61,19 @@ export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenti
   const addHref = `/food/search?date=${date}&meal=${mealType}`;
 
   return (
-    <div className="mx-4 mt-3">
+    <div className="mx-4 mt-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span>{mealIcons[mealType]}</span>
-          <h3 className="font-semibold">{mealLabels[mealType]}</h3>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-sm">{mealIcons[mealType]}</span>
+          <h3 className="text-sm font-light">{mealLabels[mealType]}</h3>
+          <span className="text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">
             {Math.round(mealCalories)} kcal
           </span>
         </div>
         <Link href={addHref} onClick={handleAddClick}>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Plus className="h-4 w-4" />
-          </Button>
+          <button className="p-1.5 text-neutral-400 transition-all duration-300 hover:text-foreground">
+            <Plus className="h-4 w-4" strokeWidth={1.5} />
+          </button>
         </Link>
       </div>
 
@@ -82,12 +81,12 @@ export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenti
         <Link
           href={addHref}
           onClick={handleAddClick}
-          className="block rounded-lg border border-dashed p-3 text-center text-sm text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+          className="block border-b border-dashed border-black/[0.06] dark:border-white/[0.06] py-3 text-center text-sm font-light text-neutral-400 transition-all duration-300 hover:text-primary"
         >
           點擊新增食物
         </Link>
       ) : (
-        <div className="space-y-1">
+        <div>
           {entries.map((entry) => (
             <EntryRow key={entry.id} entry={entry} />
           ))}
@@ -112,31 +111,29 @@ function EntryRow({ entry }: { entry: DiaryEntry }) {
 
   return (
     <div
-      className={`flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2 ${
-        isPending ? "opacity-50" : ""
+      className={`flex items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] py-2.5 ${
+        isPending ? "opacity-30" : ""
       }`}
     >
       <Link href={`/food/${entry.foodId}`} className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{entry.foodName}</p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm font-light truncate">{entry.foodName}</p>
+        <p className="text-xs text-neutral-400 dark:text-neutral-600">
           {entry.servingQty} x {entry.foodServingSize}
           {entry.foodServingUnit}
-          {entry.foodBrand ? ` \u00B7 ${entry.foodBrand}` : ""}
+          {entry.foodBrand ? ` · ${entry.foodBrand}` : ""}
         </p>
       </Link>
       <div className="flex items-center gap-2 ml-2">
-        <span className="text-sm font-medium tabular-nums">
+        <span className="text-sm font-light tabular-nums text-neutral-500">
           {Math.round(Number(entry.calories || 0))}
         </span>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 text-muted-foreground hover:text-destructive"
+        <button
+          className="p-1 text-neutral-300 dark:text-neutral-700 transition-all duration-300 hover:text-destructive"
           onClick={handleRemove}
           disabled={isPending}
         >
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
+          <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+        </button>
       </div>
     </div>
   );
