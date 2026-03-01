@@ -1,5 +1,397 @@
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import Link from "next/link";
 
-export default function HomePage() {
-  redirect("/diary");
+export const metadata: Metadata = {
+  title: "Open Health — 追蹤健康的本質",
+  description:
+    "開源、免費的健康追蹤平台。以簡約與科技的力量，重新定義健康管理。",
+};
+
+function Nav() {
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/60 border-b border-white/[0.06]">
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <Link
+          href="/"
+          className="text-base font-light tracking-[0.3em] text-white"
+        >
+          OH
+        </Link>
+        <div className="hidden md:flex items-center gap-8 text-sm text-neutral-500">
+          <a
+            href="#features"
+            className="hover:text-white transition-colors duration-300"
+          >
+            功能
+          </a>
+          <a
+            href="#install"
+            className="hover:text-white transition-colors duration-300"
+          >
+            安裝
+          </a>
+          <Link
+            href="/blog"
+            className="hover:text-white transition-colors duration-300"
+          >
+            部落格
+          </Link>
+        </div>
+        <Link
+          href="/diary"
+          className="text-sm text-white hover:text-neutral-300 transition-colors duration-300"
+        >
+          開始使用 →
+        </Link>
+      </div>
+    </nav>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="min-h-screen flex flex-col items-center justify-center px-6 relative">
+      {/* Enso Circle */}
+      <div
+        className="animate-fade-in-up"
+        style={{ animationDelay: "0.2s" }}
+      >
+        <svg
+          width="120"
+          height="120"
+          viewBox="0 0 120 120"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle
+            cx="60"
+            cy="60"
+            r="50"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeDasharray="314"
+            strokeDashoffset="30"
+            strokeLinecap="round"
+            className="animate-draw-enso"
+          />
+        </svg>
+      </div>
+
+      <h1
+        className="mt-12 text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-white animate-fade-in-up"
+        style={{ animationDelay: "0.5s" }}
+      >
+        Open Health
+      </h1>
+
+      <p
+        className="mt-6 text-lg md:text-xl font-light text-neutral-400 tracking-wide animate-fade-in-up"
+        style={{ animationDelay: "0.7s" }}
+      >
+        追蹤健康的本質
+      </p>
+
+      <p
+        className="mt-4 text-sm text-neutral-600 font-light max-w-md text-center animate-fade-in-up"
+        style={{ animationDelay: "0.9s" }}
+      >
+        開源、免費、屬於你的健康追蹤平台
+      </p>
+
+      <Link
+        href="/diary"
+        className="mt-12 px-8 py-3 border border-white/20 text-sm text-white hover:bg-white hover:text-black transition-all duration-500 tracking-wider animate-fade-in-up"
+        style={{ animationDelay: "1.1s" }}
+      >
+        開始使用
+      </Link>
+
+      {/* Scroll indicator */}
+      <div
+        className="absolute bottom-12 animate-fade-in-up"
+        style={{ animationDelay: "1.5s" }}
+      >
+        <div className="w-[1px] h-16 bg-gradient-to-b from-transparent via-neutral-700 to-transparent animate-pulse" />
+      </div>
+    </section>
+  );
+}
+
+function Philosophy() {
+  return (
+    <section className="max-w-3xl mx-auto px-6 py-32 md:py-40 text-center">
+      <p className="text-[10px] tracking-[0.4em] text-neutral-600 uppercase mb-16">
+        Philosophy
+      </p>
+
+      <blockquote className="text-2xl md:text-3xl lg:text-4xl font-extralight text-white leading-relaxed">
+        健康追蹤，
+        <br />
+        不該複雜。
+      </blockquote>
+
+      <div className="w-8 h-[1px] bg-neutral-800 mx-auto my-12" />
+
+      <p className="text-neutral-500 font-light leading-loose max-w-xl mx-auto text-sm md:text-base">
+        Open Health 將科技與簡約結合，
+        <br className="hidden md:block" />
+        讓你專注於真正重要的事——你的健康。
+      </p>
+
+      <p className="mt-6 text-neutral-700 font-light text-xs md:text-sm tracking-wide">
+        不是另一個 MyFitnessPal。是重新思考。
+      </p>
+    </section>
+  );
+}
+
+const features = [
+  {
+    num: "01",
+    title: "智能食物追蹤",
+    en: "Smart Food Tracking",
+    desc: "記錄每一餐的營養攝取，精確到 82 種以上營養素。從碳水、蛋白質到微量元素，全面掌握。",
+  },
+  {
+    num: "02",
+    title: "AI 營養辨識",
+    en: "AI Recognition",
+    desc: "拍照即可辨識營養標籤與食物內容。讓記錄變得毫不費力，科技為你服務。",
+  },
+  {
+    num: "03",
+    title: "數據視覺化",
+    en: "Data Visualization",
+    desc: "視覺化你的健康趨勢。體重、營養攝取、飲水量，一目瞭然。用數據驅動決策。",
+  },
+  {
+    num: "04",
+    title: "開源透明",
+    en: "Open Source",
+    desc: "完全開放的程式碼，完全屬於你的數據。沒有隱藏的追蹤，沒有付費牆。健康追蹤應該是自由的。",
+  },
+];
+
+function Features() {
+  return (
+    <section id="features" className="max-w-4xl mx-auto px-6 py-32">
+      <p className="text-[10px] tracking-[0.4em] text-neutral-600 uppercase mb-20">
+        Features
+      </p>
+
+      <div>
+        {features.map((f) => (
+          <div
+            key={f.num}
+            className="group grid grid-cols-1 md:grid-cols-[60px_1fr] gap-4 md:gap-12 py-10 md:py-14 border-t border-white/[0.06] last:border-b"
+          >
+            <span className="text-xs font-mono text-neutral-700 pt-1">
+              {f.num}
+            </span>
+            <div>
+              <h3 className="text-xl md:text-2xl font-light text-white group-hover:tracking-wide transition-all duration-500">
+                {f.title}
+              </h3>
+              <p className="text-[10px] tracking-[0.2em] text-neutral-700 mt-1 font-mono uppercase">
+                {f.en}
+              </p>
+              <p className="mt-5 text-neutral-500 font-light leading-relaxed text-sm max-w-lg">
+                {f.desc}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Install() {
+  return (
+    <section id="install" className="max-w-4xl mx-auto px-6 py-32">
+      <p className="text-[10px] tracking-[0.4em] text-neutral-600 uppercase mb-4">
+        Install
+      </p>
+      <h2 className="text-3xl md:text-4xl font-extralight text-white mb-4">
+        安裝到你的裝置
+      </h2>
+      <p className="text-neutral-600 font-light mb-20 text-sm">
+        PWA 應用程式——無需商店下載，直接安裝到主畫面。
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-20">
+        {/* iOS */}
+        <div>
+          <h3 className="text-xs tracking-[0.3em] text-neutral-500 uppercase mb-10 font-mono">
+            iOS / Safari
+          </h3>
+          <ol className="space-y-8">
+            {[
+              ["01", "用 Safari 開啟 openhealth.blog"],
+              ["02", "點選底部分享按鈕"],
+              ["03", "選擇「加入主畫面」"],
+            ].map(([num, text]) => (
+              <li key={num} className="flex gap-5">
+                <span className="text-xs font-mono text-neutral-700 shrink-0 pt-0.5">
+                  {num}
+                </span>
+                <p className="text-white font-light text-sm">{text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* Android */}
+        <div>
+          <h3 className="text-xs tracking-[0.3em] text-neutral-500 uppercase mb-10 font-mono">
+            Android / Chrome
+          </h3>
+          <ol className="space-y-8">
+            {[
+              ["01", "用 Chrome 開啟 openhealth.blog"],
+              ["02", "點選右上角選單 ⋮"],
+              ["03", "選擇「安裝應用程式」"],
+            ].map(([num, text]) => (
+              <li key={num} className="flex gap-5">
+                <span className="text-xs font-mono text-neutral-700 shrink-0 pt-0.5">
+                  {num}
+                </span>
+                <p className="text-white font-light text-sm">{text}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
+      <div className="mt-20 pt-8 border-t border-white/[0.06]">
+        <Link
+          href="/docs"
+          className="text-xs text-neutral-600 hover:text-white transition-colors duration-300 tracking-wider"
+        >
+          查看完整安裝指南 →
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function BlogPreview() {
+  return (
+    <section className="max-w-4xl mx-auto px-6 py-32">
+      <p className="text-[10px] tracking-[0.4em] text-neutral-600 uppercase mb-4">
+        Journal
+      </p>
+      <h2 className="text-3xl md:text-4xl font-extralight text-white mb-4">
+        關於健康的思考
+      </h2>
+      <p className="text-neutral-600 font-light mb-16 text-sm">
+        健康、營養與生活方式的見解。
+      </p>
+
+      <div className="border border-white/[0.06] p-12 md:p-20 flex flex-col items-center">
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 120 120"
+          fill="none"
+          aria-hidden="true"
+          className="mb-8 opacity-20"
+        >
+          <circle
+            cx="60"
+            cy="60"
+            r="50"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeDasharray="314"
+            strokeDashoffset="30"
+            strokeLinecap="round"
+          />
+        </svg>
+        <p className="text-neutral-600 font-light text-sm">即將推出</p>
+      </div>
+
+      <div className="mt-10">
+        <Link
+          href="/blog"
+          className="text-xs text-neutral-600 hover:text-white transition-colors duration-300 tracking-wider"
+        >
+          前往部落格 →
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="max-w-4xl mx-auto px-6 py-20 border-t border-white/[0.06]">
+      <div className="flex flex-col md:flex-row justify-between gap-12">
+        <div>
+          <p className="text-base font-light tracking-[0.3em] text-white">
+            OH
+          </p>
+          <p className="text-xs text-neutral-700 mt-3 font-light">
+            &copy; {new Date().getFullYear()} Open Health
+          </p>
+        </div>
+
+        <div className="flex gap-16 text-sm">
+          <div className="space-y-4">
+            <p className="text-[10px] text-neutral-600 uppercase tracking-[0.2em]">
+              產品
+            </p>
+            <Link
+              href="/diary"
+              className="block text-neutral-500 hover:text-white transition-colors duration-300 text-xs"
+            >
+              開始使用
+            </Link>
+            <Link
+              href="/docs"
+              className="block text-neutral-500 hover:text-white transition-colors duration-300 text-xs"
+            >
+              安裝指南
+            </Link>
+          </div>
+          <div className="space-y-4">
+            <p className="text-[10px] text-neutral-600 uppercase tracking-[0.2em]">
+              社群
+            </p>
+            <a
+              href="https://github.com/LJlkdskdjflsa/open-health"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-neutral-500 hover:text-white transition-colors duration-300 text-xs"
+            >
+              GitHub
+            </a>
+            <Link
+              href="/blog"
+              className="block text-neutral-500 hover:text-white transition-colors duration-300 text-xs"
+            >
+              部落格
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <div className="bg-black text-white min-h-screen overflow-x-hidden selection:bg-white selection:text-black">
+      <Nav />
+      <Hero />
+
+      <div className="w-12 h-[1px] bg-white/[0.06] mx-auto" />
+
+      <Philosophy />
+      <Features />
+      <Install />
+      <BlogPreview />
+      <Footer />
+    </div>
+  );
 }
