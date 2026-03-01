@@ -7,6 +7,8 @@ import { blogPosts } from "@/server/db/schema";
 import { eq, and } from "drizzle-orm";
 import { BlogContent } from "./blog-content";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
