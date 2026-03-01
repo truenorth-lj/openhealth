@@ -13,6 +13,11 @@
 - **目標設定** — 自訂每日熱量與蛋白質、碳水、脂肪目標
 - **帳號系統** — Email/密碼註冊登入
 
+## Web 策略
+
+- **Next.js web (`apps/web`) 是主要的 web 體驗**，提供 SSR、SEO、Server Components 等完整功能
+- **Expo web 僅作為開發/測試 mobile UI 的便利工具**，不需要特別維護
+
 ## 技術架構
 
 | 層級 | 技術 |
