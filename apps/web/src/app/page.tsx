@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { db } from "@/server/db";
+import { blogPosts } from "@/server/db/schema";
+import { eq, desc } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "Open Health — 追蹤健康的本質",
@@ -282,7 +286,18 @@ function Install() {
   );
 }
 
-function BlogPreview() {
+interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string;
+  thumbnailUrl: string | null;
+  tags: string[] | null;
+  videoPublishedAt: Date | null;
+  createdAt: Date;
+}
+
+function BlogPreview({ posts }: { posts: BlogPost[] }) {
   return (
     <section className="max-w-4xl mx-auto px-6 py-32">
       <p className="text-[10px] tracking-[0.4em] text-neutral-400 dark:text-neutral-600 uppercase mb-4">
@@ -295,30 +310,72 @@ function BlogPreview() {
         健康、營養與生活方式的見解。
       </p>
 
-      <div className="border border-black/[0.06] dark:border-white/[0.06] p-12 md:p-20 flex flex-col items-center">
-        <svg
-          width="40"
-          height="40"
-          viewBox="0 0 120 120"
-          fill="none"
-          aria-hidden="true"
-          className="mb-8 opacity-20"
-        >
-          <circle
-            cx="60"
-            cy="60"
-            r="50"
-            className="stroke-black dark:stroke-white"
-            strokeWidth="1.5"
-            strokeDasharray="314"
-            strokeDashoffset="30"
-            strokeLinecap="round"
-          />
-        </svg>
-        <p className="text-neutral-400 dark:text-neutral-600 font-light text-sm">
-          即將推出
-        </p>
-      </div>
+      {posts.length === 0 ? (
+        <div className="border border-black/[0.06] dark:border-white/[0.06] p-12 md:p-20 flex flex-col items-center">
+          <svg
+            width="40"
+            height="40"
+            viewBox="0 0 120 120"
+            fill="none"
+            aria-hidden="true"
+            className="mb-8 opacity-20"
+          >
+            <circle
+              cx="60"
+              cy="60"
+              r="50"
+              className="stroke-black dark:stroke-white"
+              strokeWidth="1.5"
+              strokeDasharray="314"
+              strokeDashoffset="30"
+              strokeLinecap="round"
+            />
+          </svg>
+          <p className="text-neutral-400 dark:text-neutral-600 font-light text-sm">
+            即將推出
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-px">
+          {posts.map((post) => (
+            <Link
+              key={post.id}
+              href={`/blog/${post.slug}`}
+              className="group block border border-black/[0.06] dark:border-white/[0.06] hover:border-black/[0.12] dark:hover:border-white/[0.12] transition-colors duration-300"
+            >
+              <div className="flex flex-col md:flex-row">
+                {post.thumbnailUrl && (
+                  <div className="md:w-56 md:flex-shrink-0 aspect-video md:aspect-auto relative overflow-hidden">
+                    <Image
+                      src={post.thumbnailUrl}
+                      alt={post.title}
+                      fill
+                      className="object-cover opacity-80 group-hover:opacity-100 dark:opacity-70 dark:group-hover:opacity-90 transition-opacity duration-300"
+                      sizes="(max-width: 768px) 100vw, 224px"
+                    />
+                  </div>
+                )}
+                <div className="p-5 md:p-6 flex flex-col justify-center min-w-0">
+                  <time className="text-[10px] tracking-[0.3em] text-neutral-400 dark:text-neutral-600 uppercase mb-2">
+                    {new Date(post.videoPublishedAt ?? post.createdAt).toLocaleDateString("zh-TW", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
+                  <h3 className="text-base font-light mb-2 group-hover:text-black/80 dark:group-hover:text-white/90 transition-colors line-clamp-2">
+                    {post.title}
+                  </h3>
+                  <p className="text-xs text-neutral-500 font-light line-clamp-2">
+                    {post.summary?.slice(0, 120)}
+                    {(post.summary?.length ?? 0) > 120 ? "…" : ""}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
 
       <div className="mt-10">
         <Link
@@ -383,7 +440,23 @@ function Footer() {
   );
 }
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const recentPosts = await db
+    .select({
+      id: blogPosts.id,
+      title: blogPosts.title,
+      slug: blogPosts.slug,
+      summary: blogPosts.summary,
+      thumbnailUrl: blogPosts.thumbnailUrl,
+      tags: blogPosts.tags,
+      videoPublishedAt: blogPosts.videoPublishedAt,
+      createdAt: blogPosts.createdAt,
+    })
+    .from(blogPosts)
+    .where(eq(blogPosts.status, "published"))
+    .orderBy(desc(blogPosts.videoPublishedAt))
+    .limit(3);
+
   return (
     <div className="bg-white dark:bg-black text-black dark:text-white min-h-screen overflow-x-hidden selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
       <Nav />
@@ -394,7 +467,7 @@ export default function LandingPage() {
       <Philosophy />
       <Features />
       <Install />
-      <BlogPreview />
+      <BlogPreview posts={recentPosts} />
       <Footer />
     </div>
   );

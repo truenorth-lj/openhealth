@@ -6,6 +6,7 @@ import { db } from "@/server/db";
 import { blogPosts } from "@/server/db/schema";
 import { eq, and } from "drizzle-orm";
 import { BlogContent } from "./blog-content";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -29,10 +30,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${post.title} — Open Health`,
-    description: post.summary.slice(0, 160),
+    description: post.summary?.slice(0, 160) ?? "",
     openGraph: {
       title: post.title,
-      description: post.summary.slice(0, 160),
+      description: post.summary?.slice(0, 160) ?? "",
       type: "article",
       images: post.thumbnailUrl ? [{ url: post.thumbnailUrl }] : [],
     },
@@ -45,28 +46,31 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <div className="bg-black text-white min-h-screen selection:bg-white selection:text-black">
-      <nav className="border-b border-white/[0.06]">
+    <div className="bg-white dark:bg-black text-black dark:text-white min-h-screen selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
+      <nav className="border-b border-black/[0.06] dark:border-white/[0.06]">
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link
             href="/"
-            className="text-base font-light tracking-[0.3em] text-white"
+            className="text-base font-light tracking-[0.3em] text-black dark:text-white"
           >
             OH
           </Link>
-          <Link
-            href="/blog"
-            className="text-sm text-neutral-500 hover:text-white transition-colors duration-300"
-          >
-            ← 所有文章
-          </Link>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <Link
+              href="/blog"
+              className="text-sm text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300"
+            >
+              ← 所有文章
+            </Link>
+          </div>
         </div>
       </nav>
 
       <main className="max-w-3xl mx-auto px-6 py-16 md:py-24">
         {/* Thumbnail */}
         {post.thumbnailUrl && (
-          <div className="relative aspect-video mb-12 overflow-hidden border border-white/[0.06]">
+          <div className="relative aspect-video mb-12 overflow-hidden border border-black/[0.06] dark:border-white/[0.06]">
             <Image
               src={post.thumbnailUrl}
               alt={post.title}
@@ -81,7 +85,7 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Header */}
         <header className="mb-12">
           <div className="flex items-center gap-4 mb-6">
-            <time className="text-[10px] tracking-[0.4em] text-neutral-600 uppercase">
+            <time className="text-[10px] tracking-[0.4em] text-neutral-400 dark:text-neutral-600 uppercase">
               {new Date(post.videoPublishedAt ?? post.createdAt).toLocaleDateString("zh-TW", {
                 year: "numeric",
                 month: "long",
@@ -89,7 +93,7 @@ export default async function BlogPostPage({ params }: Props) {
               })}
             </time>
             {post.youtubeChannel && (
-              <span className="text-[10px] tracking-[0.3em] text-neutral-600 uppercase">
+              <span className="text-[10px] tracking-[0.3em] text-neutral-400 dark:text-neutral-600 uppercase">
                 {post.youtubeChannel}
               </span>
             )}
@@ -102,7 +106,7 @@ export default async function BlogPostPage({ params }: Props) {
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="text-[10px] tracking-wider text-neutral-500 border border-white/[0.06] px-2.5 py-1"
+                  className="text-[10px] tracking-wider text-neutral-500 border border-black/[0.06] dark:border-white/[0.06] px-2.5 py-1"
                 >
                   {tag}
                 </span>
@@ -112,11 +116,11 @@ export default async function BlogPostPage({ params }: Props) {
         </header>
 
         {/* Summary box */}
-        <div className="border border-white/[0.08] bg-white/[0.02] px-6 py-5 mb-12">
-          <p className="text-[10px] tracking-[0.4em] text-neutral-600 uppercase mb-3">
+        <div className="border border-black/[0.08] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.02] px-6 py-5 mb-12">
+          <p className="text-[10px] tracking-[0.4em] text-neutral-400 dark:text-neutral-600 uppercase mb-3">
             精華摘要
           </p>
-          <p className="text-sm text-neutral-300 font-light leading-relaxed">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300 font-light leading-relaxed">
             {post.summary}
           </p>
         </div>
@@ -128,12 +132,12 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* YouTube link */}
         {post.youtubeVideoId && (
-          <div className="border-t border-white/[0.06] pt-8 mb-12">
+          <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-8 mb-12">
             <a
               href={`https://www.youtube.com/watch?v=${post.youtubeVideoId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-white transition-colors duration-300"
+              className="inline-flex items-center gap-2 text-sm text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300"
             >
               <svg
                 width="20"
@@ -150,10 +154,10 @@ export default async function BlogPostPage({ params }: Props) {
         )}
 
         {/* Back link */}
-        <div className="border-t border-white/[0.06] pt-8">
+        <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-8">
           <Link
             href="/blog"
-            className="text-xs text-neutral-600 hover:text-white transition-colors duration-300 tracking-wider"
+            className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-black dark:hover:text-white transition-colors duration-300 tracking-wider"
           >
             ← 所有文章
           </Link>
