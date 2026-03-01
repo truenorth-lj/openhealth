@@ -6,3 +6,4 @@ export * from "./exercise";
 export * from "./water";
 export * from "./fasting";
 export * from "./achievements";
+export * from "./blog";
