@@ -4,7 +4,7 @@ import Image from "next/image";
 import { db } from "@/server/db";
 import { blogPosts } from "@/server/db/schema";
 import { eq, desc } from "drizzle-orm";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteNav } from "@/components/layout/site-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -36,27 +36,9 @@ export default async function BlogPage() {
 
   return (
     <div className="bg-white dark:bg-black text-black dark:text-white min-h-screen selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
-      <nav className="border-b border-black/[0.06] dark:border-white/[0.06]">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-base font-light tracking-[0.3em] text-black dark:text-white"
-          >
-            OH
-          </Link>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Link
-              href="/diary"
-              className="text-sm text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300"
-            >
-              開始使用 →
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <SiteNav />
 
-      <main className="max-w-4xl mx-auto px-6 py-16 md:py-24">
+      <main className="max-w-4xl mx-auto px-6 pt-28 pb-16 md:pt-32 md:pb-24">
         <p className="text-[10px] tracking-[0.4em] text-neutral-400 dark:text-neutral-600 uppercase mb-4">
           Journal
         </p>

@@ -6,7 +6,7 @@ import { db } from "@/server/db";
 import { blogPosts } from "@/server/db/schema";
 import { eq, and } from "drizzle-orm";
 import { BlogContent } from "./blog-content";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { SiteNav } from "@/components/layout/site-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -47,27 +47,9 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="bg-white dark:bg-black text-black dark:text-white min-h-screen selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
-      <nav className="border-b border-black/[0.06] dark:border-white/[0.06]">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-base font-light tracking-[0.3em] text-black dark:text-white"
-          >
-            OH
-          </Link>
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Link
-              href="/blog"
-              className="text-sm text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300"
-            >
-              ← 所有文章
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <SiteNav />
 
-      <main className="max-w-3xl mx-auto px-6 py-16 md:py-24">
+      <main className="max-w-3xl mx-auto px-6 pt-28 pb-16 md:pt-32 md:pb-24">
         {/* Thumbnail */}
         {post.thumbnailUrl && (
           <div className="relative aspect-video mb-12 overflow-hidden border border-black/[0.06] dark:border-white/[0.06]">
