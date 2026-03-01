@@ -82,7 +82,7 @@ export default async function BlogPostPage({ params }: Props) {
         <header className="mb-12">
           <div className="flex items-center gap-4 mb-6">
             <time className="text-[10px] tracking-[0.4em] text-neutral-600 uppercase">
-              {new Date(post.createdAt).toLocaleDateString("zh-TW", {
+              {new Date(post.videoPublishedAt ?? post.createdAt).toLocaleDateString("zh-TW", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",

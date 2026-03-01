@@ -22,10 +22,11 @@ async function getPosts() {
       thumbnailUrl: blogPosts.thumbnailUrl,
       tags: blogPosts.tags,
       createdAt: blogPosts.createdAt,
+      videoPublishedAt: blogPosts.videoPublishedAt,
     })
     .from(blogPosts)
     .where(eq(blogPosts.status, "published"))
-    .orderBy(desc(blogPosts.createdAt))
+    .orderBy(desc(blogPosts.videoPublishedAt))
     .limit(50);
 }
 
@@ -108,7 +109,7 @@ export default async function BlogPage() {
                   )}
                   <div className="p-6 md:p-8 flex flex-col justify-center min-w-0">
                     <time className="text-[10px] tracking-[0.3em] text-neutral-600 uppercase mb-3">
-                      {new Date(post.createdAt).toLocaleDateString("zh-TW", {
+                      {new Date(post.videoPublishedAt ?? post.createdAt).toLocaleDateString("zh-TW", {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
