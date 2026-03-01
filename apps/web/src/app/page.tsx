@@ -6,6 +6,8 @@ import { db } from "@/server/db";
 import { blogPosts } from "@/server/db/schema";
 import { eq, desc } from "drizzle-orm";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Open Health — 追蹤健康的本質",
   description:
