@@ -1,9 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc-client";
+import { useSession } from "@/lib/auth-client";
 
 const categoryLabels: Record<string, string> = {
   macro: "巨量營養素",
@@ -17,11 +21,70 @@ const categoryOrder = ["macro", "vitamin", "mineral", "other"];
 export default function FoodDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { data: session } = useSession();
+  const [isEditing, setIsEditing] = useState(false);
+  const [validationError, setValidationError] = useState<string>();
 
+  const utils = trpc.useUtils();
   const { data: food, isLoading } = trpc.food.getById.useQuery(
     { id: params.id },
     { enabled: !!params.id }
   );
+
+  const updateMutation = trpc.food.updateFood.useMutation({
+    onSuccess: () => {
+      utils.food.getById.invalidate({ id: params.id });
+      setIsEditing(false);
+    },
+  });
+
+  const [editForm, setEditForm] = useState({
+    name: "",
+    brand: "",
+    description: "",
+    servingSize: "",
+    servingUnit: "",
+    householdServing: "",
+    calories: "",
+  });
+
+  const isOwner = !!(session?.user?.id && food?.createdBy && session.user.id === food.createdBy);
+
+  function startEditing() {
+    if (!food) return;
+    setEditForm({
+      name: food.name,
+      brand: food.brand ?? "",
+      description: food.description ?? "",
+      servingSize: String(food.servingSize),
+      servingUnit: food.servingUnit,
+      householdServing: food.householdServing ?? "",
+      calories: String(food.calories),
+    });
+    setValidationError(undefined);
+    setIsEditing(true);
+  }
+
+  function handleSave() {
+    if (!food) return;
+    const servingSize = Number(editForm.servingSize);
+    const calories = Number(editForm.calories);
+    if (isNaN(servingSize) || servingSize <= 0 || isNaN(calories) || calories < 0) {
+      setValidationError("請輸入有效的數值");
+      return;
+    }
+    setValidationError(undefined);
+    updateMutation.mutate({
+      id: food.id,
+      name: editForm.name,
+      brand: editForm.brand || null,
+      description: editForm.description || null,
+      servingSize,
+      servingUnit: editForm.servingUnit,
+      householdServing: editForm.householdServing || null,
+      calories,
+    });
+  }
 
   if (isLoading) {
     return (
@@ -71,28 +134,131 @@ export default function FoodDetailPage() {
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div className="min-w-0">
-          <h1 className="font-semibold truncate">{food.name}</h1>
-          {food.brand && (
-            <p className="text-xs text-muted-foreground">{food.brand}</p>
+        <div className="min-w-0 flex-1">
+          {isEditing ? (
+            <Input
+              value={editForm.name}
+              onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
+              className="font-semibold"
+            />
+          ) : (
+            <>
+              <h1 className="font-semibold truncate">{food.name}</h1>
+              {food.brand && (
+                <p className="text-xs text-muted-foreground">{food.brand}</p>
+              )}
+            </>
           )}
         </div>
+        {isOwner && !isEditing && (
+          <Button variant="ghost" size="icon" onClick={startEditing}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+        )}
+        {isEditing && (
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsEditing(false)}
+              disabled={updateMutation.isPending}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleSave}
+              disabled={updateMutation.isPending}
+            >
+              <Save className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
+      {/* Brand (edit mode) */}
+      {isEditing && (
+        <div className="mb-3 space-y-2">
+          <Input
+            value={editForm.brand}
+            onChange={(e) => setEditForm((f) => ({ ...f, brand: e.target.value }))}
+            placeholder="品牌（選填）"
+          />
+        </div>
+      )}
+
+      {/* Description */}
+      {isEditing ? (
+        <div className="mb-4">
+          <Textarea
+            value={editForm.description}
+            onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+            placeholder="備註（選填）"
+            rows={3}
+          />
+        </div>
+      ) : (
+        food.description && (
+          <p className="text-sm text-muted-foreground mb-4 px-1">{food.description}</p>
+        )
+      )}
+
       {/* Serving info */}
-      <div className="rounded-lg bg-muted/50 px-4 py-3 mb-4">
-        <p className="text-sm text-muted-foreground">每份</p>
-        <p className="text-lg font-semibold">
-          {food.servingSize}{food.servingUnit}
-          {food.householdServing ? ` (${food.householdServing})` : ""}
-        </p>
-      </div>
+      {isEditing ? (
+        <div className="rounded-lg bg-muted/50 px-4 py-3 mb-4 space-y-2">
+          <p className="text-sm text-muted-foreground">每份</p>
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              value={editForm.servingSize}
+              onChange={(e) => setEditForm((f) => ({ ...f, servingSize: e.target.value }))}
+              placeholder="份量"
+              className="w-24"
+            />
+            <Input
+              value={editForm.servingUnit}
+              onChange={(e) => setEditForm((f) => ({ ...f, servingUnit: e.target.value }))}
+              placeholder="單位"
+              className="w-20"
+            />
+            <Input
+              value={editForm.householdServing}
+              onChange={(e) => setEditForm((f) => ({ ...f, householdServing: e.target.value }))}
+              placeholder="家用份量（選填）"
+              className="flex-1"
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-lg bg-muted/50 px-4 py-3 mb-4">
+          <p className="text-sm text-muted-foreground">每份</p>
+          <p className="text-lg font-semibold">
+            {food.servingSize}{food.servingUnit}
+            {food.householdServing ? ` (${food.householdServing})` : ""}
+          </p>
+        </div>
+      )}
 
       {/* Calories + Macros summary */}
       <div className="rounded-lg border p-4 mb-4">
         <div className="text-center mb-3">
-          <p className="text-3xl font-bold">{Math.round(Number(food.calories ?? 0))}</p>
-          <p className="text-sm text-muted-foreground">大卡</p>
+          {isEditing ? (
+            <div className="flex items-center justify-center gap-2">
+              <Input
+                type="number"
+                value={editForm.calories}
+                onChange={(e) => setEditForm((f) => ({ ...f, calories: e.target.value }))}
+                className="w-28 text-center text-xl font-bold"
+              />
+              <span className="text-sm text-muted-foreground">大卡</span>
+            </div>
+          ) : (
+            <>
+              <p className="text-3xl font-bold">{Math.round(Number(food.calories ?? 0))}</p>
+              <p className="text-sm text-muted-foreground">大卡</p>
+            </>
+          )}
         </div>
         <div className="grid grid-cols-4 gap-2 text-center">
           <MacroItem label="蛋白質" value={proteinG} unit="g" />
@@ -101,6 +267,16 @@ export default function FoodDetailPage() {
           <MacroItem label="纖維" value={fiberG} unit="g" />
         </div>
       </div>
+
+      {/* Errors */}
+      {validationError && (
+        <p className="text-sm text-red-500 mb-4">{validationError}</p>
+      )}
+      {updateMutation.isError && (
+        <p className="text-sm text-red-500 mb-4">
+          {updateMutation.error.message}
+        </p>
+      )}
 
       {/* Full nutrient list by category */}
       {nutrientsByCategory.map((group) => (

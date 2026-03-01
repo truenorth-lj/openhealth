@@ -30,6 +30,7 @@ export async function createCustomFood(
       servingSize: String(validated.servingSize),
       servingUnit: validated.servingUnit,
       householdServing: validated.householdServing,
+      description: validated.description,
       calories: String(validated.calories),
       isPublic: true,
       createdBy: user.id,

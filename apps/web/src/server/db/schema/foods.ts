@@ -44,6 +44,7 @@ export const foods = pgTable(
     servingSize: decimal("serving_size", { precision: 8, scale: 2 }).notNull(),
     servingUnit: varchar("serving_unit", { length: 50 }).notNull(),
     householdServing: varchar("household_serving", { length: 100 }),
+    description: text("description"),
     calories: decimal("calories", { precision: 7, scale: 1 }).notNull(),
     isVerified: boolean("is_verified").default(false).notNull(),
     isPublic: boolean("is_public").default(true).notNull(),

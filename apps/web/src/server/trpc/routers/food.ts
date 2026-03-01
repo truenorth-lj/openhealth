@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createFoodSchema, createFoodFromBarcodeSchema } from "@open-health/shared/schemas";
+import { createFoodSchema, createFoodFromBarcodeSchema, updateFoodSchema } from "@open-health/shared/schemas";
 import { NUTRIENT_IDS } from "@open-health/shared/constants";
 import { publicProcedure, protectedProcedure, router } from "../trpc";
 import { foods, foodNutrients, nutrientDefinitions, foodServings } from "@/server/db/schema";
@@ -163,6 +163,7 @@ export const foodRouter = router({
         .values({
           name: input.name,
           brand: input.brand,
+          description: input.description,
           barcode: input.barcode,
           source: "user",
           servingSize: String(input.servingSize),
@@ -255,5 +256,65 @@ export const foodRouter = router({
       }
 
       return { success: true, foodId: food.id };
+    }),
+
+  updateFood: protectedProcedure
+    .input(updateFoodSchema)
+    .mutation(async ({ ctx, input }) => {
+      const existing = await ctx.db.query.foods.findFirst({
+        where: eq(foods.id, input.id),
+      });
+
+      if (!existing) {
+        throw new Error("找不到食物");
+      }
+
+      if (existing.createdBy !== ctx.user.id) {
+        throw new Error("只能編輯自己建立的食物");
+      }
+
+      const { id, nutrients, alternateServings, ...updateFields } = input;
+
+      // Build update object with only provided fields
+      const updates: Record<string, unknown> = { updatedAt: new Date() };
+      if (updateFields.name !== undefined) updates.name = updateFields.name;
+      if (updateFields.brand !== undefined) updates.brand = updateFields.brand;
+      if (updateFields.description !== undefined) updates.description = updateFields.description;
+      if (updateFields.servingSize !== undefined) updates.servingSize = String(updateFields.servingSize);
+      if (updateFields.servingUnit !== undefined) updates.servingUnit = updateFields.servingUnit;
+      if (updateFields.householdServing !== undefined) updates.householdServing = updateFields.householdServing;
+      if (updateFields.calories !== undefined) updates.calories = String(updateFields.calories);
+
+      await ctx.db.update(foods).set(updates).where(eq(foods.id, id));
+
+      // Replace nutrients if provided
+      if (nutrients !== undefined) {
+        await ctx.db.delete(foodNutrients).where(eq(foodNutrients.foodId, id));
+        if (nutrients.length > 0) {
+          await ctx.db.insert(foodNutrients).values(
+            nutrients.map((n) => ({
+              foodId: id,
+              nutrientId: n.nutrientId,
+              amount: String(n.amount),
+            }))
+          );
+        }
+      }
+
+      // Replace alternate servings if provided
+      if (alternateServings !== undefined) {
+        await ctx.db.delete(foodServings).where(eq(foodServings.foodId, id));
+        if (alternateServings.length > 0) {
+          await ctx.db.insert(foodServings).values(
+            alternateServings.map((s) => ({
+              foodId: id,
+              label: s.label,
+              grams: String(s.grams),
+            }))
+          );
+        }
+      }
+
+      return { success: true };
     }),
 });

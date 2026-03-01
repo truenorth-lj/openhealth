@@ -11,11 +11,39 @@ export const logFoodSchema = z.object({
 export const createFoodSchema = z.object({
   name: z.string().min(1).max(500),
   brand: z.string().max(255).optional(),
+  description: z.string().max(2000).optional(),
   barcode: z.string().max(50).optional(),
   servingSize: z.number().positive(),
   servingUnit: z.string().min(1).max(50),
   householdServing: z.string().max(100).optional(),
   calories: z.number().min(0),
+  nutrients: z
+    .array(
+      z.object({
+        nutrientId: z.number(),
+        amount: z.number().min(0),
+      })
+    )
+    .optional(),
+  alternateServings: z
+    .array(
+      z.object({
+        label: z.string(),
+        grams: z.number().positive(),
+      })
+    )
+    .optional(),
+});
+
+export const updateFoodSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1).max(500).optional(),
+  brand: z.string().max(255).nullish(),
+  description: z.string().max(2000).nullish(),
+  servingSize: z.number().positive().optional(),
+  servingUnit: z.string().min(1).max(50).optional(),
+  householdServing: z.string().max(100).nullish(),
+  calories: z.number().min(0).optional(),
   nutrients: z
     .array(
       z.object({
