@@ -5,6 +5,8 @@ import { publicProcedure, protectedProcedure, router } from "../trpc";
 import { foods, foodNutrients, nutrientDefinitions, foodServings } from "@/server/db/schema";
 import { eq, sql, desc } from "drizzle-orm";
 import { quickFoods } from "@/server/db/schema/diary";
+import { lookupOpenFoodFacts } from "@/server/services/openfoodfacts";
+import { recognizeNutritionLabel, estimateNutritionFromText } from "@/server/services/ai";
 
 export const foodRouter = router({
   search: publicProcedure
@@ -256,6 +258,24 @@ export const foodRouter = router({
       }
 
       return { success: true, foodId: food.id };
+    }),
+
+  lookupBarcode: protectedProcedure
+    .input(z.object({ barcode: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      return lookupOpenFoodFacts(input.barcode);
+    }),
+
+  recognizeLabel: protectedProcedure
+    .input(z.object({ base64Image: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      return recognizeNutritionLabel(input.base64Image);
+    }),
+
+  estimateNutrition: protectedProcedure
+    .input(z.object({ description: z.string().min(1) }))
+    .mutation(async ({ input }) => {
+      return estimateNutritionFromText(input.description);
     }),
 
   updateFood: protectedProcedure
