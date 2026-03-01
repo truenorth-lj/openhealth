@@ -31,7 +31,6 @@ export async function lookupOpenFoodFacts(
   }
 
   const suffix = nutriments["energy-kcal_serving"] != null ? "_serving" : "_100g";
-  const getSuffix = suffix;
 
   return {
     found: true,
@@ -39,21 +38,21 @@ export async function lookupOpenFoodFacts(
     brand: p.brands || undefined,
     servingSize,
     servingUnit,
-    calories: nutriments[`energy-kcal${getSuffix}`] ?? nutriments[`energy-kcal_100g`] ?? 0,
-    protein: nutriments[`proteins${getSuffix}`] ?? nutriments[`proteins_100g`] ?? 0,
-    fat: nutriments[`fat${getSuffix}`] ?? nutriments[`fat_100g`] ?? 0,
-    carbs: nutriments[`carbohydrates${getSuffix}`] ?? nutriments[`carbohydrates_100g`] ?? 0,
-    fiber: nutriments[`fiber${getSuffix}`] ?? nutriments[`fiber_100g`] ?? undefined,
-    sugar: nutriments[`sugars${getSuffix}`] ?? nutriments[`sugars_100g`] ?? undefined,
-    saturatedFat: nutriments[`saturated-fat${getSuffix}`] ?? nutriments[`saturated-fat_100g`] ?? undefined,
-    transFat: nutriments[`trans-fat${getSuffix}`] ?? nutriments[`trans-fat_100g`] ?? undefined,
-    cholesterol: nutriments[`cholesterol${getSuffix}`] != null
-      ? nutriments[`cholesterol${getSuffix}`] * 1000
+    calories: nutriments[`energy-kcal${suffix}`] ?? nutriments[`energy-kcal_100g`] ?? 0,
+    protein: nutriments[`proteins${suffix}`] ?? nutriments[`proteins_100g`] ?? 0,
+    fat: nutriments[`fat${suffix}`] ?? nutriments[`fat_100g`] ?? 0,
+    carbs: nutriments[`carbohydrates${suffix}`] ?? nutriments[`carbohydrates_100g`] ?? 0,
+    fiber: nutriments[`fiber${suffix}`] ?? nutriments[`fiber_100g`] ?? undefined,
+    sugar: nutriments[`sugars${suffix}`] ?? nutriments[`sugars_100g`] ?? undefined,
+    saturatedFat: nutriments[`saturated-fat${suffix}`] ?? nutriments[`saturated-fat_100g`] ?? undefined,
+    transFat: nutriments[`trans-fat${suffix}`] ?? nutriments[`trans-fat_100g`] ?? undefined,
+    cholesterol: nutriments[`cholesterol${suffix}`] != null
+      ? nutriments[`cholesterol${suffix}`] * 1000
       : nutriments[`cholesterol_100g`] != null
         ? nutriments[`cholesterol_100g`] * 1000
         : undefined,
-    sodium: nutriments[`sodium${getSuffix}`] != null
-      ? nutriments[`sodium${getSuffix}`] * 1000
+    sodium: nutriments[`sodium${suffix}`] != null
+      ? nutriments[`sodium${suffix}`] * 1000
       : nutriments[`sodium_100g`] != null
         ? nutriments[`sodium_100g`] * 1000
         : undefined,

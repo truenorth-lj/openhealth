@@ -3,6 +3,8 @@ import { protectedProcedure, router } from "../trpc";
 import { waterLogs, waterGoals } from "@/server/db/schema";
 import { eq, and, sql, desc } from "drizzle-orm";
 
+const DEFAULT_DAILY_WATER_ML = 2500;
+
 export const waterRouter = router({
   getToday: protectedProcedure
     .input(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }))
@@ -25,7 +27,7 @@ export const waterRouter = router({
 
       return {
         totalMl: result[0]?.totalMl ?? 0,
-        goalMl: goal?.dailyTargetMl ?? 2500,
+        goalMl: goal?.dailyTargetMl ?? DEFAULT_DAILY_WATER_ML,
       };
     }),
 
@@ -72,7 +74,7 @@ export const waterRouter = router({
     const goal = await ctx.db.query.waterGoals.findFirst({
       where: eq(waterGoals.userId, ctx.user.id),
     });
-    return { dailyTargetMl: goal?.dailyTargetMl ?? 2500 };
+    return { dailyTargetMl: goal?.dailyTargetMl ?? DEFAULT_DAILY_WATER_ML };
   }),
 
   setGoal: protectedProcedure
