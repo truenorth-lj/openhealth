@@ -1,27 +1,16 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
-import { useChat, type UIMessage } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc-client";
 import { createChatSession, deleteChatSession } from "@/server/actions/chat";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import {
   Send,
-  RotateCcw,
   Loader2,
   Bot,
-  User,
-  History,
-  Plus,
   Trash2,
-  ArrowLeft,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const MAX_USER_MESSAGES_PER_CONVERSATION = 5;
 
 const quickPrompts = [
   "分析我今天的飲食",
@@ -31,38 +20,12 @@ const quickPrompts = [
 
 export default function ChatPage() {
   const { data: session, isPending } = useSession();
+  const router = useRouter();
   const [input, setInput] = useState("");
-  const [sessionId, setSessionId] = useState<string | null>(null);
-  const [initialMessages, setInitialMessages] = useState<UIMessage[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const sessionIdRef = useRef<string | null>(null);
-
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: "/api/chat",
-        body: () => ({ sessionId: sessionIdRef.current }),
-      }),
-    []
-  );
+  const [isSending, setIsSending] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
 
   const utils = trpc.useUtils();
-
-  const {
-    messages,
-    setMessages,
-    sendMessage,
-    status,
-    error,
-  } = useChat({
-    id: sessionId ?? undefined,
-    messages: initialMessages,
-    transport,
-    onFinish: () => {
-      utils.chat.getDailyUsage.invalidate();
-      utils.chat.listSessions.invalidate();
-    },
-  });
 
   const { data: sessionsData } = trpc.chat.listSessions.useQuery(undefined, {
     enabled: !!session?.user,
@@ -71,9 +34,6 @@ export default function ChatPage() {
   const { data: dailyUsage } = trpc.chat.getDailyUsage.useQuery(undefined, {
     enabled: !!session?.user,
   });
-
-  const isLoading = status === "submitted" || status === "streaming";
-  const hasError = status === "error";
 
   if (isPending) {
     return (
@@ -92,61 +52,32 @@ export default function ChatPage() {
     );
   }
 
-  const userMessageCount = messages.filter((m) => m.role === "user").length;
-  const isConversationLimitReached =
-    userMessageCount >= MAX_USER_MESSAGES_PER_CONVERSATION;
   const isDailyLimitReached =
     dailyUsage && dailyUsage.used >= dailyUsage.limit;
-  const hasMessages = messages.length > 0;
   const dailyRemaining = dailyUsage
     ? dailyUsage.limit - dailyUsage.used
     : null;
 
   const handleSend = async (text: string) => {
-    if (!text.trim() || isLoading || isDailyLimitReached) return;
-    setInput("");
-
-    // Create session if needed
-    if (!sessionIdRef.current) {
-      const newSession = await createChatSession({
+    if (!text.trim() || isSending || isDailyLimitReached) return;
+    setIsSending(true);
+    setSendError(null);
+    let newSession: { id: string };
+    try {
+      newSession = await createChatSession({
         title: text.slice(0, 50),
       });
-      sessionIdRef.current = newSession.id;
-      setSessionId(newSession.id);
+    } catch {
+      setIsSending(false);
+      setSendError("無法建立對話，請重試");
+      return;
     }
-
-    sendMessage({ text });
+    router.push(`/chat/${newSession.id}?init=${encodeURIComponent(text)}`);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSend(input);
-  };
-
-  const handleNewConversation = () => {
-    sessionIdRef.current = null;
-    setSessionId(null);
-    setMessages([]);
-    setInitialMessages([]);
-    setShowHistory(false);
-  };
-
-  const handleLoadSession = async (id: string) => {
-    setShowHistory(false);
-    sessionIdRef.current = id;
-    setSessionId(id);
-
-    const data = await utils.chat.getMessages.fetch({ sessionId: id });
-    const uiMessages: UIMessage[] = data.map((msg) => ({
-      id: msg.id,
-      role: msg.role as "user" | "assistant",
-      content: msg.content,
-      parts: (msg.parts as UIMessage["parts"]) ?? [
-        { type: "text" as const, text: msg.content },
-      ],
-    }));
-    setInitialMessages(uiMessages);
-    setMessages(uiMessages);
   };
 
   const handleDeleteSession = async (
@@ -156,36 +87,56 @@ export default function ChatPage() {
     e.stopPropagation();
     await deleteChatSession(id);
     utils.chat.listSessions.invalidate();
-
-    // If deleting the current session, reset
-    if (sessionIdRef.current === id) {
-      handleNewConversation();
-    }
   };
 
-  // History list view
-  if (showHistory) {
-    return (
-      <div className="flex h-[calc(100vh-8rem)] flex-col">
-        <div className="border-b border-black/[0.06] dark:border-white/[0.06] px-4 py-3">
-          <div className="mx-auto flex max-w-lg items-center gap-3">
-            <button
-              onClick={() => setShowHistory(false)}
-              className="p-1.5 text-neutral-400 transition-all duration-300 hover:text-foreground"
-            >
-              <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
-            </button>
-            <h2 className="text-base font-light">歷史對話</h2>
-          </div>
+  return (
+    <div className="flex h-[calc(100vh-8rem)] flex-col">
+      {/* Top bar */}
+      <div className="border-b border-black/[0.06] dark:border-white/[0.06] px-4 py-2">
+        <div className="mx-auto flex max-w-lg items-center justify-end">
+          {dailyRemaining !== null && (
+            <span className="text-xs font-light text-neutral-400">
+              今日剩餘 {dailyRemaining} 次
+            </span>
+          )}
         </div>
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          <div className="mx-auto max-w-lg">
-            {sessionsData && sessionsData.length > 0 ? (
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="mx-auto max-w-lg">
+          {/* Empty state with quick prompts */}
+          <div className="flex flex-col items-center gap-6 py-8">
+            <div className="flex flex-col items-center gap-2">
+              <Bot className="h-8 w-8 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
+              <h2 className="text-base font-light">AI 營養顧問</h2>
+              <p className="text-center text-sm font-light text-neutral-400">
+                我可以分析你的飲食紀錄，提供營養建議
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 w-full max-w-sm">
+              {quickPrompts.map((prompt) => (
+                <button
+                  key={prompt}
+                  onClick={() => handleSend(prompt)}
+                  disabled={isSending}
+                  className="border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 text-left text-sm font-light transition-all duration-300 hover:border-foreground/20 hover:pl-5 rounded-lg disabled:opacity-50"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* History list */}
+          {sessionsData && sessionsData.length > 0 && (
+            <div className="mt-4">
+              <h3 className="mb-2 text-sm font-light text-neutral-400">歷史對話</h3>
               <div className="border-t border-black/[0.06] dark:border-white/[0.06]">
                 {sessionsData.map((s) => (
                   <button
                     key={s.id}
-                    onClick={() => handleLoadSession(s.id)}
+                    onClick={() => router.push(`/chat/${s.id}`)}
                     className="flex w-full items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] px-1 py-3.5 text-left transition-all duration-300 hover:pl-2"
                   >
                     <div className="min-w-0 flex-1">
@@ -210,184 +161,24 @@ export default function ChatPage() {
                   </button>
                 ))}
               </div>
-            ) : (
-              <p className="py-8 text-center text-sm font-light text-neutral-400">
-                尚無歷史對話
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col">
-      {/* Top bar */}
-      <div className="border-b border-black/[0.06] dark:border-white/[0.06] px-4 py-2">
-        <div className="mx-auto flex max-w-lg items-center justify-between">
-          <button
-            onClick={() => setShowHistory(true)}
-            className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-foreground"
-          >
-            <History className="h-4 w-4" strokeWidth={1.5} />
-            歷史對話
-          </button>
-          <div className="flex items-center gap-2">
-            {dailyRemaining !== null && (
-              <span className="text-xs font-light text-neutral-400">
-                今日剩餘 {dailyRemaining} 次
-              </span>
-            )}
-            <button
-              onClick={handleNewConversation}
-              className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-foreground"
-            >
-              <Plus className="h-4 w-4" strokeWidth={1.5} />
-              新對話
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        {!hasMessages ? (
-          <div className="flex h-full flex-col items-center justify-center gap-6">
-            <div className="flex flex-col items-center gap-2">
-              <Bot className="h-8 w-8 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
-              <h2 className="text-base font-light">AI 營養顧問</h2>
-              <p className="text-center text-sm font-light text-neutral-400">
-                我可以分析你的飲食紀錄，提供營養建議
-              </p>
             </div>
-            <div className="flex flex-col gap-2 w-full max-w-sm">
-              {quickPrompts.map((prompt) => (
-                <button
-                  key={prompt}
-                  onClick={() => handleSend(prompt)}
-                  className="border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 text-left text-sm font-light transition-all duration-300 hover:border-foreground/20 hover:pl-5 rounded-lg"
-                >
-                  {prompt}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="mx-auto max-w-lg space-y-4">
-            {messages.map((message) => {
-              if (message.role !== "user" && message.role !== "assistant")
-                return null;
-              const isUser = message.role === "user";
-
-              const textContent =
-                message.parts
-                  ?.filter(
-                    (p): p is Extract<typeof p, { type: "text" }> =>
-                      p.type === "text"
-                  )
-                  .map((p) => p.text)
-                  .join("") ?? "";
-
-              if (!isUser && !textContent) return null;
-
-              return (
-                <div
-                  key={message.id}
-                  className={cn("flex gap-2", isUser && "flex-row-reverse")}
-                >
-                  <div
-                    className={cn(
-                      "flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
-                      isUser
-                        ? "bg-foreground text-background"
-                        : "border border-black/[0.06] dark:border-white/[0.06]"
-                    )}
-                  >
-                    {isUser ? (
-                      <User className="h-3.5 w-3.5" strokeWidth={1.5} />
-                    ) : (
-                      <Bot className="h-3.5 w-3.5 text-neutral-400" strokeWidth={1.5} />
-                    )}
-                  </div>
-                  <div
-                    className={cn(
-                      "max-w-[85%] overflow-hidden rounded-2xl px-4 py-2 text-sm font-light",
-                      isUser
-                        ? "bg-foreground text-background"
-                        : "border border-black/[0.06] dark:border-white/[0.06]"
-                    )}
-                  >
-                    {isUser ? (
-                      <p>{textContent}</p>
-                    ) : (
-                      <div className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_table]:w-full [&_table]:text-xs [&_table]:border-collapse [&_th]:border [&_th]:border-border/50 [&_th]:px-2 [&_th]:py-1 [&_th]:text-left [&_th]:font-light [&_td]:border [&_td]:border-border/50 [&_td]:px-2 [&_td]:py-1 [&_.table-wrapper]:overflow-x-auto">
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm]}
-                          components={{
-                            table: ({ children }) => (
-                              <div className="table-wrapper overflow-x-auto">
-                                <table>{children}</table>
-                              </div>
-                            ),
-                          }}
-                        >
-                          {textContent}
-                        </ReactMarkdown>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-
-            {isLoading && (
-              <div className="flex gap-2">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-black/[0.06] dark:border-white/[0.06]">
-                  <Bot className="h-3.5 w-3.5 text-neutral-400" strokeWidth={1.5} />
-                </div>
-                <div className="flex items-center gap-2 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] px-4 py-2 text-sm font-light text-neutral-400">
-                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
-                  正在分析...
-                </div>
-              </div>
-            )}
-
-            {hasError && error && (
-              <div className="flex gap-2">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-destructive/20">
-                  <Bot className="h-3.5 w-3.5 text-destructive" strokeWidth={1.5} />
-                </div>
-                <div className="max-w-[85%] rounded-2xl border border-destructive/20 px-4 py-2 text-sm font-light text-destructive">
-                  {error.message?.includes("429")
-                    ? "已達每日訊息上限（100 則），明天再來吧！"
-                    : "發生錯誤，請重試"}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Input area */}
       <div className="border-t border-black/[0.06] dark:border-white/[0.06] bg-background px-4 py-3">
         <div className="mx-auto max-w-lg">
-          {isConversationLimitReached || isDailyLimitReached ? (
+          {sendError && (
+            <p className="mb-2 text-center text-sm font-light text-destructive">
+              {sendError}
+            </p>
+          )}
+          {isDailyLimitReached ? (
             <div className="flex flex-col items-center gap-2">
               <p className="text-sm font-light text-neutral-400">
-                {isDailyLimitReached
-                  ? "已達每日訊息上限（100 則）"
-                  : `已達到對話上限（${MAX_USER_MESSAGES_PER_CONVERSATION} 則）`}
+                已達每日訊息上限（{dailyUsage?.limit ?? 100} 則）
               </p>
-              {!isDailyLimitReached && (
-                <button
-                  onClick={handleNewConversation}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-lg transition-all duration-300 hover:border-foreground/20"
-                >
-                  <RotateCcw className="h-4 w-4" strokeWidth={1.5} />
-                  開始新對話
-                </button>
-              )}
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex items-center gap-2">
@@ -396,14 +187,18 @@ export default function ChatPage() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="輸入你的飲食問題..."
                 className="flex-1 rounded-full border border-black/[0.06] dark:border-white/[0.06] bg-transparent px-4 py-2.5 text-sm font-light outline-none transition-all duration-300 focus:border-foreground/20 placeholder:text-neutral-400"
-                disabled={isLoading}
+                disabled={isSending}
               />
               <button
                 type="submit"
-                disabled={isLoading || !input.trim()}
+                disabled={isSending || !input.trim()}
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground text-background transition-all duration-300 hover:opacity-80 disabled:opacity-30"
               >
-                <Send className="h-4 w-4" strokeWidth={1.5} />
+                {isSending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
+                ) : (
+                  <Send className="h-4 w-4" strokeWidth={1.5} />
+                )}
               </button>
             </form>
           )}
