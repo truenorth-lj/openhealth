@@ -66,18 +66,27 @@ function ChatDetail() {
 
   const {
     messages,
+    setMessages,
     sendMessage,
     status,
     error,
   } = useChat({
     id: sessionId,
-    messages: initialMessages,
     transport,
     onFinish: () => {
       utils.chat.getDailyUsage.invalidate();
       utils.chat.listSessions.invalidate();
     },
   });
+
+  // Sync DB messages into useChat when they load
+  const messagesSyncedRef = useRef(false);
+  useEffect(() => {
+    if (initialMessages.length > 0 && !messagesSyncedRef.current) {
+      messagesSyncedRef.current = true;
+      setMessages(initialMessages);
+    }
+  }, [initialMessages, setMessages]);
 
   const { data: dailyUsage } = trpc.chat.getDailyUsage.useQuery(undefined, {
     enabled: !!session?.user,
@@ -86,13 +95,13 @@ function ChatDetail() {
   // Handle init message from search params (first message flow)
   const initMessage = searchParams.get("init");
   useEffect(() => {
-    if (initMessage && !initSentRef.current && existingMessages && !isLoadingMessages) {
+    if (initMessage && !initSentRef.current && !isLoadingMessages) {
       initSentRef.current = true;
       sendMessage({ text: initMessage });
       // Clear the search param without adding to history
       router.replace(`/chat/${sessionId}`, { scroll: false });
     }
-  }, [initMessage, existingMessages, isLoadingMessages, sendMessage, router, sessionId]);
+  }, [initMessage, isLoadingMessages, sendMessage, router, sessionId]);
 
   const isLoading = status === "submitted" || status === "streaming";
   const hasError = status === "error";
