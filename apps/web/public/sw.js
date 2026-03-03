@@ -1,30 +1,41 @@
-const CACHE_NAME = "open-health-v2";
+const CACHE_NAME = "open-health-v3";
 
-const PRECACHE_URLS = ["/manifest.json", "/icons/icon-192.png", "/icons/icon-512.png"];
+const PRECACHE_URLS = [
+  "/manifest.json",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+  "/offline.html",
+];
 
-// Install: pre-cache essential static assets
+// Install: pre-cache essential static assets (don't skipWaiting — let client decide)
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
   );
-  self.skipWaiting();
 });
 
-// Activate: clean up old caches
+// Activate: clean up old caches, then claim clients
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        )
       )
-    )
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch: network-first for navigation & API, cache-first for static assets
+// Listen for skip-waiting message from client
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+// Fetch: network-first for navigation, cache-first for static assets
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -35,10 +46,14 @@ self.addEventListener("fetch", (event) => {
   // API & auth routes: network only (no caching)
   if (url.pathname.startsWith("/api/")) return;
 
-  // Navigation (HTML pages): network-first with offline fallback
+  // Navigation (HTML pages): network-first with offline fallback page
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(() => caches.match(request))
+      fetch(request).catch(async () => {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+        return caches.match("/offline.html");
+      })
     );
     return;
   }
