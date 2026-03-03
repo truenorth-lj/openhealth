@@ -54,16 +54,21 @@ function FoodSearchContent() {
 
   const doLogFood = (foodId: string) => {
     startTransition(async () => {
-      await logFood({
-        date,
-        mealType: meal,
-        foodId,
-        servingQty: 1,
-      });
-      await utils.diary.getDay.invalidate();
-      toast.success("已新增到日記");
-      router.push(`/diary?date=${date}`);
-      router.refresh();
+      try {
+        await logFood({
+          date,
+          mealType: meal,
+          foodId,
+          servingQty: 1,
+        });
+        await utils.diary.getDay.invalidate();
+        toast.success("已新增到日記");
+        router.push(`/diary?date=${date}`);
+        router.refresh();
+      } catch (err) {
+        console.error("logFood failed:", err);
+        toast.error("新增失敗，請重試");
+      }
     });
   };
 

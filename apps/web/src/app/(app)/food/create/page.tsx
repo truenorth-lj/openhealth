@@ -33,30 +33,37 @@ function CreateFoodContent() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
-      const result = await createCustomFood({
-        name,
-        brand: brand || undefined,
-        servingSize: parseFloat(servingSize),
-        servingUnit,
-        calories: parseFloat(calories),
-        nutrients: [
-          { nutrientId: 1, amount: parseFloat(protein) || 0 },
-          { nutrientId: 2, amount: parseFloat(fat) || 0 },
-          { nutrientId: 3, amount: parseFloat(carbs) || 0 },
-        ],
-      });
-
-      if (result.success && result.foodId) {
-        await logFood({
-          date,
-          mealType: meal,
-          foodId: result.foodId,
-          servingQty: 1,
+      try {
+        const result = await createCustomFood({
+          name,
+          brand: brand || undefined,
+          servingSize: parseFloat(servingSize),
+          servingUnit,
+          calories: parseFloat(calories),
+          nutrients: [
+            { nutrientId: 1, amount: parseFloat(protein) || 0 },
+            { nutrientId: 2, amount: parseFloat(fat) || 0 },
+            { nutrientId: 3, amount: parseFloat(carbs) || 0 },
+          ],
         });
-        await utils.diary.getDay.invalidate();
-        toast.success("已新增到日記");
-        router.push(`/diary?date=${date}`);
-        router.refresh();
+
+        if (result.success && result.foodId) {
+          await logFood({
+            date,
+            mealType: meal,
+            foodId: result.foodId,
+            servingQty: 1,
+          });
+          await utils.diary.getDay.invalidate();
+          toast.success("已新增到日記");
+          router.push(`/diary?date=${date}`);
+          router.refresh();
+        } else {
+          toast.error("建立食物失敗，請重試");
+        }
+      } catch (err) {
+        console.error("createCustomFood/logFood failed:", err);
+        toast.error("新增失敗，請重試");
       }
     });
   };

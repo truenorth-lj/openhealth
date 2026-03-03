@@ -56,10 +56,15 @@ function compressImage(dataUrl: string, maxWidth = 1600, quality = 0.8): Promise
       }
       canvas.width = width;
       canvas.height = height;
-      const ctx = canvas.getContext("2d")!;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        resolve(dataUrl);
+        return;
+      }
       ctx.drawImage(img, 0, 0, width, height);
       resolve(canvas.toDataURL("image/jpeg", quality));
     };
+    img.onerror = () => resolve(dataUrl);
     img.src = dataUrl;
   });
 }
@@ -118,6 +123,10 @@ function ScanLabelContent() {
 
     // Create preview and compress
     const reader = new FileReader();
+    reader.onerror = () => {
+      setError("讀取檔案失敗，請重試");
+      setStage("capture");
+    };
     reader.onload = async (event) => {
       const rawDataUrl = event.target?.result as string;
       const dataUrl = await compressImage(rawDataUrl);
@@ -174,40 +183,47 @@ function ScanLabelContent() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
-      const nutrients = [
-        { nutrientId: NUTRIENT_IDS.protein, amount: parseFloat(protein) || 0 },
-        { nutrientId: NUTRIENT_IDS.totalFat, amount: parseFloat(fat) || 0 },
-        { nutrientId: NUTRIENT_IDS.totalCarbs, amount: parseFloat(carbs) || 0 },
-      ];
+      try {
+        const nutrients = [
+          { nutrientId: NUTRIENT_IDS.protein, amount: parseFloat(protein) || 0 },
+          { nutrientId: NUTRIENT_IDS.totalFat, amount: parseFloat(fat) || 0 },
+          { nutrientId: NUTRIENT_IDS.totalCarbs, amount: parseFloat(carbs) || 0 },
+        ];
 
-      // Add optional nutrients if provided
-      if (fiber) nutrients.push({ nutrientId: NUTRIENT_IDS.fiber, amount: parseFloat(fiber) });
-      if (sugar) nutrients.push({ nutrientId: NUTRIENT_IDS.sugar, amount: parseFloat(sugar) });
-      if (saturatedFat) nutrients.push({ nutrientId: NUTRIENT_IDS.saturatedFat, amount: parseFloat(saturatedFat) });
-      if (transFat) nutrients.push({ nutrientId: NUTRIENT_IDS.transFat, amount: parseFloat(transFat) });
-      if (cholesterol) nutrients.push({ nutrientId: NUTRIENT_IDS.cholesterol, amount: parseFloat(cholesterol) });
-      if (sodium) nutrients.push({ nutrientId: NUTRIENT_IDS.sodium, amount: parseFloat(sodium) });
+        // Add optional nutrients if provided
+        if (fiber) nutrients.push({ nutrientId: NUTRIENT_IDS.fiber, amount: parseFloat(fiber) });
+        if (sugar) nutrients.push({ nutrientId: NUTRIENT_IDS.sugar, amount: parseFloat(sugar) });
+        if (saturatedFat) nutrients.push({ nutrientId: NUTRIENT_IDS.saturatedFat, amount: parseFloat(saturatedFat) });
+        if (transFat) nutrients.push({ nutrientId: NUTRIENT_IDS.transFat, amount: parseFloat(transFat) });
+        if (cholesterol) nutrients.push({ nutrientId: NUTRIENT_IDS.cholesterol, amount: parseFloat(cholesterol) });
+        if (sodium) nutrients.push({ nutrientId: NUTRIENT_IDS.sodium, amount: parseFloat(sodium) });
 
-      const result = await createCustomFood({
-        name,
-        brand: brand || undefined,
-        servingSize: parseFloat(servingSize),
-        servingUnit,
-        calories: parseFloat(calories),
-        nutrients,
-      });
-
-      if (result.success && result.foodId) {
-        await logFood({
-          date,
-          mealType: meal,
-          foodId: result.foodId,
-          servingQty: 1,
+        const result = await createCustomFood({
+          name,
+          brand: brand || undefined,
+          servingSize: parseFloat(servingSize),
+          servingUnit,
+          calories: parseFloat(calories),
+          nutrients,
         });
-        await utils.diary.getDay.invalidate();
-        toast.success("已新增到日記");
-        router.push(`/diary?date=${date}`);
-        router.refresh();
+
+        if (result.success && result.foodId) {
+          await logFood({
+            date,
+            mealType: meal,
+            foodId: result.foodId,
+            servingQty: 1,
+          });
+          await utils.diary.getDay.invalidate();
+          toast.success("已新增到日記");
+          router.push(`/diary?date=${date}`);
+          router.refresh();
+        } else {
+          toast.error("建立食物失敗，請重試");
+        }
+      } catch (err) {
+        console.error("createCustomFood/logFood failed:", err);
+        toast.error("新增失敗，請重試");
       }
     });
   };
