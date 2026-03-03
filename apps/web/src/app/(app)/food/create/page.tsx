@@ -11,6 +11,7 @@ import { createCustomFood } from "@/server/actions/food";
 import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
+import { NUTRIENT_IDS } from "@open-health/shared/constants";
 
 function CreateFoodContent() {
   const searchParams = useSearchParams();
@@ -41,9 +42,9 @@ function CreateFoodContent() {
           servingUnit,
           calories: parseFloat(calories),
           nutrients: [
-            { nutrientId: 1, amount: parseFloat(protein) || 0 },
-            { nutrientId: 2, amount: parseFloat(fat) || 0 },
-            { nutrientId: 3, amount: parseFloat(carbs) || 0 },
+            { nutrientId: NUTRIENT_IDS.protein, amount: parseFloat(protein) || 0 },
+            { nutrientId: NUTRIENT_IDS.totalFat, amount: parseFloat(fat) || 0 },
+            { nutrientId: NUTRIENT_IDS.totalCarbs, amount: parseFloat(carbs) || 0 },
           ],
         });
 

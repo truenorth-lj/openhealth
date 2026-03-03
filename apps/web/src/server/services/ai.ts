@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI, type Schema, SchemaType } from "@google/generative-ai";
+import type { NutritionRecognitionResult } from "@open-health/shared/types";
 
 const nutritionLabelSchema: Schema = {
   type: SchemaType.OBJECT,
@@ -65,11 +66,11 @@ const ESTIMATION_SYSTEM_PROMPT = `你是一個台灣營養學專家。使用者�
 只回傳 JSON，不要有任何其他文字。`;
 
 export type NutritionLabelResult =
-  | { success: true; data: Record<string, unknown> }
+  | { success: true; data: NutritionRecognitionResult }
   | { success: false; error: string };
 
 export type NutritionEstimationResult =
-  | { success: true; data: Record<string, unknown> }
+  | { success: true; data: NutritionRecognitionResult }
   | { success: false; error: string };
 
 export async function recognizeNutritionLabel(

@@ -13,35 +13,7 @@ import { createCustomFood } from "@/server/actions/food";
 import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
-
-type EstimationResult = {
-  foodName: string;
-  brand?: string | null;
-  servingSize: number;
-  servingUnit: string;
-  calories: number;
-  proteinG: number;
-  fatG: number;
-  carbsG: number;
-  sodiumMg?: number | null;
-  sugarG?: number | null;
-  fiberG?: number | null;
-  saturatedFatG?: number | null;
-  transFatG?: number | null;
-  cholesterolMg?: number | null;
-};
-
-const NUTRIENT_IDS = {
-  protein: 1,
-  totalFat: 2,
-  totalCarbs: 3,
-  fiber: 4,
-  sugar: 5,
-  saturatedFat: 7,
-  transFat: 8,
-  cholesterol: 11,
-  sodium: 31,
-};
+import { NUTRIENT_IDS } from "@open-health/shared/constants";
 
 const EXAMPLES = [
   "一碗白飯",
@@ -96,7 +68,7 @@ function EstimateContent() {
       const result = await estimateNutritionFromText(description);
 
       if (result.success) {
-        const data = result.data as EstimationResult;
+        const data = result.data;
         setName(data.foodName || "");
         setBrand(data.brand || "");
         setServingSize(String(data.servingSize || 100));
@@ -137,7 +109,7 @@ function EstimateContent() {
     e.preventDefault();
     startTransition(async () => {
       try {
-        const nutrients = [
+        const nutrients: { nutrientId: number; amount: number }[] = [
           {
             nutrientId: NUTRIENT_IDS.protein,
             amount: parseFloat(protein) || 0,

@@ -31,6 +31,23 @@ export interface NutritionData {
   sodium?: number;
 }
 
+export type NutritionRecognitionResult = {
+  foodName: string;
+  brand?: string | null;
+  servingSize: number;
+  servingUnit: string;
+  calories: number;
+  proteinG: number;
+  fatG: number;
+  carbsG: number;
+  sodiumMg?: number | null;
+  sugarG?: number | null;
+  fiberG?: number | null;
+  saturatedFatG?: number | null;
+  transFatG?: number | null;
+  cholesterolMg?: number | null;
+};
+
 export type OpenFoodFactsResult = {
   found: boolean;
   name?: string;
