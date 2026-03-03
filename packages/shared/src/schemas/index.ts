@@ -132,3 +132,19 @@ export const copyMealSchema = z.object({
 export const removeEntrySchema = z.object({
   entryId: z.string().uuid(),
 });
+
+export const applyReferralCodeSchema = z.object({
+  code: z
+    .string()
+    .min(4)
+    .max(12)
+    .regex(/^[A-Z0-9]+$/i, "推薦碼只能包含英文字母和數字"),
+});
+
+export const customizeReferralCodeSchema = z.object({
+  code: z
+    .string()
+    .min(4)
+    .max(12)
+    .regex(/^[A-Z0-9]+$/i, "推薦碼只能包含英文字母和數字"),
+});

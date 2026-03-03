@@ -21,6 +21,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState("");
   const [googleLoading, setGoogleLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
 
@@ -28,6 +29,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
     setName("");
     setEmail("");
     setPassword("");
+    setReferralCode("");
     setError("");
     setLoading(false);
   };
@@ -56,6 +58,26 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
           setError(result.error.message || "註冊失敗");
           setLoading(false);
           return;
+        }
+
+        // Apply referral code after successful registration
+        if (referralCode.trim()) {
+          try {
+            const { applyReferralCode } = await import("@/server/actions/referral");
+            const referralResult = await applyReferralCode({ code: referralCode.trim() });
+            if (!referralResult.success) {
+              // Registration succeeded but referral failed — show error and keep dialog open
+              setError(`註冊成功，但推薦碼套用失敗：${referralResult.error}`);
+              setLoading(false);
+              setReferralCode("");
+              return;
+            }
+          } catch {
+            setError("註冊成功，但推薦碼套用失敗");
+            setLoading(false);
+            setReferralCode("");
+            return;
+          }
         }
       }
 
@@ -193,6 +215,15 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
           required
           minLength={mode === "register" ? 8 : undefined}
         />
+
+        {mode === "register" && (
+          <Input
+            placeholder="推薦碼（選填）"
+            value={referralCode}
+            onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+            maxLength={12}
+          />
+        )}
 
         <Button type="submit" className="w-full" disabled={loading}>
           {loading

@@ -31,6 +31,7 @@ export const users = pgTable("users", {
   image: text("image"),
   timezone: varchar("timezone", { length: 50 }).default("UTC"),
   unitSystem: unitSystemEnum("unit_system").default("metric"),
+  referralCode: varchar("referral_code", { length: 12 }).unique(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
