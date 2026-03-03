@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  outputFileTracingIncludes: {
+    "/": ["./src/server/db/migrations/**/*"],
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",

@@ -8,6 +8,13 @@
       "when": 1772082063980,
       "tag": "0000_icy_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772540803184,
+      "tag": "0001_align-schema",
+      "breakpoints": true
     }
   ]
 }
