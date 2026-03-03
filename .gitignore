@@ -55,5 +55,11 @@ android/
 expo-env.d.ts
 **/dist/
 
+# secrets (Apple keys, credentials, etc.)
+secrets/
+
+# debug logs
+debug/
+
 # claude code
 .claude/worktrees/
