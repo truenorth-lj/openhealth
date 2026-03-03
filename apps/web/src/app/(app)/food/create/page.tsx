@@ -11,7 +11,7 @@ import { createCustomFood } from "@/server/actions/food";
 import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
-import { NUTRIENT_IDS } from "@open-health/shared/constants";
+import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
 
 function CreateFoodContent() {
   const searchParams = useSearchParams();
@@ -24,7 +24,7 @@ function CreateFoodContent() {
   const utils = trpc.useUtils();
   const [name, setName] = useState(defaultName);
   const [brand, setBrand] = useState("");
-  const [servingSize, setServingSize] = useState("100");
+  const [servingSize, setServingSize] = useState(String(DEFAULT_SERVING_SIZE));
   const [servingUnit, setServingUnit] = useState("g");
   const [calories, setCalories] = useState("");
   const [protein, setProtein] = useState("");

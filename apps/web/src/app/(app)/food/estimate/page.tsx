@@ -13,7 +13,7 @@ import { createCustomFood } from "@/server/actions/food";
 import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
-import { NUTRIENT_IDS } from "@open-health/shared/constants";
+import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
 
 const EXAMPLES = [
   "一碗白飯",
@@ -44,7 +44,7 @@ function EstimateContent() {
   // Form fields
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
-  const [servingSize, setServingSize] = useState("100");
+  const [servingSize, setServingSize] = useState(String(DEFAULT_SERVING_SIZE));
   const [servingUnit, setServingUnit] = useState("g");
   const [calories, setCalories] = useState("");
   const [protein, setProtein] = useState("");
@@ -71,22 +71,18 @@ function EstimateContent() {
         const data = result.data;
         setName(data.foodName || "");
         setBrand(data.brand || "");
-        setServingSize(String(data.servingSize || 100));
+        setServingSize(String(data.servingSize ?? DEFAULT_SERVING_SIZE));
         setServingUnit(data.servingUnit || "g");
         setCalories(String(data.calories || 0));
         setProtein(String(data.proteinG || 0));
         setCarbs(String(data.carbsG || 0));
         setFat(String(data.fatG || 0));
-        setSodium(data.sodiumMg != null ? String(data.sodiumMg) : "");
-        setSugar(data.sugarG != null ? String(data.sugarG) : "");
-        setFiber(data.fiberG != null ? String(data.fiberG) : "");
-        setSaturatedFat(
-          data.saturatedFatG != null ? String(data.saturatedFatG) : ""
-        );
-        setTransFat(data.transFatG != null ? String(data.transFatG) : "");
-        setCholesterol(
-          data.cholesterolMg != null ? String(data.cholesterolMg) : ""
-        );
+        setSodium(String(data.sodiumMg ?? ""));
+        setSugar(String(data.sugarG ?? ""));
+        setFiber(String(data.fiberG ?? ""));
+        setSaturatedFat(String(data.saturatedFatG ?? ""));
+        setTransFat(String(data.transFatG ?? ""));
+        setCholesterol(String(data.cholesterolMg ?? ""));
         setStage("edit");
       } else {
         setError(result.error || "估算失敗");

@@ -47,5 +47,7 @@ export const NUTRIENT_IDS = {
   sodium: 31,
 } as const;
 
+export const DEFAULT_SERVING_SIZE = 100;
+
 export const APP_NAME = "Open Health";
 export const THEME_COLOR = "#16a34a";
