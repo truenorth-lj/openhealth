@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { trpc } from "@/lib/trpc-client";
+import { useSession } from "@/lib/auth-client";
 import { applyReferralCode, customizeReferralCode } from "@/server/actions/referral";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,8 +12,17 @@ import { useRouter } from "next/navigation";
 
 export default function ReferralPage() {
   const router = useRouter();
-  const { data: codeData, refetch: refetchCode } = trpc.referral.getMyCode.useQuery();
-  const { data: stats, refetch: refetchStats } = trpc.referral.getStats.useQuery();
+  const { data: session, isPending: sessionLoading } = useSession();
+  const isLoggedIn = !!session?.user;
+
+  const { data: codeData, refetch: refetchCode, isError: codeError } = trpc.referral.getMyCode.useQuery(
+    undefined,
+    { enabled: isLoggedIn }
+  );
+  const { data: stats, refetch: refetchStats } = trpc.referral.getStats.useQuery(
+    undefined,
+    { enabled: isLoggedIn }
+  );
 
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -88,6 +98,19 @@ export default function ReferralPage() {
         <h1 className="text-xl font-light tracking-wide">推薦碼</h1>
       </div>
 
+      {/* Auth guard */}
+      {!sessionLoading && !isLoggedIn && (
+        <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 text-center text-sm text-neutral-400">
+          請先登入以查看推薦碼。
+        </div>
+      )}
+
+      {sessionLoading && (
+        <div className="text-center text-sm text-neutral-400 py-8">載入中...</div>
+      )}
+
+      {isLoggedIn && (
+      <>
       {/* My referral code */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
@@ -95,7 +118,7 @@ export default function ReferralPage() {
         </p>
         <div className="flex items-center gap-2">
           <div className="flex-1 rounded-lg border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 text-center font-mono text-lg tracking-[0.2em]">
-            {codeData?.code ?? "載入中..."}
+            {codeError ? "無法載入" : codeData?.code ?? "載入中..."}
           </div>
           <Button
             variant="outline"
@@ -226,6 +249,8 @@ export default function ReferralPage() {
           </p>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 }
