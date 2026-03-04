@@ -1,121 +1,99 @@
 # Open Health
 
-開源健康追蹤應用，替代 MyFitnessPal 的全功能飲食記錄工具。
+開源、免費的飲食與營養追蹤平台。
 
-## 功能
+> [openhealth.blog](https://openhealth.blog)
 
-- **飲食日記** — 記錄每日早餐、午餐、晚餐、點心，即時顯示熱量與巨量營養素進度
-- **食物搜尋** — PostgreSQL 全文搜尋，內建 20 種台灣常見食物
-- **自訂食物** — 手動建立食物並記錄營養成分
-- **營養標示辨識** — 拍照上傳營養標示，透過 Google Gemini AI 自動辨識
-- **體重追蹤** — 記錄體重變化，以折線圖呈現 90 天趨勢
-- **飲水追蹤** — 快速記錄每日飲水量
-- **目標設定** — 自訂每日熱量與蛋白質、碳水、脂肪目標
-- **帳號系統** — Email/密碼註冊登入
+## Screenshots
 
-## Web 策略
+<p align="center">
+  <img src="apps/web/public/screenshots/01-diary.png" alt="飲食日記" width="200" />
+  <img src="apps/web/public/screenshots/02-food-search.png" alt="食物搜尋" width="200" />
+  <img src="apps/web/public/screenshots/03-ai-chat.png" alt="AI 營養顧問" width="200" />
+  <img src="apps/web/public/screenshots/04-progress.png" alt="進度追蹤" width="200" />
+</p>
 
-- **Next.js web (`apps/web`) 是主要的 web 體驗**，提供 SSR、SEO、Server Components 等完整功能
-- **Expo web 僅作為開發/測試 mobile UI 的便利工具**，不需要特別維護
+## Features
 
-## 技術架構
+- **飲食日記** — 記錄每餐食物，自動計算卡路里與三大營養素
+- **食物資料庫** — 搜尋常見食物，支援自訂食物與收藏
+- **AI 營養標籤掃描** — 拍照辨識營養標籤，快速輸入食物資料
+- **AI 營養顧問** — 分析飲食紀錄，提供營養建議
+- **進度追蹤** — 視覺化追蹤熱量、營養素與體重
+- **飲水紀錄** — 追蹤每日飲水量
+- **深色模式** — 支援淺色與深色主題
 
-| 層級 | 技術 |
-|------|------|
-| 框架 | Next.js 15 (App Router, Turbopack) |
-| 語言 | TypeScript |
-| 資料庫 | PostgreSQL + Drizzle ORM |
-| 認證 | Better Auth |
-| API | tRPC v11 (查詢) + Server Actions (寫入) |
-| 狀態管理 | Zustand + TanStack Query |
-| UI | Tailwind CSS v4 + shadcn/ui |
-| 圖表 | Recharts |
-| AI | Google Generative AI (Gemini 2.5 Flash) |
+## Tech Stack
 
-## 快速開始
+| Layer | Technology |
+|-------|-----------|
+| Web | Next.js 15, TypeScript, Tailwind CSS v4, shadcn/ui |
+| Mobile | Expo SDK 52, React Native, NativeWind |
+| Backend | tRPC v11, Server Actions, PostgreSQL, Drizzle ORM |
+| Auth | Better Auth (email/password + Google + Apple OAuth) |
+| AI | Google Gemini 2.5 Flash (nutrition label OCR, chat) |
+| Monorepo | Turborepo + pnpm workspaces |
 
-### 環境需求
+## Project Structure
 
-- Node.js 18+
-- PostgreSQL 15+
+```
+open-health/
+├── apps/
+│   ├── web/          # Next.js web app
+│   └── mobile/       # Expo React Native app
+├── packages/
+│   └── shared/       # Shared types, schemas, utils
+├── scripts/
+│   └── app-store-screenshots/   # App Store screenshot generator
+└── turbo.json
+```
 
-### 安裝
+## Getting Started
 
 ```bash
-git clone <repo-url>
-cd food-record
-npm install
+# Install dependencies
+pnpm install
+
+# Run all apps
+pnpm dev
+
+# Run specific app
+pnpm dev:web       # localhost:3001
+pnpm dev:mobile    # Expo dev server
 ```
 
-### 環境變數
+## Scripts
 
-建立 `.env.local`：
+### App Store Screenshots
 
-```env
-DATABASE_URL=postgresql://user:password@localhost:5432/food_record
-BETTER_AUTH_SECRET=your-secret-here
-BETTER_AUTH_URL=http://localhost:3001
-GOOGLE_AI_API_KEY=your-gemini-api-key
-```
-
-### 資料庫設定
+Generate iPhone 6.5" display screenshots (1284 × 2778px) for App Store Connect:
 
 ```bash
-# 建立資料庫
-createdb food_record
+# Prerequisites
+pip install playwright
+playwright install chromium
 
-# 推送 schema 到資料庫
-npm run db:push
+# Generate screenshots
+python scripts/app-store-screenshots/take-screenshots.py
 
-# 匯入種子資料（41 種營養素定義 + 20 種台灣食物）
-npm run db:seed
+# Also copy to web/public for landing page
+python scripts/app-store-screenshots/take-screenshots.py --copy-to-web
 ```
 
-### 啟動開發伺服器
+Output: `scripts/app-store-screenshots/output/`
 
-```bash
-npm run dev
-```
+| File | Content |
+|------|---------|
+| `01-diary.png` | 飲食日記（含食物紀錄） |
+| `02-food-search.png` | 食物搜尋結果 |
+| `03-ai-chat.png` | AI 營養顧問 |
+| `04-progress.png` | 進度追蹤 |
+| `05-landing.png` | 首頁（未登入） |
 
-預設在 `http://localhost:3000` 啟動。
+Environment variables (optional):
+- `BASE_URL` — target URL (default: `https://openhealth.blog`)
+- `DEMO_EMAIL` / `DEMO_PASSWORD` — demo account credentials
 
-## 指令
-
-| 指令 | 說明 |
-|------|------|
-| `npm run dev` | 啟動開發伺服器 (Turbopack) |
-| `npm run build` | 建置正式版 |
-| `npm start` | 啟動正式版伺服器 |
-| `npm run lint` | ESLint 檢查 |
-| `npm run db:push` | 推送 schema 到資料庫 |
-| `npm run db:generate` | 產生遷移檔 |
-| `npm run db:migrate` | 執行遷移 |
-| `npm run db:studio` | 開啟 Drizzle Studio |
-| `npm run db:seed` | 匯入種子資料 |
-
-## 專案結構
-
-```
-src/
-├── app/                    # 頁面路由
-│   ├── (app)/              # 登入後頁面
-│   │   ├── diary/          # 飲食日記
-│   │   ├── food/           # 食物搜尋、建立、營養標示辨識
-│   │   ├── progress/       # 體重追蹤
-│   │   ├── water/          # 飲水追蹤
-│   │   └── settings/       # 個人設定、目標
-│   ├── (auth)/             # 登入、註冊
-│   └── api/                # tRPC + Better Auth 端點
-├── components/             # UI 元件
-├── server/
-│   ├── db/schema/          # Drizzle ORM schema
-│   ├── trpc/routers/       # tRPC 查詢路由
-│   ├── actions/            # Server Actions（寫入操作）
-│   └── auth.ts             # Better Auth 設定
-├── hooks/                  # React hooks
-└── lib/                    # 工具函式、客戶端設定
-```
-
-## 授權
+## License
 
 MIT

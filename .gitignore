@@ -45,6 +45,9 @@ next-env.d.ts
 # scraped data
 scripts/output/
 
+# generated screenshots (script output, not source)
+scripts/app-store-screenshots/output/
+
 # turborepo
 .turbo/
 
