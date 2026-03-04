@@ -1,6 +1,16 @@
 "use client";
 
+import * as Sentry from "@sentry/nextjs";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+
+function isChunkLoadError(error: Error): boolean {
+  return (
+    error.name === "ChunkLoadError" ||
+    error.message.includes("Loading chunk") ||
+    error.message.includes("Failed to fetch dynamically imported module")
+  );
+}
 
 export default function AppError({
   error,
@@ -9,7 +19,20 @@ export default function AppError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  console.error("App error:", error);
+  useEffect(() => {
+    // Auto-reload on chunk loading errors (typically caused by new deployments)
+    if (isChunkLoadError(error)) {
+      window.location.reload();
+      return;
+    }
+
+    try {
+      Sentry.captureException(error);
+    } catch {
+      // Sentry may not be initialized in all environments
+    }
+    console.error("App error:", error);
+  }, [error]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] px-4">
