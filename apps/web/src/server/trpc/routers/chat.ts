@@ -3,8 +3,36 @@ import { protectedProcedure, router } from "../trpc";
 import { chatSessions, chatMessages } from "@/server/db/schema";
 import { eq, and, desc, gte, sql } from "drizzle-orm";
 import { getTaipeiTodayStart } from "@/lib/date";
+import { CHAT_DAILY_LIMIT } from "@open-health/shared/constants";
 
 export const chatRouter = router({
+  createSession: protectedProcedure
+    .input(z.object({ title: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const [session] = await ctx.db
+        .insert(chatSessions)
+        .values({
+          userId: ctx.user.id,
+          title: input.title.slice(0, 50) || "新對話",
+        })
+        .returning({ id: chatSessions.id });
+      return { id: session.id };
+    }),
+
+  deleteSession: protectedProcedure
+    .input(z.object({ sessionId: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .delete(chatSessions)
+        .where(
+          and(
+            eq(chatSessions.id, input.sessionId),
+            eq(chatSessions.userId, ctx.user.id)
+          )
+        );
+      return { success: true };
+    }),
+
   listSessions: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db
       .select({
@@ -63,7 +91,7 @@ export const chatRouter = router({
 
     return {
       used: result[0]?.count ?? 0,
-      limit: 100,
+      limit: CHAT_DAILY_LIMIT,
     };
   }),
 });

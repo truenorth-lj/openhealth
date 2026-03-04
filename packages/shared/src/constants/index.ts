@@ -49,5 +49,8 @@ export const NUTRIENT_IDS = {
 
 export const DEFAULT_SERVING_SIZE = 100;
 
+export const CHAT_DAILY_LIMIT = 100;
+export const CHAT_CONVERSATION_LIMIT = 5;
+
 export const APP_NAME = "Open Health";
 export const THEME_COLOR = "#16a34a";
