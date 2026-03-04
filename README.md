@@ -1,6 +1,6 @@
 # Open Health
 
-開源、免費的飲食與營養追蹤平台。
+開源的飲食與營養追蹤平台。
 
 > [openhealth.blog](https://openhealth.blog)
 

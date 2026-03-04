@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Open Health — 追蹤健康的本質",
   description:
-    "開源、免費的健康追蹤平台。以簡約與科技的力量，重新定義健康管理。",
+    "開源的健康追蹤平台。以簡約與科技的力量，重新定義健康管理。",
 };
 
 
@@ -61,7 +61,7 @@ function Hero() {
         className="mt-4 text-sm text-neutral-400 dark:text-neutral-600 font-light max-w-md text-center animate-fade-in-up"
         style={{ animationDelay: "0.9s" }}
       >
-        開源、免費、屬於你的健康追蹤平台
+        開源、屬於你的健康追蹤平台
       </p>
 
       <Link
