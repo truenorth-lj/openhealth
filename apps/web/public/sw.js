@@ -1,4 +1,4 @@
-const CACHE_NAME = "open-health-v3";
+const CACHE_NAME = "open-health-v4";
 
 const PRECACHE_URLS = [
   "/manifest.json",
@@ -35,6 +35,18 @@ self.addEventListener("message", (event) => {
   }
 });
 
+/** Network-first with cache fallback: try network, cache response, fall back to cache on failure. */
+function networkFirstWithCache(request) {
+  return fetch(request)
+    .then((response) => {
+      if (!response.ok) return response;
+      const clone = response.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+      return response;
+    })
+    .catch(() => caches.match(request).then((cached) => cached || Response.error()));
+}
+
 // Fetch: network-first for navigation, cache-first for static assets
 self.addEventListener("fetch", (event) => {
   const { request } = event;
@@ -58,9 +70,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Static assets (_next/static, icons, images): cache-first
+  // Icons and images: cache-first (these are stable across deployments)
   if (
-    url.pathname.startsWith("/_next/static/") ||
     url.pathname.startsWith("/icons/") ||
     url.pathname.endsWith(".png") ||
     url.pathname.endsWith(".svg") ||
@@ -81,16 +92,14 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Everything else (_next/data, JS chunks): stale-while-revalidate
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      const fetchPromise = fetch(request).then((response) => {
-        if (!response.ok) return response;
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-        return response;
-      });
-      return cached || fetchPromise;
-    })
-  );
+  // JS chunks & _next/static: network-first with cache fallback
+  // Using cache-first here causes ChunkLoadErrors after deployments
+  // because old cached chunks reference other chunks that no longer exist.
+  if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(networkFirstWithCache(request));
+    return;
+  }
+
+  // Everything else (_next/data, etc.): network-first with cache fallback
+  event.respondWith(networkFirstWithCache(request));
 });

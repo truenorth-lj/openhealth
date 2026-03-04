@@ -12,6 +12,40 @@ function isChunkLoadError(error: Error): boolean {
   );
 }
 
+const RELOAD_KEY = "chunk-error-reload-count";
+const MAX_RELOADS = 2;
+
+/**
+ * Clear all SW caches and unregister the service worker,
+ * then reload with cache-busting to get fresh assets.
+ */
+async function clearCachesAndReload() {
+  try {
+    // Delete all SW caches
+    const keys = await caches?.keys() ?? [];
+    await Promise.all(keys.map((key) => caches?.delete(key)));
+
+    // Unregister service workers so stale cache-first logic doesn't interfere
+    const registrations = await navigator.serviceWorker?.getRegistrations();
+    if (registrations) {
+      await Promise.all(registrations.map((r) => r.unregister()));
+    }
+  } catch {
+    // Cache API may not be available
+  }
+
+  // Navigate with cache-busting query param to bypass browser HTTP cache
+  // Preserve existing query params and hash
+  const separator = window.location.search ? "&" : "?";
+  window.location.href =
+    window.location.pathname +
+    window.location.search +
+    separator +
+    "_cb=" +
+    Date.now() +
+    window.location.hash;
+}
+
 export default function AppError({
   error,
   reset,
@@ -22,7 +56,24 @@ export default function AppError({
   useEffect(() => {
     // Auto-reload on chunk loading errors (typically caused by new deployments)
     if (isChunkLoadError(error)) {
-      window.location.reload();
+      const reloadCount = Number(sessionStorage.getItem(RELOAD_KEY) || "0");
+
+      if (reloadCount < MAX_RELOADS) {
+        sessionStorage.setItem(RELOAD_KEY, String(reloadCount + 1));
+        clearCachesAndReload();
+        return;
+      }
+
+      // Exceeded max reloads — report to Sentry and show error UI
+      sessionStorage.removeItem(RELOAD_KEY);
+      try {
+        Sentry.captureException(error, {
+          tags: { chunkLoadError: true, reloadAttempts: MAX_RELOADS },
+        });
+      } catch {
+        // Sentry may not be initialized
+      }
+      console.error("ChunkLoadError persisted after reload attempts:", error);
       return;
     }
 
