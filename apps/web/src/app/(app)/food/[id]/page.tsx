@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc-client";
 import { useSession } from "@/lib/auth-client";
-import { NUTRIENT_IDS } from "@open-health/shared/constants";
+import { NUTRIENT_IDS, NUTRIENT_NAME_ZH } from "@open-health/shared/constants";
 
 const categoryLabels: Record<string, string> = {
   macro: "巨量營養素",
@@ -324,7 +324,7 @@ export default function FoodDetailPage() {
                   key={idx}
                   className="flex items-center justify-between px-4 py-2"
                 >
-                  <span className="text-sm">{nutrient.name}</span>
+                  <span className="text-sm">{NUTRIENT_NAME_ZH[nutrient.name] ?? nutrient.name}</span>
                   <div className="flex items-center gap-3">
                     <span className="text-sm tabular-nums">
                       {formatAmount(amount)} {nutrient.unit}

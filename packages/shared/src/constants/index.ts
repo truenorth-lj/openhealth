@@ -47,6 +47,55 @@ export const NUTRIENT_IDS = {
   sodium: 31,
 } as const;
 
+// Nutrient name translations (English → Traditional Chinese)
+export const NUTRIENT_NAME_ZH: Record<string, string> = {
+  // 巨量營養素
+  Protein: "蛋白質",
+  "Total Fat": "總脂肪",
+  "Total Carbohydrate": "總碳水化合物",
+  "Dietary Fiber": "膳食纖維",
+  "Total Sugars": "總糖",
+  "Added Sugars": "添加糖",
+  "Saturated Fat": "飽和脂肪",
+  "Trans Fat": "反式脂肪",
+  "Monounsaturated Fat": "單元不飽和脂肪",
+  "Polyunsaturated Fat": "多元不飽和脂肪",
+  Cholesterol: "膽固醇",
+  // 維生素
+  "Vitamin A": "維生素 A",
+  "Vitamin C": "維生素 C",
+  "Vitamin D": "維生素 D",
+  "Vitamin E": "維生素 E",
+  "Vitamin K": "維生素 K",
+  "Thiamin (B1)": "硫胺素 (B1)",
+  "Riboflavin (B2)": "核黃素 (B2)",
+  "Niacin (B3)": "菸鹼素 (B3)",
+  "Pantothenic Acid (B5)": "泛酸 (B5)",
+  "Vitamin B6": "維生素 B6",
+  "Biotin (B7)": "生物素 (B7)",
+  "Folate (B9)": "葉酸 (B9)",
+  "Vitamin B12": "維生素 B12",
+  Choline: "膽鹼",
+  // 礦物質
+  Calcium: "鈣",
+  Iron: "鐵",
+  Magnesium: "鎂",
+  Phosphorus: "磷",
+  Potassium: "鉀",
+  Sodium: "鈉",
+  Zinc: "鋅",
+  Copper: "銅",
+  Manganese: "錳",
+  Selenium: "硒",
+  Chromium: "鉻",
+  Molybdenum: "鉬",
+  Iodine: "碘",
+  // 其他
+  Water: "水分",
+  Caffeine: "咖啡因",
+  Alcohol: "酒精",
+};
+
 export const DEFAULT_SERVING_SIZE = 100;
 
 export const CHAT_DAILY_LIMIT = 100;
