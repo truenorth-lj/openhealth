@@ -378,6 +378,12 @@ function Footer() {
             >
               安裝指南
             </Link>
+            <Link
+              href="/privacy"
+              className="block text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300 text-xs"
+            >
+              隱私權政策
+            </Link>
           </div>
           <div className="space-y-4">
             <p className="text-[10px] text-neutral-400 dark:text-neutral-600 uppercase tracking-[0.2em]">

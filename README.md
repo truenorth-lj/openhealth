@@ -12,6 +12,12 @@
   <img src="apps/web/public/screenshots/03-ai-chat.png" alt="AI 營養顧問" width="200" />
   <img src="apps/web/public/screenshots/04-progress.png" alt="進度追蹤" width="200" />
 </p>
+<p align="center">
+  <img src="apps/web/public/screenshots/06-food-detail.png" alt="食物詳情" width="200" />
+  <img src="apps/web/public/screenshots/07-food-create.png" alt="新增食物" width="200" />
+  <img src="apps/web/public/screenshots/08-ai-estimate.png" alt="AI 飲食估算" width="200" />
+  <img src="apps/web/public/screenshots/09-ai-chat-conversation.png" alt="AI 對話" width="200" />
+</p>
 
 ## Features
 
@@ -78,6 +84,9 @@ python scripts/app-store-screenshots/take-screenshots.py
 
 # Also copy to web/public for landing page
 python scripts/app-store-screenshots/take-screenshots.py --copy-to-web
+
+# Take additional screenshots (food detail, create, AI estimate, AI chat)
+python scripts/app-store-screenshots/take-extra-screenshots.py
 ```
 
 Output: `scripts/app-store-screenshots/output/`
@@ -89,6 +98,10 @@ Output: `scripts/app-store-screenshots/output/`
 | `03-ai-chat.png` | AI 營養顧問 |
 | `04-progress.png` | 進度追蹤 |
 | `05-landing.png` | 首頁（未登入） |
+| `06-food-detail.png` | 食物營養詳情 |
+| `07-food-create.png` | 新增自訂食物 |
+| `08-ai-estimate.png` | AI 飲食估算 |
+| `09-ai-chat-conversation.png` | AI 營養顧問對話 |
 
 Environment variables (optional):
 - `BASE_URL` — target URL (default: `https://openhealth.blog`)
