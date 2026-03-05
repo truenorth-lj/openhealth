@@ -10,6 +10,13 @@ import { carmansFoods } from "./carmans-foods";
 import { vietBitesFoods } from "./viet-bites-foods";
 import { familyFoods } from "./family-foods";
 import { sevenFoods } from "./seven-foods";
+import { erShiSuiFoods } from "./ershisui-foods";
+import { powerPeakFoods } from "./powerpeak-foods";
+import { xiangShiFoods } from "./xiangshi-foods";
+import { louisaFoods } from "./louisa-foods";
+import { starbucksFoods } from "./starbucks-foods";
+import { missEnergyFoods } from "./missenergy-foods";
+import { proteinBoxFoods } from "./proteinbox-foods";
 
 interface Dataset {
   items: Parameters<typeof seedFoods>[1];
@@ -23,6 +30,13 @@ const FOOD_DATASETS: Record<string, Dataset> = {
   "viet-bites": { items: vietBitesFoods, label: "越迷 Viet Bites" },
   family: { items: familyFoods, label: "全家 FamilyMart", bulk: true },
   seven: { items: sevenFoods, label: "7-ELEVEN", bulk: true },
+  ershisui: { items: erShiSuiFoods, label: "弍食穗" },
+  powerpeak: { items: powerPeakFoods, label: "極限餐盒 Power Peak" },
+  xiangshi: { items: xiangShiFoods, label: "享蒔健康餐盒" },
+  louisa: { items: louisaFoods, label: "路易莎 Louisa Coffee" },
+  starbucks: { items: starbucksFoods, label: "星巴克 Starbucks" },
+  missenergy: { items: missEnergyFoods, label: "能量小姐 Miss Energy" },
+  proteinbox: { items: proteinBoxFoods, label: "蛋白盒子 The Protein Box" },
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://lj@localhost:5432/food_record";
