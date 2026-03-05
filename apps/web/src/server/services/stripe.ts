@@ -151,7 +151,7 @@ export async function syncSubscriptionStatus(
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId));
-  } else if (status === "expired") {
+  } else if (status === "expired" || status === "canceled") {
     await db
       .update(users)
       .set({
