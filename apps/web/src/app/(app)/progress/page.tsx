@@ -135,7 +135,7 @@ export default function ProgressPage() {
                 <Line
                   type="monotone"
                   dataKey="weight"
-                  stroke="hsl(142.1 76.2% 36.3%)"
+                  stroke="var(--color-primary)"
                   strokeWidth={1.5}
                   dot={false}
                   activeDot={{ r: 3 }}

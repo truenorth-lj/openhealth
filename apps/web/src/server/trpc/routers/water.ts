@@ -80,21 +80,16 @@ export const waterRouter = router({
   setGoal: protectedProcedure
     .input(z.object({ dailyTargetMl: z.number().int().min(500).max(10000) }))
     .mutation(async ({ ctx, input }) => {
-      const existing = await ctx.db.query.waterGoals.findFirst({
-        where: eq(waterGoals.userId, ctx.user.id),
-      });
-
-      if (existing) {
-        await ctx.db
-          .update(waterGoals)
-          .set({ dailyTargetMl: input.dailyTargetMl })
-          .where(eq(waterGoals.userId, ctx.user.id));
-      } else {
-        await ctx.db.insert(waterGoals).values({
+      await ctx.db
+        .insert(waterGoals)
+        .values({
           userId: ctx.user.id,
           dailyTargetMl: input.dailyTargetMl,
+        })
+        .onConflictDoUpdate({
+          target: waterGoals.userId,
+          set: { dailyTargetMl: input.dailyTargetMl },
         });
-      }
 
       return { success: true };
     }),

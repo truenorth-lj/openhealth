@@ -3,21 +3,14 @@
 import { z } from "zod";
 import { NUTRIENT_IDS } from "@open-health/shared";
 import { createFoodFromBarcodeSchema } from "@open-health/shared/schemas";
-import { auth } from "@/server/auth";
+import { getSession } from "@/server/lib/get-session";
 import { db } from "@/server/db";
 import { foods, foodNutrients } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { lookupOpenFoodFacts } from "@/server/services/openfoodfacts";
 
 export { lookupOpenFoodFacts };
-
-async function getSession() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
 
 export async function createFoodFromBarcode(
   input: z.infer<typeof createFoodFromBarcodeSchema>

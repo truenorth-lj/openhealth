@@ -151,8 +151,8 @@ export const diaryRouter = router({
         return { success: false, error: "No entries found" };
       }
 
-      for (const entry of entries) {
-        await ctx.db.insert(diaryEntries).values({
+      await ctx.db.insert(diaryEntries).values(
+        entries.map((entry) => ({
           userId: ctx.user.id,
           date: input.toDate,
           mealType: entry.mealType,
@@ -164,8 +164,8 @@ export const diaryRouter = router({
           carbsG: entry.carbsG,
           fatG: entry.fatG,
           fiberG: entry.fiberG,
-        });
-      }
+        }))
+      );
 
       return { success: true };
     }),

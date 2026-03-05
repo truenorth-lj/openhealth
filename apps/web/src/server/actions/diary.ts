@@ -2,19 +2,12 @@
 
 import { z } from "zod";
 import { logFoodSchema } from "@open-health/shared/schemas";
-import { auth } from "@/server/auth";
+import { getSession } from "@/server/lib/get-session";
 import { db } from "@/server/db";
 import { diaryEntries, quickFoods } from "@/server/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { calculateNutrition } from "@/server/services/nutrition";
-
-async function getSession() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
 
 export async function logFood(input: z.infer<typeof logFoodSchema>) {
   const user = await getSession();
@@ -88,8 +81,8 @@ export async function copyMealToDate(
 
   if (entries.length === 0) return { success: false, error: "No entries found" };
 
-  for (const entry of entries) {
-    await db.insert(diaryEntries).values({
+  await db.insert(diaryEntries).values(
+    entries.map((entry) => ({
       userId: user.id,
       date: toDate,
       mealType: entry.mealType,
@@ -101,8 +94,8 @@ export async function copyMealToDate(
       carbsG: entry.carbsG,
       fatG: entry.fatG,
       fiberG: entry.fiberG,
-    });
-  }
+    }))
+  );
 
   revalidatePath(`/diary`);
   return { success: true };

@@ -137,10 +137,13 @@ export default function ChatPage() {
               <h3 className="mb-2 text-sm font-light text-neutral-400">歷史對話</h3>
               <div className="border-t border-black/[0.06] dark:border-white/[0.06]">
                 {sessionsData.map((s) => (
-                  <button
+                  <div
                     key={s.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => router.push(`/chat/${s.id}`)}
-                    className="flex w-full items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] px-1 py-3.5 text-left transition-all duration-300 hover:pl-2"
+                    onKeyDown={(e) => { if (e.key === "Enter") router.push(`/chat/${s.id}`); }}
+                    className="flex w-full items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] px-1 py-3.5 text-left transition-all duration-300 hover:pl-2 cursor-pointer"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-light">
@@ -161,7 +164,7 @@ export default function ChatPage() {
                     >
                       <Trash2 className="h-4 w-4" strokeWidth={1.5} />
                     </button>
-                  </button>
+                  </div>
                 ))}
               </div>
             </div>

@@ -11,6 +11,13 @@ import { MealSection } from "@/components/diary/meal-section";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { trpc } from "@/lib/trpc-client";
+import {
+  DEFAULT_CALORIE_TARGET,
+  DEFAULT_PROTEIN_G,
+  DEFAULT_CARBS_G,
+  DEFAULT_FAT_G,
+  DEFAULT_FIBER_G,
+} from "@open-health/shared/constants";
 
 const mealTypes = ["breakfast", "lunch", "dinner", "snack"] as const;
 
@@ -48,11 +55,11 @@ function DiaryContent() {
     { enabled: isAuthenticated }
   );
 
-  const calorieTarget = goals?.calorieTarget ? Number(goals.calorieTarget) : 2000;
-  const proteinTarget = goals?.proteinG ? Number(goals.proteinG) : 150;
-  const carbsTarget = goals?.carbsG ? Number(goals.carbsG) : 250;
-  const fatTarget = goals?.fatG ? Number(goals.fatG) : 67;
-  const fiberTarget = goals?.fiberG ? Number(goals.fiberG) : 28;
+  const calorieTarget = goals?.calorieTarget ? Number(goals.calorieTarget) : DEFAULT_CALORIE_TARGET;
+  const proteinTarget = goals?.proteinG ? Number(goals.proteinG) : DEFAULT_PROTEIN_G;
+  const carbsTarget = goals?.carbsG ? Number(goals.carbsG) : DEFAULT_CARBS_G;
+  const fatTarget = goals?.fatG ? Number(goals.fatG) : DEFAULT_FAT_G;
+  const fiberTarget = goals?.fiberG ? Number(goals.fiberG) : DEFAULT_FIBER_G;
 
   const entries = data?.entries ?? [];
   const getEntriesForMeal = (meal: string) =>

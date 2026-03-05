@@ -26,7 +26,7 @@ export function DailySummary({
   fiberTarget,
 }: DailySummaryProps) {
   const remaining = calorieTarget - calories;
-  const caloriePercent = Math.min((calories / calorieTarget) * 100, 100);
+  const caloriePercent = calorieTarget > 0 ? Math.min((calories / calorieTarget) * 100, 100) : 0;
 
   return (
     <div className="mx-4 space-y-5 py-2">
@@ -104,7 +104,7 @@ function MacroItem({
   target: number;
   color: string;
 }) {
-  const percent = Math.min((current / target) * 100, 100);
+  const percent = target > 0 ? Math.min((current / target) * 100, 100) : 0;
 
   return (
     <div className="space-y-1.5">

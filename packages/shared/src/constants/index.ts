@@ -125,5 +125,11 @@ export const PLAN_LIMITS = {
 export const CHAT_DAILY_LIMIT = 100;
 export const CHAT_CONVERSATION_LIMIT = 5;
 
+export const DEFAULT_CALORIE_TARGET = 2000;
+export const DEFAULT_PROTEIN_G = 150;
+export const DEFAULT_CARBS_G = 250;
+export const DEFAULT_FAT_G = 67;
+export const DEFAULT_FIBER_G = 28;
+
 export const APP_NAME = "Open Health";
 export const THEME_COLOR = "#16a34a";

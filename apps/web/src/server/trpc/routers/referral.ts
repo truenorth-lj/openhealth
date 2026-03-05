@@ -1,49 +1,13 @@
 import { z } from "zod";
 import { router, publicProcedure, protectedProcedure } from "../trpc";
-import { users, referrals, achievements, userAchievements } from "@/server/db/schema";
+import { users, referrals } from "@/server/db/schema";
 import { eq, desc } from "drizzle-orm";
 import {
   applyReferralCodeSchema,
   customizeReferralCodeSchema,
 } from "@open-health/shared/schemas";
 import { isUniqueViolation } from "@/lib/referral-code";
-
-async function grantAchievement(
-  db: typeof import("@/server/db").db,
-  userId: string,
-  achievementName: string
-) {
-  const [achievement] = await db
-    .insert(achievements)
-    .values({
-      name: achievementName,
-      description:
-        achievementName === "推薦達人"
-          ? "成功推薦一位朋友加入"
-          : "透過推薦碼加入",
-      icon: achievementName === "推薦達人" ? "users" : "star",
-      category: "referral",
-      requirement: { type: "referral" },
-    })
-    .onConflictDoNothing()
-    .returning();
-
-  let achievementId = achievement?.id;
-  if (!achievementId) {
-    const existing = await db
-      .select({ id: achievements.id })
-      .from(achievements)
-      .where(eq(achievements.name, achievementName))
-      .limit(1);
-    achievementId = existing[0]?.id;
-  }
-  if (!achievementId) return;
-
-  await db
-    .insert(userAchievements)
-    .values({ userId, achievementId })
-    .onConflictDoNothing();
-}
+import { grantAchievement } from "@/server/services/referral";
 
 export const referralRouter = router({
   applyCode: protectedProcedure
@@ -76,8 +40,8 @@ export const referralRouter = router({
       }
 
       await Promise.all([
-        grantAchievement(ctx.db, referrer[0].id, "推薦達人"),
-        grantAchievement(ctx.db, ctx.user.id, "受邀新星"),
+        grantAchievement(referrer[0].id, "推薦達人"),
+        grantAchievement(ctx.user.id, "受邀新星"),
       ]);
 
       return { success: true as const };

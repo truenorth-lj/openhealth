@@ -64,7 +64,7 @@ export const foods = pgTable(
     index("foods_barcode_idx").on(table.barcode),
     index("foods_name_search_idx").using(
       "gin",
-      sql`to_tsvector('english', ${table.name} || ' ' || coalesce(${table.brand}, ''))`
+      sql`to_tsvector('simple', ${table.name} || ' ' || coalesce(${table.brand}, ''))`
     ),
     index("foods_source_idx").on(table.source),
   ]

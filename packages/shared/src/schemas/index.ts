@@ -1,7 +1,9 @@
 import { z } from "zod";
 
+const dateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "日期格式需為 YYYY-MM-DD");
+
 export const logFoodSchema = z.object({
-  date: z.string(),
+  date: dateString,
   mealType: z.enum(["breakfast", "lunch", "dinner", "snack"]),
   foodId: z.string().uuid(),
   servingQty: z.number().positive(),
@@ -87,13 +89,13 @@ export const updateGoalsSchema = z.object({
 });
 
 export const logWeightSchema = z.object({
-  date: z.string(),
+  date: dateString,
   weightKg: z.number().positive().max(500),
   note: z.string().max(500).optional(),
 });
 
 export const logMeasurementsSchema = z.object({
-  date: z.string(),
+  date: dateString,
   waistCm: z.number().positive().optional(),
   hipCm: z.number().positive().optional(),
   chestCm: z.number().positive().optional(),
@@ -124,8 +126,8 @@ export const createFoodFromBarcodeSchema = z.object({
 });
 
 export const copyMealSchema = z.object({
-  fromDate: z.string(),
-  toDate: z.string(),
+  fromDate: dateString,
+  toDate: dateString,
   mealType: z.enum(["breakfast", "lunch", "dinner", "snack"]),
 });
 

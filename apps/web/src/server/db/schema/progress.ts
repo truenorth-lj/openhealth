@@ -85,6 +85,5 @@ export const tdeeCalculations = pgTable(
   },
   (table) => [
     uniqueIndex("tdee_user_date_idx").on(table.userId, table.date),
-    index("tdee_user_date_desc_idx").on(table.userId, table.date),
   ]
 );

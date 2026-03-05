@@ -2,18 +2,11 @@
 
 import { z } from "zod";
 import { updateProfileSchema } from "@open-health/shared/schemas";
-import { auth } from "@/server/auth";
+import { getSession } from "@/server/lib/get-session";
 import { db } from "@/server/db";
 import { users, userProfiles } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
-
-async function getSession() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
 
 export async function updateProfile(
   input: z.infer<typeof updateProfileSchema>

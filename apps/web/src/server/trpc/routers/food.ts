@@ -59,27 +59,28 @@ export const foodRouter = router({
 
       if (!food) return null;
 
-      const nutrients = await ctx.db
-        .select({
-          name: nutrientDefinitions.name,
-          unit: nutrientDefinitions.unit,
-          category: nutrientDefinitions.category,
-          amount: foodNutrients.amount,
-          dailyValue: nutrientDefinitions.dailyValue,
-          displayOrder: nutrientDefinitions.displayOrder,
-        })
-        .from(foodNutrients)
-        .innerJoin(
-          nutrientDefinitions,
-          eq(foodNutrients.nutrientId, nutrientDefinitions.id)
-        )
-        .where(eq(foodNutrients.foodId, input.id))
-        .orderBy(nutrientDefinitions.displayOrder);
-
-      const servings = await ctx.db
-        .select()
-        .from(foodServings)
-        .where(eq(foodServings.foodId, input.id));
+      const [nutrients, servings] = await Promise.all([
+        ctx.db
+          .select({
+            name: nutrientDefinitions.name,
+            unit: nutrientDefinitions.unit,
+            category: nutrientDefinitions.category,
+            amount: foodNutrients.amount,
+            dailyValue: nutrientDefinitions.dailyValue,
+            displayOrder: nutrientDefinitions.displayOrder,
+          })
+          .from(foodNutrients)
+          .innerJoin(
+            nutrientDefinitions,
+            eq(foodNutrients.nutrientId, nutrientDefinitions.id)
+          )
+          .where(eq(foodNutrients.foodId, input.id))
+          .orderBy(nutrientDefinitions.displayOrder),
+        ctx.db
+          .select()
+          .from(foodServings)
+          .where(eq(foodServings.foodId, input.id)),
+      ]);
 
       return { ...food, nutrients, servings };
     }),
@@ -93,27 +94,28 @@ export const foodRouter = router({
 
       if (!food) return null;
 
-      const nutrients = await ctx.db
-        .select({
-          name: nutrientDefinitions.name,
-          unit: nutrientDefinitions.unit,
-          category: nutrientDefinitions.category,
-          amount: foodNutrients.amount,
-          dailyValue: nutrientDefinitions.dailyValue,
-          displayOrder: nutrientDefinitions.displayOrder,
-        })
-        .from(foodNutrients)
-        .innerJoin(
-          nutrientDefinitions,
-          eq(foodNutrients.nutrientId, nutrientDefinitions.id)
-        )
-        .where(eq(foodNutrients.foodId, food.id))
-        .orderBy(nutrientDefinitions.displayOrder);
-
-      const servings = await ctx.db
-        .select()
-        .from(foodServings)
-        .where(eq(foodServings.foodId, food.id));
+      const [nutrients, servings] = await Promise.all([
+        ctx.db
+          .select({
+            name: nutrientDefinitions.name,
+            unit: nutrientDefinitions.unit,
+            category: nutrientDefinitions.category,
+            amount: foodNutrients.amount,
+            dailyValue: nutrientDefinitions.dailyValue,
+            displayOrder: nutrientDefinitions.displayOrder,
+          })
+          .from(foodNutrients)
+          .innerJoin(
+            nutrientDefinitions,
+            eq(foodNutrients.nutrientId, nutrientDefinitions.id)
+          )
+          .where(eq(foodNutrients.foodId, food.id))
+          .orderBy(nutrientDefinitions.displayOrder),
+        ctx.db
+          .select()
+          .from(foodServings)
+          .where(eq(foodServings.foodId, food.id)),
+      ]);
 
       return { ...food, nutrients, servings };
     }),

@@ -38,14 +38,17 @@ export const streaks = pgTable(
   ]
 );
 
-export const achievements = pgTable("achievements", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 200 }).notNull(),
-  description: text("description"),
-  icon: varchar("icon", { length: 100 }),
-  category: varchar("category", { length: 50 }),
-  requirement: jsonb("requirement").notNull(),
-});
+export const achievements = pgTable(
+  "achievements",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 200 }).notNull().unique(),
+    description: text("description"),
+    icon: varchar("icon", { length: 100 }),
+    category: varchar("category", { length: 50 }),
+    requirement: jsonb("requirement").notNull(),
+  }
+);
 
 export const userAchievements = pgTable(
   "user_achievements",

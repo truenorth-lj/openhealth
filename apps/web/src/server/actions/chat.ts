@@ -1,17 +1,10 @@
 "use server";
 
-import { auth } from "@/server/auth";
+import { getSession } from "@/server/lib/get-session";
 import { db } from "@/server/db";
 import { chatSessions } from "@/server/db/schema";
 import { eq, and } from "drizzle-orm";
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-
-async function getSession() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
 
 export async function createChatSession({ title }: { title: string }) {
   const user = await getSession();
