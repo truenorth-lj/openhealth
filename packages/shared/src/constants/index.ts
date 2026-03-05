@@ -133,3 +133,4 @@ export const DEFAULT_FIBER_G = 28;
 
 export const APP_NAME = "Open Health";
 export const THEME_COLOR = "#16a34a";
+export const DANGER_COLOR = "#ef4444";

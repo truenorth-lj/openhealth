@@ -10,6 +10,31 @@ import { lookupOpenFoodFacts } from "@/server/services/openfoodfacts";
 import { recognizeNutritionLabel, estimateNutritionFromText } from "@/server/services/ai";
 import { checkAndIncrementAiUsage } from "@/server/services/plan";
 
+async function fetchFoodNutrientsAndServings(db: typeof import("@/server/db").db, foodId: string) {
+  return Promise.all([
+    db
+      .select({
+        name: nutrientDefinitions.name,
+        unit: nutrientDefinitions.unit,
+        category: nutrientDefinitions.category,
+        amount: foodNutrients.amount,
+        dailyValue: nutrientDefinitions.dailyValue,
+        displayOrder: nutrientDefinitions.displayOrder,
+      })
+      .from(foodNutrients)
+      .innerJoin(
+        nutrientDefinitions,
+        eq(foodNutrients.nutrientId, nutrientDefinitions.id)
+      )
+      .where(eq(foodNutrients.foodId, foodId))
+      .orderBy(nutrientDefinitions.displayOrder),
+    db
+      .select()
+      .from(foodServings)
+      .where(eq(foodServings.foodId, foodId)),
+  ]);
+}
+
 export const foodRouter = router({
   search: publicProcedure
     .input(
@@ -59,29 +84,7 @@ export const foodRouter = router({
 
       if (!food) return null;
 
-      const [nutrients, servings] = await Promise.all([
-        ctx.db
-          .select({
-            name: nutrientDefinitions.name,
-            unit: nutrientDefinitions.unit,
-            category: nutrientDefinitions.category,
-            amount: foodNutrients.amount,
-            dailyValue: nutrientDefinitions.dailyValue,
-            displayOrder: nutrientDefinitions.displayOrder,
-          })
-          .from(foodNutrients)
-          .innerJoin(
-            nutrientDefinitions,
-            eq(foodNutrients.nutrientId, nutrientDefinitions.id)
-          )
-          .where(eq(foodNutrients.foodId, input.id))
-          .orderBy(nutrientDefinitions.displayOrder),
-        ctx.db
-          .select()
-          .from(foodServings)
-          .where(eq(foodServings.foodId, input.id)),
-      ]);
-
+      const [nutrients, servings] = await fetchFoodNutrientsAndServings(ctx.db, input.id);
       return { ...food, nutrients, servings };
     }),
 
@@ -94,29 +97,7 @@ export const foodRouter = router({
 
       if (!food) return null;
 
-      const [nutrients, servings] = await Promise.all([
-        ctx.db
-          .select({
-            name: nutrientDefinitions.name,
-            unit: nutrientDefinitions.unit,
-            category: nutrientDefinitions.category,
-            amount: foodNutrients.amount,
-            dailyValue: nutrientDefinitions.dailyValue,
-            displayOrder: nutrientDefinitions.displayOrder,
-          })
-          .from(foodNutrients)
-          .innerJoin(
-            nutrientDefinitions,
-            eq(foodNutrients.nutrientId, nutrientDefinitions.id)
-          )
-          .where(eq(foodNutrients.foodId, food.id))
-          .orderBy(nutrientDefinitions.displayOrder),
-        ctx.db
-          .select()
-          .from(foodServings)
-          .where(eq(foodServings.foodId, food.id)),
-      ]);
-
+      const [nutrients, servings] = await fetchFoodNutrientsAndServings(ctx.db, food.id);
       return { ...food, nutrients, servings };
     }),
 

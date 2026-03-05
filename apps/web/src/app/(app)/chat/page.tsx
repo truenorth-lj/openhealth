@@ -142,7 +142,9 @@ export default function ChatPage() {
                     role="button"
                     tabIndex={0}
                     onClick={() => router.push(`/chat/${s.id}`)}
-                    onKeyDown={(e) => { if (e.key === "Enter") router.push(`/chat/${s.id}`); }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") router.push(`/chat/${s.id}`);
+                    }}
                     className="flex w-full items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] px-1 py-3.5 text-left transition-all duration-300 hover:pl-2 cursor-pointer"
                   >
                     <div className="min-w-0 flex-1">
