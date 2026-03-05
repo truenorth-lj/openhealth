@@ -3,7 +3,7 @@ import { createFoodSchema, createFoodFromBarcodeSchema, updateFoodSchema } from 
 import { NUTRIENT_IDS } from "@open-health/shared/constants";
 import { publicProcedure, protectedProcedure, router } from "../trpc";
 import { foods, foodNutrients, nutrientDefinitions, foodServings } from "@/server/db/schema";
-import { eq, sql, desc } from "drizzle-orm";
+import { eq, sql, desc, and, gte } from "drizzle-orm";
 import { quickFoods } from "@/server/db/schema/diary";
 import { lookupOpenFoodFacts } from "@/server/services/openfoodfacts";
 import { recognizeNutritionLabel, estimateNutritionFromText } from "@/server/services/ai";
@@ -14,12 +14,14 @@ export const foodRouter = router({
       z.object({
         query: z.string().min(1).max(200),
         limit: z.number().min(1).max(50).default(20),
-        offset: z.number().min(0).default(0),
+        offset: z.number().min(0).default(0), // kept for mobile backward compat
+        cursor: z.number().min(0).default(0), // used by web infinite scroll
       })
     )
     .query(async ({ ctx, input }) => {
       const query = input.query.trim();
       const likePattern = `%${query}%`;
+      const effectiveOffset = input.cursor || input.offset;
 
       const results = await ctx.db
         .select({
@@ -41,7 +43,7 @@ export const foodRouter = router({
           sql`CASE WHEN ${foods.name} ILIKE ${likePattern} THEN 0 ELSE 1 END, ${foods.name}`
         )
         .limit(input.limit)
-        .offset(input.offset);
+        .offset(effectiveOffset);
 
       return results;
     }),
@@ -137,6 +139,73 @@ export const foodRouter = router({
       return recent;
     }),
 
+  getFrequent: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(20),
+        cursor: z.number().min(0).default(0),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const results = await ctx.db
+        .select({
+          id: foods.id,
+          name: foods.name,
+          brand: foods.brand,
+          calories: foods.calories,
+          servingSize: foods.servingSize,
+          servingUnit: foods.servingUnit,
+          householdServing: foods.householdServing,
+          useCount: quickFoods.useCount,
+        })
+        .from(quickFoods)
+        .innerJoin(foods, eq(quickFoods.foodId, foods.id))
+        .where(
+          and(
+            eq(quickFoods.userId, ctx.user.id),
+            gte(quickFoods.lastUsedAt, thirtyDaysAgo)
+          )
+        )
+        .orderBy(desc(quickFoods.useCount), desc(quickFoods.lastUsedAt))
+        .limit(input.limit)
+        .offset(input.cursor);
+
+      return results;
+    }),
+
+  getGlobalPopular: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(20),
+        cursor: z.number().min(0).default(0),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select({
+          id: foods.id,
+          name: foods.name,
+          brand: foods.brand,
+          calories: foods.calories,
+          servingSize: foods.servingSize,
+          servingUnit: foods.servingUnit,
+          householdServing: foods.householdServing,
+          totalUseCount: sql<number>`cast(sum(${quickFoods.useCount}) as int)`.as("total_use_count"),
+        })
+        .from(quickFoods)
+        .innerJoin(foods, eq(quickFoods.foodId, foods.id))
+        .groupBy(foods.id)
+        .orderBy(sql`total_use_count desc`)
+        .limit(input.limit)
+        .offset(input.cursor);
+
+      return results;
+    }),
+
+  // Keep for mobile backward compat
   getGlobalRecent: publicProcedure
     .input(z.object({ limit: z.number().min(1).max(30).default(20) }))
     .query(async ({ ctx, input }) => {

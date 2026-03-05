@@ -1,8 +1,8 @@
 "use client";
 
-import { Suspense, useState, useTransition } from "react";
+import { Suspense, useState, useTransition, useRef, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Search, ArrowLeft, Barcode, Camera, MessageSquare } from "lucide-react";
+import { Search, ArrowLeft, Barcode, Camera, MessageSquare, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc-client";
@@ -11,6 +11,14 @@ import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import Link from "next/link";
 import { toast } from "sonner";
+
+const PAGE_SIZE = 20;
+
+const infiniteOpts = {
+  getNextPageParam: (lastPage: unknown[], allPages: unknown[][]) =>
+    lastPage.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined,
+  initialCursor: 0,
+};
 
 function FoodSearchContent() {
   const searchParams = useSearchParams();
@@ -27,22 +35,26 @@ function FoodSearchContent() {
   const [pendingFoodId, setPendingFoodId] = useState<string | null>(null);
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } = useAuthGuard();
   const utils = trpc.useUtils();
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const { data: searchResults, isLoading } = trpc.food.search.useQuery(
-    { query, limit: 20 },
-    { enabled: query.length >= 1 }
+  // Search results (infinite)
+  const searchQuery = trpc.food.search.useInfiniteQuery(
+    { query, limit: PAGE_SIZE },
+    { enabled: query.length >= 1, ...infiniteOpts }
   );
 
-  const { data: recentFoods, isLoading: isLoadingRecent } = trpc.food.getRecent.useQuery(
-    { limit: 20 },
-    { enabled: isAuthenticated, staleTime: 5 * 60 * 1000 }
+  // User's frequent foods (infinite)
+  const frequentQuery = trpc.food.getFrequent.useInfiniteQuery(
+    { limit: PAGE_SIZE },
+    { enabled: isAuthenticated, staleTime: 5 * 60 * 1000, ...infiniteOpts }
   );
 
-  const hasUserRecent = recentFoods && recentFoods.length > 0;
+  const hasUserFrequent = frequentQuery.data && frequentQuery.data.pages[0]?.length > 0;
 
-  const { data: globalRecentFoods, isLoading: isLoadingGlobalRecent } = trpc.food.getGlobalRecent.useQuery(
-    { limit: 20 },
-    { enabled: !isLoadingRecent && !hasUserRecent, staleTime: 10 * 60 * 1000 }
+  // Global popular foods (infinite, fallback when no user frequent)
+  const globalPopularQuery = trpc.food.getGlobalPopular.useInfiniteQuery(
+    { limit: PAGE_SIZE },
+    { enabled: !frequentQuery.isLoading && !hasUserFrequent, staleTime: 10 * 60 * 1000, ...infiniteOpts }
   );
 
   const mealLabels: Record<string, string> = {
@@ -51,6 +63,38 @@ function FoodSearchContent() {
     dinner: "晚餐",
     snack: "點心",
   };
+
+  // Determine which query is active
+  const activeQuery = query.length >= 1
+    ? searchQuery
+    : hasUserFrequent
+      ? frequentQuery
+      : globalPopularQuery;
+
+  const displayFoods = activeQuery.data?.pages.flat() ?? [];
+  const isLoadingInitial = query.length >= 1
+    ? searchQuery.isLoading
+    : frequentQuery.isLoading || (!hasUserFrequent && globalPopularQuery.isLoading);
+
+  // Intersection Observer for infinite scroll
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = activeQuery;
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage]
+  );
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(handleObserver, { threshold: 0.1 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [handleObserver]);
 
   const doLogFood = (foodId: string) => {
     startTransition(async () => {
@@ -90,9 +134,11 @@ function FoodSearchContent() {
     }
   };
 
-  const fallbackFoods = hasUserRecent ? recentFoods : globalRecentFoods;
-  const displayFoods = query.length >= 1 ? searchResults : fallbackFoods;
-  const isLoadingFallback = isLoadingRecent || (!hasUserRecent && isLoadingGlobalRecent);
+  const sectionLabel = query.length >= 1
+    ? "搜尋結果"
+    : hasUserFrequent
+      ? "常用食物"
+      : "最多人使用";
 
   return (
     <div className="px-4 pb-4">
@@ -145,16 +191,16 @@ function FoodSearchContent() {
       </div>
 
       <p className="text-xs text-muted-foreground mb-2 px-1">
-        {query.length >= 1 ? "搜尋結果" : hasUserRecent ? "最近使用" : "熱門食物"}
+        {sectionLabel}
       </p>
 
-      {(query.length >= 1 ? isLoading : isLoadingFallback) ? (
+      {isLoadingInitial ? (
         <div className="space-y-2">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
           ))}
         </div>
-      ) : displayFoods && displayFoods.length > 0 ? (
+      ) : displayFoods.length > 0 ? (
         <div className="space-y-1">
           {displayFoods.map((food) => (
             <button
@@ -179,6 +225,13 @@ function FoodSearchContent() {
               </div>
             </button>
           ))}
+
+          {/* Sentinel for infinite scroll */}
+          <div ref={sentinelRef} className="flex justify-center py-4">
+            {isFetchingNextPage && (
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            )}
+          </div>
         </div>
       ) : query.length >= 1 ? (
         <div className="text-center py-8 text-muted-foreground">
@@ -191,7 +244,7 @@ function FoodSearchContent() {
         </div>
       ) : (
         <div className="text-center py-8 text-muted-foreground">
-          <p className="text-sm">尚無最近使用的食物</p>
+          <p className="text-sm">尚無常用食物</p>
           <p className="text-xs mt-1">搜尋並新增食物後會顯示在這裡</p>
         </div>
       )}
