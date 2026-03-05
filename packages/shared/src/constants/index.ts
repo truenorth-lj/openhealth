@@ -134,3 +134,21 @@ export const DEFAULT_FIBER_G = 28;
 export const APP_NAME = "Open Health";
 export const THEME_COLOR = "#16a34a";
 export const DANGER_COLOR = "#ef4444";
+
+// Referral system
+export const REFERRAL = {
+  REFEREE_TRIAL_DAYS: 14,
+  REFERRER_FREE_DAYS: 30,
+  MAX_TRIAL_DAYS: 365,
+  REVENUE_SHARE_PERCENTAGE: 0.25,
+  REVENUE_SHARE_CONFIRM_DAYS: 90,
+  MIN_PAYOUT_CENTS: 50000, // NT$500
+} as const;
+
+export const PAYOUT_METHODS = [
+  "subscription_credit",
+  "bank_transfer",
+] as const;
+
+export type PayoutMethod = (typeof PAYOUT_METHODS)[number];
+export type RefereeStatus = "paid" | "trial" | "registered";

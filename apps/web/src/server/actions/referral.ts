@@ -12,6 +12,7 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { isUniqueViolation } from "@/lib/referral-code";
 import { grantAchievement } from "@/server/services/referral";
+import { grantReferralTrialDays } from "@/server/services/referral-reward";
 
 export async function applyReferralCode(
   input: z.infer<typeof applyReferralCodeSchema>
@@ -36,11 +37,16 @@ export async function applyReferralCode(
   }
 
   // Insert referral — unique index on refereeId prevents duplicates
+  let referralId: string;
   try {
-    await db.insert(referrals).values({
-      referrerId: referrer[0].id,
-      refereeId: user.id,
-    });
+    const [inserted] = await db
+      .insert(referrals)
+      .values({
+        referrerId: referrer[0].id,
+        refereeId: user.id,
+      })
+      .returning({ id: referrals.id });
+    referralId = inserted.id;
   } catch (error) {
     if (isUniqueViolation(error)) {
       return { success: false, error: "你已經使用過推薦碼了" };
@@ -48,10 +54,11 @@ export async function applyReferralCode(
     throw error;
   }
 
-  // Grant achievements to both
+  // Grant achievements + trial days to both
   await Promise.all([
     grantAchievement(referrer[0].id, "推薦達人"),
     grantAchievement(user.id, "受邀新星"),
+    grantReferralTrialDays(referralId, referrer[0].id, user.id),
   ]);
 
   revalidatePath("/settings/referral");

@@ -6,7 +6,7 @@ import { useSession } from "@/lib/auth-client";
 import { applyReferralCode, customizeReferralCode } from "@/server/actions/referral";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Copy, Check, Pencil, Users } from "lucide-react";
+import { ArrowLeft, Copy, Check, Pencil, Users, Gift, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -207,7 +207,7 @@ export default function ReferralPage() {
 
       {applySuccess && (
         <div className="rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 p-3 text-sm text-green-700 dark:text-green-300">
-          推薦碼套用成功！雙方皆獲得成就獎勵。
+          推薦碼套用成功！你獲得 14 天 Pro 試用，推薦人獲得 30 天免費。
         </div>
       )}
 
@@ -216,6 +216,37 @@ export default function ReferralPage() {
           你已透過推薦碼加入。
         </div>
       )}
+
+      {/* Trial / Free days info */}
+      {stats && (stats.totalFreeDaysEarned > 0 || stats.trialExpiresAt) && (
+        <div className="rounded-lg border border-green-200 bg-green-50 dark:border-green-900/30 dark:bg-green-950/30 p-4 space-y-1">
+          {stats.totalFreeDaysEarned > 0 && (
+            <p className="text-sm text-green-700 dark:text-green-300 flex items-center gap-1.5">
+              <Gift className="h-3.5 w-3.5" strokeWidth={1.5} />
+              已累計獲得 {stats.totalFreeDaysEarned} 天免費天數
+            </p>
+          )}
+          {stats.trialExpiresAt && new Date(stats.trialExpiresAt) > new Date() && (
+            <p className="text-xs text-green-600 dark:text-green-400">
+              試用到期：{new Date(stats.trialExpiresAt).toLocaleDateString("zh-TW")}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Rewards card */}
+      <Link
+        href="/settings/referral/rewards"
+        className="flex items-center justify-between rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
+      >
+        <div className="space-y-0.5">
+          <p className="text-sm font-medium">分潤獎勵</p>
+          <p className="text-xs text-neutral-400">
+            查看分潤明細、提領餘額
+          </p>
+        </div>
+        <ChevronRight className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
+      </Link>
 
       {/* Referral list */}
       <div className="space-y-3">
@@ -236,7 +267,18 @@ export default function ReferralPage() {
                 key={item.id}
                 className="flex items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] px-1 py-3"
               >
-                <span className="text-sm font-light">{item.name}</span>
+                <div className="space-y-0.5">
+                  <span className="text-sm font-light">{item.name}</span>
+                  <span className={`block text-xs ${
+                    item.status === "paid" ? "text-green-600" :
+                    item.status === "trial" ? "text-amber-500" :
+                    "text-neutral-400"
+                  }`}>
+                    {item.status === "paid" ? "已付費" :
+                     item.status === "trial" ? "試用中" :
+                     "已註冊"}
+                  </span>
+                </div>
                 <span className="text-xs text-neutral-400">
                   {new Date(item.joinedAt).toLocaleDateString("zh-TW")}
                 </span>

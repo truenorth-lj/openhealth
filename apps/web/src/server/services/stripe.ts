@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { eq, and } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { db } from "@/server/db";
-import { users, subscriptions } from "@/server/db/schema";
+import { users, subscriptions, referrals } from "@/server/db/schema";
 
 let stripeClient: Stripe | null = null;
 
@@ -55,6 +55,31 @@ export async function createCheckoutSession(
   const stripe = getStripeClient();
   const customerId = await getOrCreateStripeCustomer(userId, email);
 
+  // Check if user was referred — apply 20% off coupon for first subscription
+  const couponId = process.env.STRIPE_REFERRAL_COUPON_ID;
+  let discounts: Stripe.Checkout.SessionCreateParams["discounts"] | undefined;
+
+  if (couponId) {
+    const [referral] = await db
+      .select({ id: referrals.id })
+      .from(referrals)
+      .where(eq(referrals.refereeId, userId))
+      .limit(1);
+
+    if (referral) {
+      // Check if user has never had a subscription before (first-time)
+      const [existingSub] = await db
+        .select({ id: subscriptions.id })
+        .from(subscriptions)
+        .where(eq(subscriptions.userId, userId))
+        .limit(1);
+
+      if (!existingSub) {
+        discounts = [{ coupon: couponId }];
+      }
+    }
+  }
+
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: "subscription",
@@ -65,6 +90,7 @@ export async function createCheckoutSession(
     subscription_data: {
       metadata: { userId },
     },
+    ...(discounts ? { discounts } : {}),
   });
 
   return session.url!;
