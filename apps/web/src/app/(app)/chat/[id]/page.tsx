@@ -16,8 +16,10 @@ import {
   Plus,
   Trash2,
   ArrowLeft,
+  Crown,
 } from "lucide-react";
 import { Suspense } from "react";
+import { UpgradeDialog } from "@/components/upgrade-dialog";
 
 const MAX_USER_MESSAGES_PER_CONVERSATION = 5;
 
@@ -27,6 +29,7 @@ function ChatDetail() {
   const searchParams = useSearchParams();
   const { data: session, isPending } = useSession();
   const [input, setInput] = useState("");
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const initSentRef = useRef(false);
 
   const sessionId = params.id;
@@ -222,10 +225,18 @@ function ChatDetail() {
             <div className="flex flex-col items-center gap-2">
               <p className="text-sm font-light text-neutral-400">
                 {isDailyLimitReached
-                  ? `已達每日訊息上限（${dailyUsage?.limit ?? 100} 則）`
+                  ? `已達每日訊息上限（${dailyUsage?.limit ?? 10} 則）`
                   : `已達到對話上限（${MAX_USER_MESSAGES_PER_CONVERSATION} 則）`}
               </p>
-              {!isDailyLimitReached && (
+              {isDailyLimitReached ? (
+                <button
+                  onClick={() => setShowUpgrade(true)}
+                  className="flex items-center gap-1.5 text-sm font-light text-amber-600 hover:text-amber-500 transition-colors"
+                >
+                  <Crown className="h-4 w-4" />
+                  升級 Pro 取得更多額度
+                </button>
+              ) : (
                 <button
                   onClick={() => router.push("/chat")}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-lg transition-all duration-300 hover:border-foreground/20"
@@ -255,6 +266,8 @@ function ChatDetail() {
           )}
         </div>
       </div>
+
+      <UpgradeDialog open={showUpgrade} onOpenChange={setShowUpgrade} />
     </div>
   );
 }

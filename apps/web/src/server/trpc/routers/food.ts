@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { createFoodSchema, createFoodFromBarcodeSchema, updateFoodSchema } from "@open-health/shared/schemas";
 import { NUTRIENT_IDS } from "@open-health/shared/constants";
 import { publicProcedure, protectedProcedure, router } from "../trpc";
@@ -7,6 +8,7 @@ import { eq, sql, desc, and, gte } from "drizzle-orm";
 import { quickFoods } from "@/server/db/schema/diary";
 import { lookupOpenFoodFacts } from "@/server/services/openfoodfacts";
 import { recognizeNutritionLabel, estimateNutritionFromText } from "@/server/services/ai";
+import { checkAndIncrementAiUsage } from "@/server/services/plan";
 
 export const foodRouter = router({
   search: publicProcedure
@@ -337,13 +339,27 @@ export const foodRouter = router({
 
   recognizeLabel: protectedProcedure
     .input(z.object({ base64Image: z.string().min(1) }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const usage = await checkAndIncrementAiUsage(ctx.user.id, "ocr", ctx.userPlan);
+      if (!usage.allowed) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: `已達今日 AI 辨識上限（${usage.limit} 次）`,
+        });
+      }
       return recognizeNutritionLabel(input.base64Image);
     }),
 
   estimateNutrition: protectedProcedure
     .input(z.object({ description: z.string().min(1) }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const usage = await checkAndIncrementAiUsage(ctx.user.id, "estimate", ctx.userPlan);
+      if (!usage.allowed) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: `已達今日 AI 估算上限（${usage.limit} 次）`,
+        });
+      }
       return estimateNutritionFromText(input.description);
     }),
 

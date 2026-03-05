@@ -15,6 +15,20 @@
       "when": 1772540803184,
       "tag": "0001_align-schema",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772720226923,
+      "tag": "0002_fearless_ma_gnuci",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1772726054023,
+      "tag": "0003_melted_phantom_reporter",
+      "breakpoints": true
     }
   ]
 }

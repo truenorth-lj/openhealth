@@ -11,10 +11,13 @@ import {
   chatSessions,
   chatMessages,
 } from "@/server/db/schema";
-import { and, eq, gte, sql } from "drizzle-orm";
-import { getTaiwanDate, getTaipeiTodayStart } from "@/lib/date";
-
-const DAILY_MESSAGE_LIMIT = 100;
+import { and, eq } from "drizzle-orm";
+import { getTaiwanDate } from "@/lib/date";
+import { users } from "@/server/db/schema";
+import {
+  resolveEffectivePlan,
+  checkAndIncrementAiUsage,
+} from "@/server/services/plan";
 
 export async function POST(req: Request) {
   const reqHeaders = await headers();
@@ -27,22 +30,23 @@ export async function POST(req: Request) {
   const userId = session.user.id;
   const { messages: uiMessages, sessionId } = await req.json();
 
-  // Daily limit check
-  const todayStart = getTaipeiTodayStart();
-  const [usageResult] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(chatMessages)
-    .where(
-      and(
-        eq(chatMessages.userId, userId),
-        eq(chatMessages.role, "user"),
-        gte(chatMessages.createdAt, todayStart)
-      )
-    );
+  // Resolve user plan
+  const userRow = await db
+    .select({
+      plan: users.plan,
+      planExpiresAt: users.planExpiresAt,
+      trialExpiresAt: users.trialExpiresAt,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
+    .then((r) => r[0]);
+  const plan = userRow ? resolveEffectivePlan(userRow) : "free";
 
-  if ((usageResult?.count ?? 0) >= DAILY_MESSAGE_LIMIT) {
+  // Daily limit check via ai_usage
+  const usage = await checkAndIncrementAiUsage(userId, "chat", plan);
+  if (!usage.allowed) {
     return Response.json(
-      { error: "已達每日訊息上限（100 則）" },
+      { error: `已達每日訊息上限（${usage.limit} 則）` },
       { status: 429 }
     );
   }

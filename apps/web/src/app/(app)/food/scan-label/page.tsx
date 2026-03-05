@@ -14,6 +14,7 @@ import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
 import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
+import { UpgradeDialog } from "@/components/upgrade-dialog";
 
 function compressImage(dataUrl: string, maxWidth = 1600, quality = 0.8): Promise<string> {
   return new Promise((resolve) => {
@@ -57,6 +58,7 @@ function ScanLabelContent() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const utils = trpc.useUtils();
 
   // Form fields
@@ -131,9 +133,14 @@ function ScanLabelContent() {
           setError(result.error || "辨識失敗");
           setStage("capture");
         }
-      } catch {
-        setError("辨識過程發生錯誤，請重試");
-        setStage("capture");
+      } catch (err) {
+        if (err instanceof Error && err.message === "AI_LIMIT_REACHED") {
+          setShowUpgrade(true);
+          setStage("capture");
+        } else {
+          setError("辨識過程發生錯誤，請重試");
+          setStage("capture");
+        }
       }
     };
     reader.readAsDataURL(file);
@@ -475,6 +482,8 @@ function ScanLabelContent() {
           </form>
         </div>
       )}
+
+      <UpgradeDialog open={showUpgrade} onOpenChange={setShowUpgrade} />
     </div>
   );
 }

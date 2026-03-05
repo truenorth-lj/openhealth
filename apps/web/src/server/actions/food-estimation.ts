@@ -3,14 +3,20 @@
 import { auth } from "@/server/auth";
 import { headers } from "next/headers";
 import { estimateNutritionFromText as estimateNutrition } from "@/server/services/ai";
-
-async function getSession() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
+import {
+  getSessionWithPlan,
+  checkAndIncrementAiUsage,
+} from "@/server/services/plan";
 
 export async function estimateNutritionFromText(description: string) {
-  await getSession();
+  const { user, plan } = await getSessionWithPlan(async () => {
+    return auth.api.getSession({ headers: await headers() });
+  });
+
+  const usage = await checkAndIncrementAiUsage(user.id, "estimate", plan);
+  if (!usage.allowed) {
+    throw new Error("AI_LIMIT_REACHED");
+  }
+
   return estimateNutrition(description);
 }

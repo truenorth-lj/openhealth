@@ -98,6 +98,30 @@ export const NUTRIENT_NAME_ZH: Record<string, string> = {
 
 export const DEFAULT_SERVING_SIZE = 100;
 
+export const PLANS = ["free", "pro"] as const;
+export const AI_FEATURES = ["ocr", "estimate", "chat"] as const;
+
+export const PLAN_LIMITS = {
+  free: {
+    ai: { ocr: 3, estimate: 3, chat: 10 },
+    micronutrients: false,
+    exercise: false,
+    fasting: false,
+    progressPhotos: false,
+    exportData: false,
+    savedMealsLimit: 0,
+  },
+  pro: {
+    ai: { ocr: Infinity, estimate: Infinity, chat: 100 },
+    micronutrients: true,
+    exercise: true,
+    fasting: true,
+    progressPhotos: true,
+    exportData: true,
+    savedMealsLimit: Infinity,
+  },
+} as const;
+
 export const CHAT_DAILY_LIMIT = 100;
 export const CHAT_CONVERSATION_LIMIT = 5;
 

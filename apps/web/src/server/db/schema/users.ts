@@ -32,6 +32,9 @@ export const users = pgTable("users", {
   timezone: varchar("timezone", { length: 50 }).default("UTC"),
   unitSystem: unitSystemEnum("unit_system").default("metric"),
   referralCode: varchar("referral_code", { length: 12 }).unique(),
+  plan: text("plan").notNull().default("free"),
+  planExpiresAt: timestamp("plan_expires_at", { withTimezone: true }),
+  trialExpiresAt: timestamp("trial_expires_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });

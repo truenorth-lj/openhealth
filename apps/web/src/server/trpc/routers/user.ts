@@ -2,6 +2,7 @@ import { updateProfileSchema, updateGoalsSchema } from "@open-health/shared/sche
 import { protectedProcedure, router } from "../trpc";
 import { users, userProfiles, userGoals } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+import { getAiUsage } from "@/server/services/plan";
 
 export const userRouter = router({
   getProfile: protectedProcedure.query(async ({ ctx }) => {
@@ -48,6 +49,19 @@ export const userRouter = router({
 
       return { success: true };
     }),
+
+  getPlanInfo: protectedProcedure.query(async ({ ctx }) => {
+    const [ocr, estimate, chat] = await Promise.all([
+      getAiUsage(ctx.user.id, "ocr", ctx.userPlan),
+      getAiUsage(ctx.user.id, "estimate", ctx.userPlan),
+      getAiUsage(ctx.user.id, "chat", ctx.userPlan),
+    ]);
+
+    return {
+      plan: ctx.userPlan,
+      aiUsage: { ocr, estimate, chat },
+    };
+  }),
 
   updateGoals: protectedProcedure
     .input(updateGoalsSchema)

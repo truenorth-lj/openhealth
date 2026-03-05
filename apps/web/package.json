@@ -50,6 +50,7 @@
     "recharts": "^3.7.0",
     "remark-gfm": "^4.0.1",
     "sonner": "^2.0.7",
+    "stripe": "^20.4.0",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
     "vercel-minimax-ai-provider": "^0.0.2",

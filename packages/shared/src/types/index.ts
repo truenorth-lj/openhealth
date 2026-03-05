@@ -7,6 +7,8 @@ import type {
   NUTRIENT_CATEGORIES,
   UNIT_SYSTEMS,
   TARGET_MODES,
+  PLANS,
+  AI_FEATURES,
 } from "../constants";
 
 export type MealType = (typeof MEAL_TYPES)[number];
@@ -17,6 +19,8 @@ export type ActivityLevel = (typeof ACTIVITY_LEVELS)[number];
 export type GoalType = (typeof GOAL_TYPES)[number];
 export type UnitSystem = (typeof UNIT_SYSTEMS)[number];
 export type TargetMode = (typeof TARGET_MODES)[number];
+export type Plan = (typeof PLANS)[number];
+export type AiFeature = (typeof AI_FEATURES)[number];
 
 export interface NutritionData {
   calories: number;

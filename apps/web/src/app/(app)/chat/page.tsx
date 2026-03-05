@@ -10,7 +10,9 @@ import {
   Loader2,
   Bot,
   Trash2,
+  Crown,
 } from "lucide-react";
+import { UpgradeDialog } from "@/components/upgrade-dialog";
 
 const quickPrompts = [
   "分析我今天的飲食",
@@ -24,6 +26,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   const utils = trpc.useUtils();
 
@@ -177,8 +180,15 @@ export default function ChatPage() {
           {isDailyLimitReached ? (
             <div className="flex flex-col items-center gap-2">
               <p className="text-sm font-light text-neutral-400">
-                已達每日訊息上限（{dailyUsage?.limit ?? 100} 則）
+                已達每日訊息上限（{dailyUsage?.limit ?? 10} 則）
               </p>
+              <button
+                onClick={() => setShowUpgrade(true)}
+                className="flex items-center gap-1.5 text-sm font-light text-amber-600 hover:text-amber-500 transition-colors"
+              >
+                <Crown className="h-4 w-4" />
+                升級 Pro 取得更多額度
+              </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex items-center gap-2">
@@ -204,6 +214,8 @@ export default function ChatPage() {
           )}
         </div>
       </div>
+
+      <UpgradeDialog open={showUpgrade} onOpenChange={setShowUpgrade} />
     </div>
   );
 }

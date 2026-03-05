@@ -14,6 +14,7 @@ import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
 import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
+import { UpgradeDialog } from "@/components/upgrade-dialog";
 
 const EXAMPLES = [
   "一碗白飯",
@@ -39,6 +40,7 @@ function EstimateContent() {
   const [error, setError] = useState<string | null>(null);
   const [isEstimating, setIsEstimating] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [showUpgrade, setShowUpgrade] = useState(false);
   const utils = trpc.useUtils();
 
   // Form fields
@@ -88,9 +90,14 @@ function EstimateContent() {
         setError(result.error || "估算失敗");
         setStage("input");
       }
-    } catch {
-      setError("估算過程發生錯誤，請重試");
-      setStage("input");
+    } catch (err) {
+      if (err instanceof Error && err.message === "AI_LIMIT_REACHED") {
+        setShowUpgrade(true);
+        setStage("input");
+      } else {
+        setError("估算過程發生錯誤，請重試");
+        setStage("input");
+      }
     } finally {
       setIsEstimating(false);
     }
@@ -463,6 +470,8 @@ function EstimateContent() {
           </form>
         </div>
       )}
+
+      <UpgradeDialog open={showUpgrade} onOpenChange={setShowUpgrade} />
     </div>
   );
 }

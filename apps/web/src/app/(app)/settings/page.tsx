@@ -17,6 +17,7 @@ import {
   Moon,
   Monitor,
   Gift,
+  CreditCard,
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -31,6 +32,7 @@ const menuItems = [
   { href: "/settings/profile", label: "個人資料", icon: User, implemented: true },
   { href: "/settings/goals", label: "目標設定", icon: Target, implemented: true },
   { href: "/settings/referral", label: "推薦碼", icon: Gift, implemented: true },
+  { href: "/settings/subscription", label: "訂閱方案", icon: CreditCard, implemented: true },
   { href: "/water", label: "水分追蹤", icon: Droplets, implemented: true },
   { href: "/exercise", label: "運動記錄", icon: Dumbbell, implemented: false },
   { href: "/fasting", label: "間歇性斷食", icon: Timer, implemented: false },

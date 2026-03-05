@@ -1,9 +1,8 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { chatSessions, chatMessages } from "@/server/db/schema";
-import { eq, and, desc, gte, sql } from "drizzle-orm";
-import { getTaipeiTodayStart } from "@/lib/date";
-import { CHAT_DAILY_LIMIT } from "@open-health/shared/constants";
+import { eq, and, desc } from "drizzle-orm";
+import { getAiUsage } from "@/server/services/plan";
 
 export const chatRouter = router({
   createSession: protectedProcedure
@@ -76,22 +75,6 @@ export const chatRouter = router({
     }),
 
   getDailyUsage: protectedProcedure.query(async ({ ctx }) => {
-    const todayStart = getTaipeiTodayStart();
-
-    const result = await ctx.db
-      .select({ count: sql<number>`count(*)::int` })
-      .from(chatMessages)
-      .where(
-        and(
-          eq(chatMessages.userId, ctx.user.id),
-          eq(chatMessages.role, "user"),
-          gte(chatMessages.createdAt, todayStart)
-        )
-      );
-
-    return {
-      used: result[0]?.count ?? 0,
-      limit: CHAT_DAILY_LIMIT,
-    };
+    return getAiUsage(ctx.user.id, "chat", ctx.userPlan);
   }),
 });
