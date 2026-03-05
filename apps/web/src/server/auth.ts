@@ -7,6 +7,7 @@ import { users, sessions, accounts, verifications } from "./db/schema";
 import { generateReferralCode, REFERRAL_CODE_MAX_RETRIES, isUniqueViolation } from "@/lib/referral-code";
 
 export const auth = betterAuth({
+  trustedOrigins: ["open-health://", "exp://*", "http://localhost:8081"],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {
