@@ -38,7 +38,7 @@ function ProgressContent() {
   const utils = trpc.useUtils();
 
   const { data: dateWeight } = trpc.progress.getDateWeight.useQuery({ date: dateStr });
-  const { data: dateSteps } = trpc.progress.getTodaySteps.useQuery({ date: dateStr });
+  const { data: dateSteps } = trpc.progress.getDateSteps.useQuery({ date: dateStr });
   const { data: goals } = trpc.user.getGoals.useQuery();
   const { data: weightHistory } = trpc.progress.getWeightHistory.useQuery({ limit: 7 });
   const { data: stepsHistory } = trpc.progress.getStepsHistory.useQuery({ limit: 7 });
@@ -187,7 +187,7 @@ function ProgressContent() {
             {currentSteps !== null ? (
               <span>{dayLabel}：{currentSteps.toLocaleString()} 步</span>
             ) : (
-              <span>{dayLabel}尚無記錄</span>
+              <span>{dayLabel} 尚無記錄</span>
             )}
             {recentStepsAvg !== null && (
               <span className="ml-auto">

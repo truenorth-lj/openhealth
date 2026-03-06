@@ -143,7 +143,7 @@ export const progressRouter = router({
       return steps.reverse();
     }),
 
-  getTodaySteps: protectedProcedure
+  getDateSteps: protectedProcedure
     .input(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }))
     .query(async ({ ctx, input }) => {
       const result = await ctx.db

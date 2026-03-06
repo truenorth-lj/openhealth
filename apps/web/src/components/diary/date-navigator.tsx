@@ -24,8 +24,10 @@ export function DateNavigator({ date, onDateChange }: DateNavigatorProps) {
   const today = isToday(date);
 
   const handleDateLabelClick = () => {
-    if (inputRef.current) {
+    if (inputRef.current?.showPicker) {
       inputRef.current.showPicker();
+    } else {
+      inputRef.current?.click();
     }
   };
 
