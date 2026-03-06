@@ -134,6 +134,25 @@ export const DEFAULT_FIBER_G = 28;
 export const DEFAULT_WATER_GOAL_ML = 2500;
 export const MAX_STEPS = 200000;
 
+export const EXERCISE_CATEGORIES = ["cardio", "strength", "flexibility", "sport", "other"] as const;
+export const EXERCISE_INTENSITIES = ["low", "moderate", "high"] as const;
+export const DEFAULT_EXERCISE_CALORIE_GOAL = 300;
+export const DEFAULT_WEIGHT_KG = 70;
+
+export const EXERCISE_CATEGORY_LABELS: Record<string, string> = {
+  cardio: "有氧",
+  strength: "肌力",
+  flexibility: "柔軟度",
+  sport: "運動",
+  other: "其他",
+};
+
+export const EXERCISE_INTENSITY_LABELS: Record<string, string> = {
+  low: "低",
+  moderate: "中",
+  high: "高",
+};
+
 export const APP_NAME = "Open Health";
 export const THEME_COLOR = "#16a34a";
 export const DANGER_COLOR = "#ef4444";

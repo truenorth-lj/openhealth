@@ -11,6 +11,7 @@ interface DailySummaryProps {
   carbsTarget: number;
   fatTarget: number;
   fiberTarget: number;
+  exerciseCalories?: number;
 }
 
 export function DailySummary({
@@ -24,8 +25,9 @@ export function DailySummary({
   carbsTarget,
   fatTarget,
   fiberTarget,
+  exerciseCalories = 0,
 }: DailySummaryProps) {
-  const remaining = calorieTarget - calories;
+  const remaining = calorieTarget - calories + exerciseCalories;
   const caloriePercent = calorieTarget > 0 ? Math.min((calories / calorieTarget) * 100, 100) : 0;
 
   return (
@@ -53,6 +55,14 @@ export function DailySummary({
           <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">目標</p>
         </div>
       </div>
+
+      {/* Exercise calories */}
+      {exerciseCalories > 0 && (
+        <div className="flex items-center justify-end gap-1 text-xs text-orange-500">
+          <span className="tabular-nums">+{Math.round(exerciseCalories)}</span>
+          <span>運動消耗</span>
+        </div>
+      )}
 
       {/* Minimal progress bar */}
       <div className="h-px bg-neutral-200 dark:bg-neutral-800 relative">

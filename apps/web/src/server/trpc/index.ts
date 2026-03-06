@@ -8,6 +8,7 @@ import { waterRouter } from "./routers/water";
 import { chatRouter } from "./routers/chat";
 import { referralRouter } from "./routers/referral";
 import { subscriptionRouter } from "./routers/subscription";
+import { exerciseRouter } from "./routers/exercise";
 import { fastingRouter } from "./routers/fasting";
 
 export const appRouter = router({
@@ -20,6 +21,7 @@ export const appRouter = router({
   chat: chatRouter,
   referral: referralRouter,
   subscription: subscriptionRouter,
+  exercise: exerciseRouter,
   fasting: fastingRouter,
 });
 

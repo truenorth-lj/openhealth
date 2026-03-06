@@ -157,3 +157,18 @@ export const customizeReferralCodeSchema = z.object({
     .max(12)
     .regex(/^[A-Z0-9]+$/i, "推薦碼只能包含英文字母和數字"),
 });
+
+export const logExerciseSchema = z.object({
+  date: dateString,
+  exerciseId: z.string().uuid(),
+  durationMin: z.number().int().min(1).max(1440),
+  caloriesBurned: z.number().min(0).max(99999).optional(),
+  intensity: z.enum(["low", "moderate", "high"]).optional(),
+  note: z.string().max(500).optional(),
+});
+
+export const createCustomExerciseSchema = z.object({
+  name: z.string().min(1).max(200),
+  category: z.enum(["cardio", "strength", "flexibility", "sport", "other"]).optional(),
+  metValue: z.number().min(0).max(30).optional(),
+});
