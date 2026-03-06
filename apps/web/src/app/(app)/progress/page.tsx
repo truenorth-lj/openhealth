@@ -22,6 +22,7 @@ export default function ProgressPage() {
   const [isPendingWeight, startWeightTransition] = useTransition();
   const [isPendingSteps, startStepsTransition] = useTransition();
 
+  const utils = trpc.useUtils();
   const today = format(new Date(), "yyyy-MM-dd");
 
   const { data: latestWeight } = trpc.progress.getLatestWeight.useQuery();
@@ -39,7 +40,7 @@ export default function ProgressPage() {
     startWeightTransition(async () => {
       await logWeight({ date: today, weightKg: parseFloat(weight) });
       setWeight("");
-      router.refresh();
+      await utils.progress.invalidate();
     });
   };
 
@@ -48,7 +49,7 @@ export default function ProgressPage() {
     startStepsTransition(async () => {
       await logSteps({ date: today, steps: parseInt(steps, 10) });
       setSteps("");
-      router.refresh();
+      await utils.progress.invalidate();
     });
   };
 
