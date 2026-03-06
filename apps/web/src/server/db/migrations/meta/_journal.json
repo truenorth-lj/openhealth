@@ -43,6 +43,13 @@
       "when": 1772809243661,
       "tag": "0005_tough_gamma_corps",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772811133253,
+      "tag": "0006_concerned_white_tiger",
+      "breakpoints": true
     }
   ]
 }

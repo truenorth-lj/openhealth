@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
-import { waterLogs, waterGoals } from "@/server/db/schema";
-import { eq, and, sql, desc } from "drizzle-orm";
+import { waterLogs, waterGoals, waterContainers } from "@/server/db/schema";
+import { eq, and, sql, desc, asc } from "drizzle-orm";
 
 const DEFAULT_DAILY_WATER_ML = 2500;
 
@@ -112,6 +112,78 @@ export const waterRouter = router({
           set: { dailyTargetMl: input.dailyTargetMl },
         });
 
+      return { success: true };
+    }),
+
+  // --- Custom Containers ---
+
+  getContainers: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db
+      .select({
+        id: waterContainers.id,
+        name: waterContainers.name,
+        amountMl: waterContainers.amountMl,
+        sortOrder: waterContainers.sortOrder,
+      })
+      .from(waterContainers)
+      .where(eq(waterContainers.userId, ctx.user.id))
+      .orderBy(asc(waterContainers.sortOrder));
+  }),
+
+  upsertContainer: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().uuid().optional(),
+        name: z.string().min(1).max(20),
+        amountMl: z.number().int().min(1).max(5000),
+        sortOrder: z.number().int().min(0),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.id) {
+        // Update existing
+        await ctx.db
+          .update(waterContainers)
+          .set({ name: input.name, amountMl: input.amountMl, sortOrder: input.sortOrder })
+          .where(
+            and(
+              eq(waterContainers.id, input.id),
+              eq(waterContainers.userId, ctx.user.id)
+            )
+          );
+      } else {
+        // Check max 4
+        const existing = await ctx.db
+          .select({ id: waterContainers.id })
+          .from(waterContainers)
+          .where(eq(waterContainers.userId, ctx.user.id));
+
+        if (existing.length >= 4) {
+          throw new Error("最多只能建立 4 個自訂容器");
+        }
+
+        await ctx.db.insert(waterContainers).values({
+          userId: ctx.user.id,
+          name: input.name,
+          amountMl: input.amountMl,
+          sortOrder: input.sortOrder,
+        });
+      }
+
+      return { success: true };
+    }),
+
+  deleteContainer: protectedProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .delete(waterContainers)
+        .where(
+          and(
+            eq(waterContainers.id, input.id),
+            eq(waterContainers.userId, ctx.user.id)
+          )
+        );
       return { success: true };
     }),
 });

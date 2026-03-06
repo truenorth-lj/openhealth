@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Droplets, Plus, Undo2 } from "lucide-react";
+import { toast } from "sonner";
+import { Droplets, Plus, Undo2, Settings2, Pencil, Trash2, X } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { todayString } from "@open-health/shared/utils";
 
-const quickAmounts = [150, 250, 350, 500];
+const DEFAULT_QUICK_AMOUNTS = [150, 250, 350, 500];
 
 function formatTime(date: Date | string) {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -24,9 +25,17 @@ export default function WaterPage() {
 
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [goalInput, setGoalInput] = useState("");
+  const [containerDialogOpen, setContainerDialogOpen] = useState(false);
+  const [editingContainer, setEditingContainer] = useState<{
+    id?: string;
+    name: string;
+    amountMl: string;
+    sortOrder: number;
+  } | null>(null);
 
   const { data: todayData, isLoading } = trpc.water.getToday.useQuery({ date: today });
   const { data: logs } = trpc.water.getLogs.useQuery({ date: today });
+  const { data: containers } = trpc.water.getContainers.useQuery();
 
   const logWater = trpc.water.logWater.useMutation({
     onSuccess: () => {
@@ -50,9 +59,34 @@ export default function WaterPage() {
     },
   });
 
+  const upsertContainer = trpc.water.upsertContainer.useMutation({
+    onSuccess: () => {
+      utils.water.getContainers.invalidate();
+      setEditingContainer(null);
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  const deleteContainer = trpc.water.deleteContainer.useMutation({
+    onSuccess: () => {
+      utils.water.getContainers.invalidate();
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
   const totalMl = todayData?.totalMl ?? 0;
   const goalMl = todayData?.goalMl ?? 2500;
   const percentage = Math.min((totalMl / goalMl) * 100, 100);
+
+  // Use custom containers if any exist, otherwise fall back to defaults
+  const hasCustomContainers = containers && containers.length > 0;
+  const quickButtons = hasCustomContainers
+    ? containers.map((c) => ({ id: c.id, label: c.name, amountMl: c.amountMl }))
+    : DEFAULT_QUICK_AMOUNTS.map((ml) => ({ id: String(ml), label: `${ml} ml`, amountMl: ml }));
 
   const handleOpenGoalDialog = () => {
     setGoalInput(String(goalMl));
@@ -62,6 +96,42 @@ export default function WaterPage() {
   const handleSaveGoal = () => {
     if (!isValidGoal(goalInput)) return;
     setGoal.mutate({ dailyTargetMl: parseInt(goalInput, 10) });
+  };
+
+  const handleOpenContainerDialog = () => {
+    setEditingContainer(null);
+    setContainerDialogOpen(true);
+  };
+
+  const handleEditContainer = (container: { id: string; name: string; amountMl: number; sortOrder: number }) => {
+    setEditingContainer({
+      id: container.id,
+      name: container.name,
+      amountMl: String(container.amountMl),
+      sortOrder: container.sortOrder,
+    });
+  };
+
+  const handleAddNew = () => {
+    const maxSort = containers?.reduce((max, c) => Math.max(max, c.sortOrder), -1) ?? -1;
+    setEditingContainer({
+      name: "",
+      amountMl: "",
+      sortOrder: maxSort + 1,
+    });
+  };
+
+  const handleSaveContainer = () => {
+    if (!editingContainer) return;
+    const amountMl = parseInt(editingContainer.amountMl, 10);
+    if (!editingContainer.name.trim() || isNaN(amountMl) || amountMl < 1 || amountMl > 5000) return;
+
+    upsertContainer.mutate({
+      id: editingContainer.id,
+      name: editingContainer.name.trim(),
+      amountMl,
+      sortOrder: editingContainer.sortOrder,
+    });
   };
 
   if (isLoading) {
@@ -125,19 +195,35 @@ export default function WaterPage() {
 
       {/* Quick Add */}
       <div className="space-y-3">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          快速新增
-        </p>
-        <div className="grid grid-cols-4 gap-2">
-          {quickAmounts.map((ml) => (
+        <div className="flex items-center justify-between">
+          <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+            快速新增
+          </p>
+          <button
+            onClick={handleOpenContainerDialog}
+            className="text-neutral-400 hover:text-foreground transition-colors"
+            title="管理容器"
+          >
+            <Settings2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+          </button>
+        </div>
+        <div className={`grid gap-2 ${quickButtons.length <= 2 ? "grid-cols-2" : quickButtons.length === 3 ? "grid-cols-3" : "grid-cols-4"}`}>
+          {quickButtons.map((btn) => (
             <button
-              key={ml}
-              onClick={() => logWater.mutate({ date: today, amountMl: ml })}
+              key={btn.id}
+              onClick={() => logWater.mutate({ date: today, amountMl: btn.amountMl })}
               disabled={logWater.isPending}
               className="flex flex-col items-center gap-1 py-3 border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-sm font-light transition-all duration-300 hover:border-foreground/20 disabled:opacity-50"
             >
               <Plus className="h-3 w-3 text-neutral-400" strokeWidth={1.5} />
-              <span>{ml} ml</span>
+              {hasCustomContainers ? (
+                <>
+                  <span className="text-xs truncate max-w-full px-1">{btn.label}</span>
+                  <span className="text-[10px] text-neutral-400">{btn.amountMl} ml</span>
+                </>
+              ) : (
+                <span>{btn.label}</span>
+              )}
             </button>
           ))}
         </div>
@@ -213,6 +299,107 @@ export default function WaterPage() {
           >
             {setGoal.isPending ? "儲存中..." : "儲存"}
           </button>
+        </div>
+      </Dialog>
+
+      {/* Container Management Dialog */}
+      <Dialog open={containerDialogOpen} onOpenChange={(open) => { setContainerDialogOpen(open); if (!open) setEditingContainer(null); }}>
+        <DialogHeader>
+          <DialogTitle>管理自訂容器</DialogTitle>
+        </DialogHeader>
+        <div className="mt-4 space-y-4">
+          {/* Existing containers list */}
+          {containers && containers.length > 0 && !editingContainer && (
+            <div className="space-y-2">
+              {containers.map((c) => (
+                <div
+                  key={c.id}
+                  className="flex items-center justify-between py-2 px-3 border border-black/[0.06] dark:border-white/[0.06] rounded-lg"
+                >
+                  <div>
+                    <span className="text-sm font-light">{c.name}</span>
+                    <span className="text-xs text-neutral-400 ml-2">{c.amountMl} ml</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleEditContainer(c)}
+                      className="text-neutral-400 hover:text-foreground transition-colors"
+                    >
+                      <Pencil className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    </button>
+                    <button
+                      onClick={() => deleteContainer.mutate({ id: c.id })}
+                      disabled={deleteContainer.isPending}
+                      className="text-neutral-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add / Edit form */}
+          {editingContainer ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">
+                  {editingContainer.id ? "編輯容器" : "新增容器"}
+                </p>
+                <button onClick={() => setEditingContainer(null)} className="text-neutral-400 hover:text-foreground">
+                  <X className="h-4 w-4" strokeWidth={1.5} />
+                </button>
+              </div>
+              <div>
+                <label className="text-sm font-light text-neutral-500">名稱</label>
+                <input
+                  type="text"
+                  value={editingContainer.name}
+                  onChange={(e) => setEditingContainer({ ...editingContainer, name: e.target.value })}
+                  placeholder="例：馬克杯"
+                  maxLength={20}
+                  className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-light text-neutral-500">容量 (ml)</label>
+                <input
+                  type="number"
+                  value={editingContainer.amountMl}
+                  onChange={(e) => setEditingContainer({ ...editingContainer, amountMl: e.target.value })}
+                  min={1}
+                  max={5000}
+                  placeholder="例：300"
+                  className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <button
+                onClick={handleSaveContainer}
+                disabled={upsertContainer.isPending || !editingContainer.name.trim() || !editingContainer.amountMl}
+                className="w-full rounded-lg bg-blue-500 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+              >
+                {upsertContainer.isPending ? "儲存中..." : "儲存"}
+              </button>
+            </div>
+          ) : (
+            /* Add button */
+            (containers?.length ?? 0) < 4 && (
+              <button
+                onClick={handleAddNew}
+                className="w-full flex items-center justify-center gap-2 py-2.5 border border-dashed border-black/10 dark:border-white/10 rounded-lg text-sm font-light text-neutral-400 hover:text-foreground hover:border-foreground/20 transition-all"
+              >
+                <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
+                新增容器
+              </button>
+            )
+          )}
+
+          {!editingContainer && (
+            <p className="text-xs text-neutral-400 text-center">
+              最多可建立 4 個自訂容器，建立後會取代預設按鈕
+            </p>
+          )}
         </div>
       </Dialog>
     </div>
