@@ -3,9 +3,11 @@ import path from "path";
 
 export default defineConfig({
   test: {
-    name: "web",
+    name: "web-integration",
     root: path.resolve(__dirname),
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.itest.ts"],
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
   },
   resolve: {
     alias: {

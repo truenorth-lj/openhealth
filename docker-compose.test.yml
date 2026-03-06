@@ -1,0 +1,13 @@
+services:
+  test-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: openhealth_test
+    ports:
+      # Host port 5433 to avoid conflicts with local PostgreSQL.
+      # CI uses the GitHub Actions service container on port 5432 instead.
+      - "5433:5432"
+    tmpfs:
+      - /var/lib/postgresql/data

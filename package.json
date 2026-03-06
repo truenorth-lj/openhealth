@@ -10,7 +10,8 @@
     "start": "cd apps/web && npm start",
     "lint": "turbo lint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config apps/web/vitest.integration.config.ts"
   },
   "devDependencies": {
     "turbo": "^2.5.0",
