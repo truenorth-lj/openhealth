@@ -1,7 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { format, addDays, subDays, isToday } from "date-fns";
+import { format, addDays, subDays, isToday, parseISO } from "date-fns";
 import { zhTW } from "date-fns/locale";
 
 interface DateNavigatorProps {
@@ -10,6 +11,8 @@ interface DateNavigatorProps {
 }
 
 export function DateNavigator({ date, onDateChange }: DateNavigatorProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const goBack = () => onDateChange(subDays(date, 1));
   const goForward = () => onDateChange(addDays(date, 1));
   const goToday = () => onDateChange(new Date());
@@ -20,6 +23,18 @@ export function DateNavigator({ date, onDateChange }: DateNavigatorProps) {
 
   const today = isToday(date);
 
+  const handleDateLabelClick = () => {
+    if (inputRef.current) {
+      inputRef.current.showPicker();
+    }
+  };
+
+  const handleNativeDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value) {
+      onDateChange(parseISO(e.target.value));
+    }
+  };
+
   return (
     <div className="flex items-center justify-between px-4 py-4">
       <button
@@ -29,13 +44,21 @@ export function DateNavigator({ date, onDateChange }: DateNavigatorProps) {
         <ChevronLeft className="h-5 w-5" strokeWidth={1.5} />
       </button>
 
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center relative">
         <button
-          onClick={goToday}
+          onClick={handleDateLabelClick}
           className="text-base font-light tracking-wide transition-all duration-300 hover:opacity-60"
         >
           {label}
         </button>
+        <input
+          ref={inputRef}
+          type="date"
+          value={format(date, "yyyy-MM-dd")}
+          onChange={handleNativeDateChange}
+          className="absolute inset-0 opacity-0 pointer-events-none"
+          tabIndex={-1}
+        />
         {!today && (
           <button
             onClick={goToday}

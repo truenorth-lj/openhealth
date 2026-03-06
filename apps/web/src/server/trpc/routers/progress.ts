@@ -24,6 +24,23 @@ export const progressRouter = router({
       return weights.reverse();
     }),
 
+  getDateWeight: protectedProcedure
+    .input(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }))
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .select()
+        .from(weightLogs)
+        .where(
+          and(
+            eq(weightLogs.userId, ctx.user.id),
+            eq(weightLogs.date, input.date)
+          )
+        )
+        .limit(1);
+
+      return result[0] ?? null;
+    }),
+
   getLatestWeight: protectedProcedure.query(async ({ ctx }) => {
     const latest = await ctx.db
       .select()
