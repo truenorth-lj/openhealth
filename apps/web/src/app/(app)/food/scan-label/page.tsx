@@ -15,6 +15,7 @@ import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
 import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
 import { UpgradeDialog } from "@/components/upgrade-dialog";
+import posthog from "posthog-js";
 
 function compressImage(dataUrl: string, maxWidth = 1600, quality = 0.8): Promise<string> {
   return new Promise((resolve) => {
@@ -128,13 +129,16 @@ function ScanLabelContent() {
           setSaturatedFat(String(data.saturatedFatG ?? ""));
           setTransFat(String(data.transFatG ?? ""));
           setCholesterol(String(data.cholesterolMg ?? ""));
+          posthog.capture("ai_label_scanned", { success: true });
           setStage("edit");
         } else {
+          posthog.capture("ai_label_scanned", { success: false });
           setError(result.error || "辨識失敗");
           setStage("capture");
         }
       } catch (err) {
         if (err instanceof Error && err.message === "AI_LIMIT_REACHED") {
+          posthog.capture("ai_limit_reached", { feature: "label_scan" });
           setShowUpgrade(true);
           setStage("capture");
         } else {
@@ -193,6 +197,7 @@ function ScanLabelContent() {
             servingQty: 1,
           });
           await utils.diary.getDay.invalidate();
+          posthog.capture("food_logged", { source: "label_scan", meal_type: meal, calories: parseFloat(calories) });
           toast.success("已新增到日記");
           router.push(`/diary?date=${date}`);
           router.refresh();

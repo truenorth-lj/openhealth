@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Suspense } from "react";
 import { UpgradeDialog } from "@/components/upgrade-dialog";
+import posthog from "posthog-js";
 
 const MAX_USER_MESSAGES_PER_CONVERSATION = 5;
 
@@ -74,6 +75,7 @@ function ChatDetail() {
     id: sessionId,
     transport,
     onFinish: () => {
+      posthog.capture("chat_message_sent");
       utils.chat.getDailyUsage.invalidate();
       utils.chat.listSessions.invalidate();
     },

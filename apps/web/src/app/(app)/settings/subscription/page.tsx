@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Crown, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import posthog from "posthog-js";
 
 const PRO_FEATURES = [
   "無限 AI 辨識營養標籤",
@@ -31,12 +32,14 @@ export default function SubscriptionPage() {
 
   const createCheckout = trpc.subscription.createCheckout.useMutation({
     onSuccess: (data) => {
+      posthog.capture("subscription_checkout_started", { interval });
       window.location.href = data.url;
     },
   });
 
   const createPortal = trpc.subscription.createPortalSession.useMutation({
     onSuccess: (data) => {
+      posthog.capture("subscription_portal_opened");
       window.location.href = data.url;
     },
   });

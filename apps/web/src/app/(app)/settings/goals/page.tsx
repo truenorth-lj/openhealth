@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc-client";
 import { updateGoals } from "@/server/actions/goals";
+import posthog from "posthog-js";
 
 export default function GoalsPage() {
   const { data: goals } = trpc.user.getGoals.useQuery();
@@ -44,6 +45,7 @@ export default function GoalsPage() {
           fatG: fatG ? Number(fatG) : null,
           fiberG: fiberG ? Number(fiberG) : null,
         });
+        posthog.capture("goals_updated", { calorie_target: calorieTarget ? Number(calorieTarget) : null });
         toast.success("目標已儲存");
         router.refresh();
       } catch {

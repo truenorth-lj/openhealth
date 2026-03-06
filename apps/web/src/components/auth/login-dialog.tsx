@@ -6,6 +6,7 @@ import { Dialog, DialogHeader, DialogTitle, DialogDescription } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signIn, signUp } from "@/lib/auth-client";
+import posthog from "posthog-js";
 
 interface LoginDialogProps {
   open: boolean;
@@ -47,6 +48,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
           setLoading(false);
           return;
         }
+        posthog.capture("user_logged_in", { method: "email" });
       } else {
         if (password.length < 8) {
           setError("密碼至少需要 8 個字元");
@@ -59,6 +61,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
           setLoading(false);
           return;
         }
+        posthog.capture("user_signed_up", { method: "email" });
 
         // Apply referral code after successful registration
         if (referralCode.trim()) {
@@ -129,6 +132,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
             setError("");
             try {
               await signIn.social({ provider: "google" });
+              posthog.capture("user_logged_in", { method: "google" });
             } catch {
               setError("Google 登入失敗，請稍後再試");
               setGoogleLoading(false);
@@ -166,6 +170,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
             setError("");
             try {
               await signIn.social({ provider: "apple" });
+              posthog.capture("user_logged_in", { method: "apple" });
             } catch {
               setError("Apple 登入失敗，請稍後再試");
               setAppleLoading(false);

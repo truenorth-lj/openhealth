@@ -11,6 +11,7 @@ import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import Link from "next/link";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 
 const PAGE_SIZE = 20;
 
@@ -106,6 +107,8 @@ function FoodSearchContent() {
           servingQty: 1,
         });
         await utils.diary.getDay.invalidate();
+        const food = displayFoods.find((f) => f.id === foodId);
+        posthog.capture("food_logged", { source: "search", meal_type: meal, calories: food ? Math.round(Number(food.calories)) : undefined });
         toast.success("已新增到日記");
         router.push(`/diary?date=${date}`);
         router.refresh();

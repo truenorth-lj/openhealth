@@ -6,6 +6,7 @@ import { Droplets, Plus, Undo2, Settings2, Pencil, Trash2, X } from "lucide-reac
 import { trpc } from "@/lib/trpc-client";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { todayString } from "@open-health/shared/utils";
+import posthog from "posthog-js";
 
 const DEFAULT_QUICK_AMOUNTS = [150, 250, 350, 500];
 
@@ -38,9 +39,10 @@ export default function WaterPage() {
   const { data: containers } = trpc.water.getContainers.useQuery();
 
   const logWater = trpc.water.logWater.useMutation({
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       utils.water.getToday.invalidate({ date: today });
       utils.water.getLogs.invalidate({ date: today });
+      posthog.capture("water_logged", { amount_ml: variables.amountMl });
     },
   });
 
@@ -52,9 +54,10 @@ export default function WaterPage() {
   });
 
   const setGoal = trpc.water.setGoal.useMutation({
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       utils.water.getToday.invalidate({ date: today });
       utils.water.getGoal.invalidate();
+      posthog.capture("water_goal_set", { goal_ml: variables.dailyTargetMl });
       setGoalDialogOpen(false);
     },
   });

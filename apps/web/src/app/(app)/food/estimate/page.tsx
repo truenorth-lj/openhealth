@@ -15,6 +15,7 @@ import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
 import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
 import { UpgradeDialog } from "@/components/upgrade-dialog";
+import posthog from "posthog-js";
 
 const EXAMPLES = [
   "一碗白飯",
@@ -85,13 +86,16 @@ function EstimateContent() {
         setSaturatedFat(String(data.saturatedFatG ?? ""));
         setTransFat(String(data.transFatG ?? ""));
         setCholesterol(String(data.cholesterolMg ?? ""));
+        posthog.capture("ai_food_estimated", { success: true });
         setStage("edit");
       } else {
+        posthog.capture("ai_food_estimated", { success: false });
         setError(result.error || "估算失敗");
         setStage("input");
       }
     } catch (err) {
       if (err instanceof Error && err.message === "AI_LIMIT_REACHED") {
+        posthog.capture("ai_limit_reached", { feature: "estimate" });
         setShowUpgrade(true);
         setStage("input");
       } else {
@@ -175,6 +179,7 @@ function EstimateContent() {
             servingQty: 1,
           });
           await utils.diary.getDay.invalidate();
+          posthog.capture("food_logged", { source: "estimate", meal_type: meal, calories: parseFloat(calories) });
           toast.success("已新增到日記");
           router.push(`/diary?date=${date}`);
           router.refresh();

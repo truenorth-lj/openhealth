@@ -13,6 +13,7 @@ import {
   Crown,
 } from "lucide-react";
 import { UpgradeDialog } from "@/components/upgrade-dialog";
+import posthog from "posthog-js";
 
 const quickPrompts = [
   "分析我今天的飲食",
@@ -75,6 +76,7 @@ export default function ChatPage() {
       setSendError("無法建立對話，請重試");
       return;
     }
+    posthog.capture("chat_session_created");
     router.push(`/chat/${newSession.id}?init=${encodeURIComponent(text)}`);
   };
 

@@ -11,6 +11,7 @@ import { lookupOpenFoodFacts, createFoodFromBarcode } from "@/server/actions/bar
 import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 
 type Stage = "scanning" | "searching" | "edit" | "not_found";
 
@@ -127,6 +128,7 @@ function ScanContent() {
         }
 
         // 3. Not found
+        posthog.capture("barcode_not_found", { barcode: code });
         setStage("not_found");
       } catch {
         setError("查詢過程發生錯誤，請重試");
@@ -240,6 +242,7 @@ function ScanContent() {
             servingQty: 1,
           });
           await utils.diary.getDay.invalidate();
+          posthog.capture("food_logged", { source: "barcode", meal_type: meal, barcode, is_existing: !!existingFoodId, calories: parseFloat(calories) || 0 });
           toast.success("已新增到日記");
           router.push(`/diary?date=${date}`);
           router.refresh();

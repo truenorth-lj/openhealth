@@ -6,6 +6,7 @@ import { removeEntry } from "@/server/actions/diary";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
+import posthog from "posthog-js";
 
 type MealType = "breakfast" | "lunch" | "dinner" | "snack";
 
@@ -88,7 +89,7 @@ export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenti
       ) : (
         <div>
           {entries.map((entry) => (
-            <EntryRow key={entry.id} entry={entry} />
+            <EntryRow key={entry.id} entry={entry} mealType={mealType} />
           ))}
         </div>
       )}
@@ -96,7 +97,7 @@ export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenti
   );
 }
 
-function EntryRow({ entry }: { entry: DiaryEntry }) {
+function EntryRow({ entry, mealType }: { entry: DiaryEntry; mealType: MealType }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const utils = trpc.useUtils();
@@ -105,6 +106,7 @@ function EntryRow({ entry }: { entry: DiaryEntry }) {
     startTransition(async () => {
       await removeEntry(entry.id);
       await utils.diary.getDay.invalidate();
+      posthog.capture("food_deleted", { meal_type: mealType, calories: Number(entry.calories || 0) });
       router.refresh();
     });
   };

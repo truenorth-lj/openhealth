@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { signOut, useSession } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc-client";
 import { updateProfile } from "@/server/actions/profile";
+import posthog from "posthog-js";
 
 export default function ProfilePage() {
   const { data: session } = useSession();
@@ -51,12 +52,15 @@ export default function ProfilePage() {
               | "extremely_active")
           : null,
       });
+      posthog.capture("profile_updated");
       setSaved(true);
       router.refresh();
     });
   };
 
   const handleSignOut = async () => {
+    posthog.capture("user_logged_out");
+    posthog.reset();
     await signOut();
     router.push("/diary");
   };

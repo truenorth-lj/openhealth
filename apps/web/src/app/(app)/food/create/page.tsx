@@ -12,6 +12,7 @@ import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
 import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
+import posthog from "posthog-js";
 
 function CreateFoodContent() {
   const searchParams = useSearchParams();
@@ -56,6 +57,7 @@ function CreateFoodContent() {
             servingQty: 1,
           });
           await utils.diary.getDay.invalidate();
+          posthog.capture("food_logged", { source: "create", meal_type: meal, calories: parseFloat(calories) });
           toast.success("已新增到日記");
           router.push(`/diary?date=${date}`);
           router.refresh();

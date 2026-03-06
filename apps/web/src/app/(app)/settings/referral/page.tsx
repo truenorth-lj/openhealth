@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Copy, Check, Pencil, Users, Gift, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 
 export default function ReferralPage() {
   const router = useRouter();
@@ -38,6 +39,7 @@ export default function ReferralPage() {
   const handleCopy = async () => {
     if (!codeData?.code) return;
     await navigator.clipboard.writeText(codeData.code);
+    posthog.capture("referral_code_shared");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -71,6 +73,7 @@ export default function ReferralPage() {
     try {
       const result = await applyReferralCode({ code: referralInput.trim() });
       if (result.success) {
+        posthog.capture("referral_code_applied");
         setApplySuccess(true);
         setReferralInput("");
         refetchStats();
