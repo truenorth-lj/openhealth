@@ -35,7 +35,7 @@ const menuItems = [
   { href: "/settings/subscription", label: "訂閱方案", icon: CreditCard, implemented: true },
   { href: "/water", label: "水分追蹤", icon: Droplets, implemented: true },
   { href: "/exercise", label: "運動記錄", icon: Dumbbell, implemented: false },
-  { href: "/fasting", label: "間歇性斷食", icon: Timer, implemented: false },
+  { href: "/fasting", label: "間歇性斷食", icon: Timer, implemented: true },
   { href: "/achievements", label: "成就", icon: Trophy, implemented: false },
   { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: false },
 ];

@@ -8,6 +8,7 @@ import { waterRouter } from "./routers/water";
 import { chatRouter } from "./routers/chat";
 import { referralRouter } from "./routers/referral";
 import { subscriptionRouter } from "./routers/subscription";
+import { fastingRouter } from "./routers/fasting";
 
 export const appRouter = router({
   food: foodRouter,
@@ -19,6 +20,7 @@ export const appRouter = router({
   chat: chatRouter,
   referral: referralRouter,
   subscription: subscriptionRouter,
+  fasting: fastingRouter,
 });
 
 export type AppRouter = typeof appRouter;
