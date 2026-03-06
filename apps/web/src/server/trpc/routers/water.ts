@@ -77,6 +77,27 @@ export const waterRouter = router({
     return { dailyTargetMl: goal?.dailyTargetMl ?? DEFAULT_DAILY_WATER_ML };
   }),
 
+  getLogs: protectedProcedure
+    .input(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }))
+    .query(async ({ ctx, input }) => {
+      const logs = await ctx.db
+        .select({
+          id: waterLogs.id,
+          amountMl: waterLogs.amountMl,
+          loggedAt: waterLogs.loggedAt,
+        })
+        .from(waterLogs)
+        .where(
+          and(
+            eq(waterLogs.userId, ctx.user.id),
+            eq(waterLogs.date, input.date)
+          )
+        )
+        .orderBy(desc(waterLogs.loggedAt));
+
+      return logs;
+    }),
+
   setGoal: protectedProcedure
     .input(z.object({ dailyTargetMl: z.number().int().min(500).max(10000) }))
     .mutation(async ({ ctx, input }) => {
