@@ -5,7 +5,7 @@ import {
   users,
 } from "@/server/db/schema";
 import { eq, sql } from "drizzle-orm";
-import { REFERRAL } from "@open-health/shared/constants";
+import { REFERRAL, REWARD_TYPES, REWARD_STATUSES } from "@open-health/shared/constants";
 
 /**
  * Grant free trial days to both referee and referrer.
@@ -72,16 +72,16 @@ export async function grantReferralTrialDays(
       {
         referralId,
         userId: refereeId,
-        type: "free_days",
-        status: "confirmed",
+        type: REWARD_TYPES.FREE_DAYS,
+        status: REWARD_STATUSES.CONFIRMED,
         freeDays: REFERRAL.REFEREE_TRIAL_DAYS,
         confirmedAt: now,
       },
       {
         referralId,
         userId: referrerId,
-        type: "free_days",
-        status: "confirmed",
+        type: REWARD_TYPES.FREE_DAYS,
+        status: REWARD_STATUSES.CONFIRMED,
         freeDays: REFERRAL.REFERRER_FREE_DAYS,
         confirmedAt: now,
       },
@@ -125,8 +125,8 @@ export async function calculateAndRecordRevenueShare(
     .values({
       referralId: referral.id,
       userId: referral.referrerId,
-      type: "revenue_share",
-      status: "pending",
+      type: REWARD_TYPES.REVENUE_SHARE,
+      status: REWARD_STATUSES.PENDING,
       amountNtd: revenueShareNtd,
       subscriptionMonth,
       stripeInvoiceId,
@@ -143,7 +143,7 @@ export async function calculateAndRecordRevenueShare(
 export async function clawBackReward(referralRewardId: string) {
   await db
     .update(referralRewards)
-    .set({ status: "clawed_back" })
+    .set({ status: REWARD_STATUSES.CLAWED_BACK })
     .where(eq(referralRewards.id, referralRewardId));
 }
 
@@ -164,8 +164,8 @@ export async function clawBackPendingRewardsForReferee(
 
   await db
     .update(referralRewards)
-    .set({ status: "clawed_back" })
+    .set({ status: REWARD_STATUSES.CLAWED_BACK })
     .where(
-      sql`${referralRewards.referralId} = ${referral.id} AND ${referralRewards.type} = 'revenue_share' AND ${referralRewards.status} = 'pending'`
+      sql`${referralRewards.referralId} = ${referral.id} AND ${referralRewards.type} = ${REWARD_TYPES.REVENUE_SHARE} AND ${referralRewards.status} = ${REWARD_STATUSES.PENDING}`
     );
 }

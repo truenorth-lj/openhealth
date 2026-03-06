@@ -152,3 +152,19 @@ export const PAYOUT_METHODS = [
 
 export type PayoutMethod = (typeof PAYOUT_METHODS)[number];
 export type RefereeStatus = "paid" | "trial" | "registered";
+
+export const REWARD_TYPES = {
+  FREE_DAYS: "free_days",
+  REVENUE_SHARE: "revenue_share",
+} as const;
+
+export type RewardType = (typeof REWARD_TYPES)[keyof typeof REWARD_TYPES];
+
+export const REWARD_STATUSES = {
+  PENDING: "pending",
+  CONFIRMED: "confirmed",
+  PAID: "paid",
+  CLAWED_BACK: "clawed_back",
+} as const;
+
+export type RewardStatus = (typeof REWARD_STATUSES)[keyof typeof REWARD_STATUSES];

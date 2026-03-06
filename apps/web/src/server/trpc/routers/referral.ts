@@ -11,7 +11,7 @@ import {
   applyReferralCodeSchema,
   customizeReferralCodeSchema,
 } from "@open-health/shared/schemas";
-import { REFERRAL, PAYOUT_METHODS } from "@open-health/shared/constants";
+import { REFERRAL, PAYOUT_METHODS, REWARD_TYPES, REWARD_STATUSES } from "@open-health/shared/constants";
 import type { RefereeStatus } from "@open-health/shared/constants";
 import { isUniqueViolation } from "@/lib/referral-code";
 import { grantAchievement } from "@/server/services/referral";
@@ -122,7 +122,7 @@ export const referralRouter = router({
       .where(
         and(
           eq(referralRewards.userId, ctx.user.id),
-          eq(referralRewards.type, "free_days")
+          eq(referralRewards.type, REWARD_TYPES.FREE_DAYS)
         )
       );
 
@@ -164,15 +164,15 @@ export const referralRouter = router({
 
     const [totals] = await ctx.db
       .select({
-        totalPending: sql<number>`coalesce(sum(case when ${referralRewards.status} = 'pending' then ${referralRewards.amountNtd} else 0 end), 0)`,
-        totalConfirmed: sql<number>`coalesce(sum(case when ${referralRewards.status} = 'confirmed' then ${referralRewards.amountNtd} else 0 end), 0)`,
-        totalPaid: sql<number>`coalesce(sum(case when ${referralRewards.status} = 'paid' then ${referralRewards.amountNtd} else 0 end), 0)`,
+        totalPending: sql<number>`coalesce(sum(case when ${referralRewards.status} = ${REWARD_STATUSES.PENDING} then ${referralRewards.amountNtd} else 0 end), 0)`,
+        totalConfirmed: sql<number>`coalesce(sum(case when ${referralRewards.status} = ${REWARD_STATUSES.CONFIRMED} then ${referralRewards.amountNtd} else 0 end), 0)`,
+        totalPaid: sql<number>`coalesce(sum(case when ${referralRewards.status} = ${REWARD_STATUSES.PAID} then ${referralRewards.amountNtd} else 0 end), 0)`,
       })
       .from(referralRewards)
       .where(
         and(
           eq(referralRewards.userId, userId),
-          eq(referralRewards.type, "revenue_share")
+          eq(referralRewards.type, REWARD_TYPES.REVENUE_SHARE)
         )
       );
 
@@ -183,8 +183,8 @@ export const referralRouter = router({
       .from(referralRewards)
       .where(
         sql`${referralRewards.userId} = ${userId}
-          AND ${referralRewards.type} = 'revenue_share'
-          AND ${referralRewards.status} = 'confirmed'
+          AND ${referralRewards.type} = ${REWARD_TYPES.REVENUE_SHARE}
+          AND ${referralRewards.status} = ${REWARD_STATUSES.CONFIRMED}
           AND ${referralRewards.confirmedAt} <= ${now}`
       );
 
@@ -258,8 +258,8 @@ export const referralRouter = router({
           .from(referralRewards)
           .where(
             sql`${referralRewards.userId} = ${userId}
-              AND ${referralRewards.type} = 'revenue_share'
-              AND ${referralRewards.status} = 'confirmed'
+              AND ${referralRewards.type} = ${REWARD_TYPES.REVENUE_SHARE}
+              AND ${referralRewards.status} = ${REWARD_STATUSES.CONFIRMED}
               AND ${referralRewards.confirmedAt} <= ${now}`
           );
 
@@ -281,7 +281,7 @@ export const referralRouter = router({
             userId,
             amountNtd: totalAmount,
             method: input.method,
-            status: "pending",
+            status: REWARD_STATUSES.PENDING,
           })
           .returning();
 
@@ -289,7 +289,7 @@ export const referralRouter = router({
         if (rewardIds.length > 0) {
           await tx
             .update(referralRewards)
-            .set({ status: "paid" })
+            .set({ status: REWARD_STATUSES.PAID })
             .where(
               sql`${referralRewards.id} IN (${sql.join(
                 rewardIds.map((id) => sql`${id}`),

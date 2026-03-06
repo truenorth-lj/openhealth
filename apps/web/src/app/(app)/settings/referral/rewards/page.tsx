@@ -6,7 +6,7 @@ import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, DollarSign, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
-import { REFERRAL } from "@open-health/shared/constants";
+import { REFERRAL, REWARD_TYPES, REWARD_STATUSES } from "@open-health/shared/constants";
 
 function formatNtd(cents: number) {
   return `NT$${Math.floor(cents / 100).toLocaleString()}`;
@@ -14,13 +14,13 @@ function formatNtd(cents: number) {
 
 function statusLabel(status: string) {
   switch (status) {
-    case "pending":
+    case REWARD_STATUSES.PENDING:
       return "待確認";
-    case "confirmed":
+    case REWARD_STATUSES.CONFIRMED:
       return "已確認";
-    case "paid":
+    case REWARD_STATUSES.PAID:
       return "已提領";
-    case "clawed_back":
+    case REWARD_STATUSES.CLAWED_BACK:
       return "已扣回";
     default:
       return status;
@@ -29,13 +29,13 @@ function statusLabel(status: string) {
 
 function statusColor(status: string) {
   switch (status) {
-    case "pending":
+    case REWARD_STATUSES.PENDING:
       return "text-amber-500";
-    case "confirmed":
+    case REWARD_STATUSES.CONFIRMED:
       return "text-green-600";
-    case "paid":
+    case REWARD_STATUSES.PAID:
       return "text-blue-500";
-    case "clawed_back":
+    case REWARD_STATUSES.CLAWED_BACK:
       return "text-red-500";
     default:
       return "text-neutral-400";
@@ -195,7 +195,7 @@ export default function RewardsPage() {
                   >
                     <div className="space-y-0.5">
                       <p className="text-sm font-light">
-                        {reward.type === "free_days"
+                        {reward.type === REWARD_TYPES.FREE_DAYS
                           ? `免費 ${reward.freeDays} 天`
                           : `分潤 ${formatNtd(reward.amountNtd ?? 0)}`}
                       </p>
