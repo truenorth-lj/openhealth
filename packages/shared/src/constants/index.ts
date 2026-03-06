@@ -131,6 +131,9 @@ export const DEFAULT_CARBS_G = 250;
 export const DEFAULT_FAT_G = 67;
 export const DEFAULT_FIBER_G = 28;
 
+export const DEFAULT_WATER_GOAL_ML = 2500;
+export const MAX_STEPS = 200000;
+
 export const APP_NAME = "Open Health";
 export const THEME_COLOR = "#16a34a";
 export const DANGER_COLOR = "#ef4444";

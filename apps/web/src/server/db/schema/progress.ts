@@ -69,6 +69,23 @@ export const progressPhotos = pgTable(
   (table) => [index("progress_photos_user_date_idx").on(table.userId, table.date)]
 );
 
+export const stepLogs = pgTable(
+  "step_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    date: date("date").notNull(),
+    steps: decimal("steps", { precision: 7, scale: 0 }).notNull(),
+    note: text("note"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    uniqueIndex("step_logs_user_date_idx").on(table.userId, table.date),
+  ]
+);
+
 export const tdeeCalculations = pgTable(
   "tdee_calculations",
   {

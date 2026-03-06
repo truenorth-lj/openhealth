@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_STEPS } from "../constants";
 
 const dateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "日期格式需為 YYYY-MM-DD");
 
@@ -91,6 +92,12 @@ export const updateGoalsSchema = z.object({
 export const logWeightSchema = z.object({
   date: dateString,
   weightKg: z.number().positive().max(500),
+  note: z.string().max(500).optional(),
+});
+
+export const logStepsSchema = z.object({
+  date: dateString,
+  steps: z.number().int().min(0).max(MAX_STEPS),
   note: z.string().max(500).optional(),
 });
 

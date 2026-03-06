@@ -1,8 +1,10 @@
 import { z } from "zod";
-import { logWeightSchema, logMeasurementsSchema } from "@open-health/shared/schemas";
+import { logWeightSchema, logMeasurementsSchema, logStepsSchema } from "@open-health/shared/schemas";
+import { DEFAULT_WATER_GOAL_ML } from "@open-health/shared/constants";
 import { protectedProcedure, router } from "../trpc";
-import { weightLogs, bodyMeasurements, tdeeCalculations } from "@/server/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { weightLogs, bodyMeasurements, tdeeCalculations, stepLogs } from "@/server/db/schema";
+import { waterLogs, waterGoals } from "@/server/db/schema";
+import { eq, desc, and, gte, sql } from "drizzle-orm";
 
 export const progressRouter = router({
   getWeightHistory: protectedProcedure
@@ -104,5 +106,125 @@ export const progressRouter = router({
         });
 
       return { success: true };
+    }),
+
+  // Steps
+  getStepsHistory: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(365).default(90),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const steps = await ctx.db
+        .select()
+        .from(stepLogs)
+        .where(eq(stepLogs.userId, ctx.user.id))
+        .orderBy(desc(stepLogs.date))
+        .limit(input.limit);
+
+      return steps.reverse();
+    }),
+
+  getTodaySteps: protectedProcedure
+    .input(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }))
+    .query(async ({ ctx, input }) => {
+      const result = await ctx.db
+        .select()
+        .from(stepLogs)
+        .where(
+          and(
+            eq(stepLogs.userId, ctx.user.id),
+            eq(stepLogs.date, input.date)
+          )
+        )
+        .limit(1);
+
+      return result[0] ?? null;
+    }),
+
+  logSteps: protectedProcedure
+    .input(logStepsSchema)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .insert(stepLogs)
+        .values({
+          userId: ctx.user.id,
+          date: input.date,
+          steps: String(input.steps),
+          note: input.note,
+        })
+        .onConflictDoUpdate({
+          target: [stepLogs.userId, stepLogs.date],
+          set: {
+            steps: String(input.steps),
+            note: input.note,
+          },
+        });
+
+      return { success: true };
+    }),
+
+  // Analytics — combined trends for water, weight, steps
+  getAnalytics: protectedProcedure
+    .input(
+      z.object({
+        days: z.number().min(7).max(365).default(30),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const since = new Date();
+      since.setDate(since.getDate() - input.days);
+      const sinceStr = since.toISOString().split("T")[0];
+
+      const [weights, steps, waterDaily] = await Promise.all([
+        ctx.db
+          .select({ date: weightLogs.date, value: weightLogs.weightKg })
+          .from(weightLogs)
+          .where(
+            and(
+              eq(weightLogs.userId, ctx.user.id),
+              gte(weightLogs.date, sinceStr)
+            )
+          )
+          .orderBy(weightLogs.date),
+
+        ctx.db
+          .select({ date: stepLogs.date, value: stepLogs.steps })
+          .from(stepLogs)
+          .where(
+            and(
+              eq(stepLogs.userId, ctx.user.id),
+              gte(stepLogs.date, sinceStr)
+            )
+          )
+          .orderBy(stepLogs.date),
+
+        ctx.db
+          .select({
+            date: waterLogs.date,
+            totalMl: sql<number>`sum(${waterLogs.amountMl})::int`,
+          })
+          .from(waterLogs)
+          .where(
+            and(
+              eq(waterLogs.userId, ctx.user.id),
+              gte(waterLogs.date, sinceStr)
+            )
+          )
+          .groupBy(waterLogs.date)
+          .orderBy(waterLogs.date),
+      ]);
+
+      const waterGoal = await ctx.db.query.waterGoals.findFirst({
+        where: eq(waterGoals.userId, ctx.user.id),
+      });
+
+      return {
+        weight: weights.map((w) => ({ date: w.date, value: Number(w.value) })),
+        steps: steps.map((s) => ({ date: s.date, value: Number(s.value) })),
+        water: waterDaily.map((w) => ({ date: w.date, value: w.totalMl })),
+        waterGoalMl: waterGoal?.dailyTargetMl ?? DEFAULT_WATER_GOAL_ML,
+      };
     }),
 });

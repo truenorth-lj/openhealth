@@ -1,10 +1,10 @@
 "use server";
 
 import { z } from "zod";
-import { logWeightSchema, logMeasurementsSchema } from "@open-health/shared/schemas";
+import { logWeightSchema, logMeasurementsSchema, logStepsSchema } from "@open-health/shared/schemas";
 import { getSession } from "@/server/lib/get-session";
 import { db } from "@/server/db";
-import { weightLogs, bodyMeasurements } from "@/server/db/schema";
+import { weightLogs, bodyMeasurements, stepLogs } from "@/server/db/schema";
 import { revalidatePath } from "next/cache";
 
 export async function logWeight(input: z.infer<typeof logWeightSchema>) {
@@ -61,6 +61,30 @@ export async function logMeasurements(
         thighCm: validated.thighCm ? String(validated.thighCm) : null,
         neckCm: validated.neckCm ? String(validated.neckCm) : null,
         bodyFatPct: validated.bodyFatPct ? String(validated.bodyFatPct) : null,
+        note: validated.note,
+      },
+    });
+
+  revalidatePath("/progress");
+  return { success: true };
+}
+
+export async function logSteps(input: z.infer<typeof logStepsSchema>) {
+  const user = await getSession();
+  const validated = logStepsSchema.parse(input);
+
+  await db
+    .insert(stepLogs)
+    .values({
+      userId: user.id,
+      date: validated.date,
+      steps: String(validated.steps),
+      note: validated.note,
+    })
+    .onConflictDoUpdate({
+      target: [stepLogs.userId, stepLogs.date],
+      set: {
+        steps: String(validated.steps),
         note: validated.note,
       },
     });

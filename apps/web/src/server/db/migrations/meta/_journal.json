@@ -36,6 +36,13 @@
       "when": 1772734220802,
       "tag": "0004_left_rick_jones",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772809243661,
+      "tag": "0005_tough_gamma_corps",
+      "breakpoints": true
     }
   ]
 }
