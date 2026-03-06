@@ -61,6 +61,7 @@ ios/
 android/
 expo-env.d.ts
 **/dist/
+*.ipa
 
 # secrets (Apple keys, credentials, etc.)
 secrets/
