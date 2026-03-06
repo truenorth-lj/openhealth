@@ -14,13 +14,13 @@ import {
   customizeReferralCodeSchema,
 } from "./index";
 
-const uuid = "550e8400-e29b-41d4-a716-446655440000";
+const testUuid = "550e8400-e29b-41d4-a716-446655440000";
 
 describe("logFoodSchema", () => {
   const valid = {
     date: "2024-03-15",
     mealType: "breakfast" as const,
-    foodId: uuid,
+    foodId: testUuid,
     servingQty: 1.5,
   };
 
@@ -29,7 +29,7 @@ describe("logFoodSchema", () => {
   });
 
   it("accepts with optional servingId", () => {
-    expect(logFoodSchema.parse({ ...valid, servingId: uuid })).toBeDefined();
+    expect(logFoodSchema.parse({ ...valid, servingId: testUuid })).toBeDefined();
   });
 
   it("rejects invalid date format", () => {
@@ -60,7 +60,7 @@ describe("createFoodSchema", () => {
   };
 
   it("accepts minimal valid input", () => {
-    expect(createFoodSchema.parse(valid)).toBeDefined();
+    expect(createFoodSchema.parse(valid)).toEqual(valid);
   });
 
   it("accepts with optional fields", () => {
@@ -107,13 +107,13 @@ describe("updateFoodSchema", () => {
   });
 
   it("accepts partial updates", () => {
-    expect(updateFoodSchema.parse({ id: uuid, name: "新名稱" })).toBeDefined();
-    expect(updateFoodSchema.parse({ id: uuid, calories: 200 })).toBeDefined();
+    expect(updateFoodSchema.parse({ id: testUuid, name: "新名稱" })).toBeDefined();
+    expect(updateFoodSchema.parse({ id: testUuid, calories: 200 })).toBeDefined();
   });
 
   it("allows nullish brand", () => {
-    expect(updateFoodSchema.parse({ id: uuid, brand: null })).toBeDefined();
-    expect(updateFoodSchema.parse({ id: uuid, brand: undefined })).toBeDefined();
+    expect(updateFoodSchema.parse({ id: testUuid, brand: null })).toBeDefined();
+    expect(updateFoodSchema.parse({ id: testUuid, brand: undefined })).toBeDefined();
   });
 });
 
@@ -127,7 +127,7 @@ describe("updateProfileSchema", () => {
   };
 
   it("accepts valid input", () => {
-    expect(updateProfileSchema.parse(valid)).toBeDefined();
+    expect(updateProfileSchema.parse(valid)).toEqual(valid);
   });
 
   it("accepts all sex options", () => {
@@ -254,7 +254,7 @@ describe("createFoodFromBarcodeSchema", () => {
   };
 
   it("accepts valid input", () => {
-    expect(createFoodFromBarcodeSchema.parse(valid)).toBeDefined();
+    expect(createFoodFromBarcodeSchema.parse(valid)).toEqual(valid);
   });
 
   it("rejects empty barcode", () => {
@@ -276,11 +276,11 @@ describe("copyMealSchema", () => {
 
 describe("removeEntrySchema", () => {
   it("accepts valid UUID", () => {
-    expect(removeEntrySchema.parse({ entryId: uuid })).toBeDefined();
+    expect(removeEntrySchema.parse({ entryId: testUuid })).toBeDefined();
   });
 
   it("rejects non-UUID", () => {
-    expect(() => removeEntrySchema.parse({ entryId: "not-a-uuid" })).toThrow();
+    expect(() => removeEntrySchema.parse({ entryId: "not-a-testUuid" })).toThrow();
   });
 });
 
