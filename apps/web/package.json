@@ -17,7 +17,9 @@
     "enrich:seven": "tsx scripts/enrich-seven-nutrients.ts",
     "enrich": "tsx scripts/enrich-nutrients.ts",
     "enrich:fiber": "tsx scripts/enrich-fiber.ts",
-    "huberman": "tsx scripts/huberman-digest.ts"
+    "huberman": "tsx scripts/huberman-digest.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.107",
@@ -60,6 +62,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",
+    "@playwright/test": "^1.58.2",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

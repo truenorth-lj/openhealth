@@ -111,6 +111,7 @@ function DiaryContent() {
         href={`/food/search?date=${dateStr}&meal=snack`}
         className="fixed bottom-20 right-4 z-50"
         onClick={handleFabClick}
+        data-testid="add-entry-fab"
       >
         <button className="flex h-12 w-12 items-center justify-center rounded-full border border-black/[0.06] dark:border-white/[0.06] bg-background text-foreground shadow-sm transition-all duration-300 hover:shadow-md hover:border-foreground/20">
           <Plus className="h-5 w-5" strokeWidth={1.5} />

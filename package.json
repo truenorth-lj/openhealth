@@ -11,7 +11,8 @@
     "lint": "turbo lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:integration": "vitest run --config apps/web/vitest.integration.config.ts"
+    "test:integration": "vitest run --config apps/web/vitest.integration.config.ts",
+    "test:e2e": "cd apps/web && pnpm test:e2e"
   },
   "devDependencies": {
     "turbo": "^2.5.0",
