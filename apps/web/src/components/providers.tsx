@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { ThemeProvider } from "next-themes";
 import { trpc } from "@/lib/trpc-client";
+import { PostHogProvider } from "@/components/posthog-provider";
 
 // Workaround: React 18/19 types mismatch in monorepo causes children prop errors
 const Theme = ThemeProvider as React.FC<{
@@ -38,12 +39,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <Theme attribute="class" defaultTheme="system" enableSystem={true}>
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          {children}
-        </QueryClientProvider>
-      </trpc.Provider>
-    </Theme>
+    <PostHogProvider>
+      <Theme attribute="class" defaultTheme="system" enableSystem={true}>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </trpc.Provider>
+      </Theme>
+    </PostHogProvider>
   );
 }
