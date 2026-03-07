@@ -122,6 +122,10 @@ Environment variables (optional):
 - `BASE_URL` — target URL (default: `https://openhealth.blog`)
 - `DEMO_EMAIL` / `DEMO_PASSWORD` — demo account credentials
 
+## Docs
+
+- [SEO Todo](docs/seo-todo.md) — SEO 待办事项与传播策略
+
 ## License
 
 MIT

@@ -8,10 +8,35 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Open Health",
+  title: "Open Health — Open Source Health Tracking & AI Nutrition Assistant",
   description:
-    "Track your food, nutrition, and fitness goals with precision. A modern, open alternative to MyFitnessPal.",
+    "Open source alternative to MyFitnessPal. Track meals, scan nutrition labels with AI, and get personalized dietary insights. Self-hostable and privacy-first.",
   manifest: "/manifest.json",
+  metadataBase: new URL("https://openhealth.blog"),
+  openGraph: {
+    title: "Open Health — Open Source Health Tracking & AI Nutrition Assistant",
+    description:
+      "Open source alternative to MyFitnessPal. Track meals, scan nutrition labels with AI, and get personalized dietary insights.",
+    url: "https://openhealth.blog",
+    siteName: "Open Health",
+    locale: "zh_TW",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Open Health — Open Source Health Tracking",
+    description:
+      "Open source alternative to MyFitnessPal. Track meals, scan nutrition labels with AI.",
+  },
+  keywords: [
+    "open source health tracker",
+    "calorie tracker",
+    "nutrition tracking",
+    "MyFitnessPal alternative",
+    "AI nutrition",
+    "food diary",
+    "self-hosted health",
+  ],
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
