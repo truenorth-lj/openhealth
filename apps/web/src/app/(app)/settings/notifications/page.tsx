@@ -1,0 +1,262 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { trpc } from "@/lib/trpc-client";
+import { toast } from "sonner";
+import { ArrowLeft, Droplets, BellRing } from "lucide-react";
+import Link from "next/link";
+import { requestNotificationPermission } from "@/hooks/use-water-reminder";
+
+const INTERVAL_OPTIONS = [
+  { value: 30, label: "30 分鐘" },
+  { value: 60, label: "1 小時" },
+  { value: 90, label: "1.5 小時" },
+  { value: 120, label: "2 小時" },
+  { value: 180, label: "3 小時" },
+  { value: 240, label: "4 小時" },
+  { value: 360, label: "6 小時" },
+];
+
+export default function NotificationSettingsPage() {
+  const { data: settings, isLoading } =
+    trpc.notification.getWaterReminderSettings.useQuery();
+
+  const updateSettings =
+    trpc.notification.updateWaterReminderSettings.useMutation({
+      onSuccess: () => {
+        toast.success("已儲存通知設定");
+        utils.notification.getWaterReminderSettings.invalidate();
+      },
+      onError: (err) => toast.error(err.message),
+    });
+
+  const utils = trpc.useUtils();
+
+  const [enabled, setEnabled] = useState(false);
+  const [startTime, setStartTime] = useState("08:00");
+  const [endTime, setEndTime] = useState("22:00");
+  const [intervalMinutes, setIntervalMinutes] = useState(120);
+  const [stopWhenGoalReached, setStopWhenGoalReached] = useState(true);
+  const [permissionState, setPermissionState] = useState<string>("default");
+
+  useEffect(() => {
+    if (settings) {
+      setEnabled(settings.enabled);
+      setStartTime(settings.startTime);
+      setEndTime(settings.endTime);
+      setIntervalMinutes(settings.intervalMinutes);
+      setStopWhenGoalReached(settings.stopWhenGoalReached);
+    }
+  }, [settings]);
+
+  useEffect(() => {
+    if ("Notification" in window) {
+      setPermissionState(Notification.permission);
+    }
+  }, []);
+
+  const handleToggleEnabled = async (nextEnabled: boolean) => {
+    if (nextEnabled && permissionState !== "granted") {
+      const permission = await requestNotificationPermission();
+      setPermissionState(permission);
+      if (permission !== "granted") {
+        toast.error("請允許瀏覽器通知權限才能啟用提醒");
+        return;
+      }
+    }
+    setEnabled(nextEnabled);
+  };
+
+  const handleSave = () => {
+    updateSettings.mutate({
+      enabled,
+      startTime,
+      endTime,
+      intervalMinutes,
+      stopWhenGoalReached,
+    });
+  };
+
+  const hasChanges =
+    settings &&
+    (enabled !== settings.enabled ||
+      startTime !== settings.startTime ||
+      endTime !== settings.endTime ||
+      intervalMinutes !== settings.intervalMinutes ||
+      stopWhenGoalReached !== settings.stopWhenGoalReached);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 py-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <Link
+          href="/settings"
+          className="text-neutral-400 hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
+        </Link>
+        <h1 className="text-xl font-light tracking-wide">通知設定</h1>
+      </div>
+
+      {/* Browser permission warning */}
+      {permissionState === "denied" && (
+        <div className="rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3">
+          <p className="text-sm text-red-600 dark:text-red-400">
+            瀏覽器通知權限已被封鎖。請在瀏覽器設定中允許本站通知。
+          </p>
+        </div>
+      )}
+
+      {/* Water Reminder Section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Droplets
+            className="h-4 w-4 text-blue-500"
+            strokeWidth={1.5}
+          />
+          <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+            喝水提醒
+          </p>
+        </div>
+
+        {/* Enable toggle */}
+        <div className="flex items-center justify-between py-3 border-b border-black/[0.06] dark:border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <BellRing
+              className="h-4 w-4 text-neutral-400 dark:text-neutral-600"
+              strokeWidth={1.5}
+            />
+            <span className="text-sm font-light">啟用喝水提醒</span>
+          </div>
+          <button
+            onClick={() => handleToggleEnabled(!enabled)}
+            className={`relative h-6 w-11 rounded-full transition-colors duration-300 ${
+              enabled
+                ? "bg-blue-500"
+                : "bg-neutral-200 dark:bg-neutral-700"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300 ${
+                enabled ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+
+        {/* Settings (shown when enabled) */}
+        {enabled && (
+          <div className="space-y-4 animate-in fade-in duration-300">
+            {/* Time range */}
+            <div className="space-y-3">
+              <p className="text-xs font-light text-neutral-400">
+                提醒時段
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <label className="text-[10px] text-neutral-400 dark:text-neutral-600">
+                    開始
+                  </label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <span className="mt-5 text-neutral-300 dark:text-neutral-700">
+                  —
+                </span>
+                <div className="flex-1">
+                  <label className="text-[10px] text-neutral-400 dark:text-neutral-600">
+                    結束
+                  </label>
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Interval */}
+            <div className="space-y-3">
+              <p className="text-xs font-light text-neutral-400">
+                提醒間隔
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {INTERVAL_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setIntervalMinutes(option.value)}
+                    className={`rounded-lg border px-3 py-2 text-sm font-light transition-all duration-300 ${
+                      intervalMinutes === option.value
+                        ? "border-blue-500 text-blue-500"
+                        : "border-black/[0.06] dark:border-white/[0.06] text-neutral-400 dark:text-neutral-600 hover:text-foreground hover:border-foreground/10"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Stop when goal reached */}
+            <div className="flex items-center justify-between py-3 border-b border-black/[0.06] dark:border-white/[0.06]">
+              <div>
+                <span className="text-sm font-light">達標後停止提醒</span>
+                <p className="text-xs text-neutral-400 dark:text-neutral-600 mt-0.5">
+                  當日飲水達到目標後不再提醒
+                </p>
+              </div>
+              <button
+                onClick={() =>
+                  setStopWhenGoalReached(!stopWhenGoalReached)
+                }
+                className={`relative h-6 w-11 rounded-full transition-colors duration-300 ${
+                  stopWhenGoalReached
+                    ? "bg-blue-500"
+                    : "bg-neutral-200 dark:bg-neutral-700"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300 ${
+                    stopWhenGoalReached
+                      ? "translate-x-5"
+                      : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Info text */}
+            <p className="text-xs text-neutral-400 dark:text-neutral-600">
+              提醒會在你設定的時段內，每隔指定時間發送瀏覽器通知。請確保瀏覽器分頁保持開啟。
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Save button */}
+      {hasChanges && (
+        <button
+          onClick={handleSave}
+          disabled={updateSettings.isPending}
+          className="w-full rounded-lg bg-blue-500 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
+        >
+          {updateSettings.isPending ? "儲存中..." : "儲存設定"}
+        </button>
+      )}
+    </div>
+  );
+}

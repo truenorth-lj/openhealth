@@ -37,7 +37,7 @@ const menuItems = [
   { href: "/exercise", label: "運動記錄", icon: Dumbbell, implemented: true },
   { href: "/fasting", label: "間歇性斷食", icon: Timer, implemented: true },
   { href: "/achievements", label: "成就", icon: Trophy, implemented: false },
-  { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: false },
+  { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: true },
 ];
 
 const themeOptions = [
