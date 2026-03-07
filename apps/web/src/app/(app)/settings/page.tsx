@@ -5,39 +5,17 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
   User,
-  Target,
-  Droplets,
-  Timer,
-  Trophy,
-  Dumbbell,
   LogOut,
   ChevronRight,
-  Bell,
   Sun,
   Moon,
   Monitor,
-  Gift,
-  CreditCard,
 } from "lucide-react";
 import Link from "next/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { href: "/settings/profile", label: "個人資料", icon: User, implemented: true },
-  { href: "/settings/goals", label: "目標設定", icon: Target, implemented: true },
-  { href: "/settings/referral", label: "推薦碼", icon: Gift, implemented: true },
-  { href: "/settings/subscription", label: "訂閱方案", icon: CreditCard, implemented: true },
-  { href: "/water", label: "水分追蹤", icon: Droplets, implemented: true },
-  { href: "/exercise", label: "運動記錄", icon: Dumbbell, implemented: true },
-  { href: "/fasting", label: "間歇性斷食", icon: Timer, implemented: true },
-  { href: "/achievements", label: "成就", icon: Trophy, implemented: false },
-  { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: true },
+  { href: "/settings/profile", label: "個人資料", icon: User },
 ];
 
 const themeOptions = [
@@ -53,12 +31,12 @@ export default function SettingsPage() {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push("/diary");
+    router.push("/hub");
   };
 
   return (
     <div className="px-4 py-6 space-y-6">
-      <h1 className="text-xl font-light tracking-wide">更多</h1>
+      <h1 className="text-xl font-light tracking-wide">設定</h1>
 
       {session?.user && (
         <div className="flex items-center gap-3 py-2">
@@ -101,48 +79,22 @@ export default function SettingsPage() {
       {/* Menu items */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          設定
+          帳號
         </p>
         <div className="border-t border-black/[0.06] dark:border-white/[0.06]">
-          <TooltipProvider>
-            {menuItems.map((item) => {
-              const itemClass = cn(
-                "flex items-center justify-between px-1 py-3.5 border-b border-black/[0.06] dark:border-white/[0.06] transition-all duration-300",
-                item.implemented
-                  ? "hover:pl-2 cursor-pointer"
-                  : "opacity-40 cursor-not-allowed"
-              );
-
-              const content = (
-                <>
-                  <div className="flex items-center gap-3">
-                    <item.icon className="h-4 w-4 text-neutral-400 dark:text-neutral-600" strokeWidth={1.5} />
-                    <span className="text-sm font-light">{item.label}</span>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
-                </>
-              );
-
-              if (item.implemented) {
-                return (
-                  <Link key={item.href} href={item.href} className={itemClass}>
-                    {content}
-                  </Link>
-                );
-              }
-
-              return (
-                <Tooltip key={item.href}>
-                  <TooltipTrigger asChild>
-                    <div className={itemClass}>{content}</div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>敬請期待</p>
-                  </TooltipContent>
-                </Tooltip>
-              );
-            })}
-          </TooltipProvider>
+          {menuItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center justify-between px-1 py-3.5 border-b border-black/[0.06] dark:border-white/[0.06] transition-all duration-300 hover:pl-2 cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <item.icon className="h-4 w-4 text-neutral-400 dark:text-neutral-600" strokeWidth={1.5} />
+                <span className="text-sm font-light">{item.label}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
+            </Link>
+          ))}
         </div>
       </div>
 

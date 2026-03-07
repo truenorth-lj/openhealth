@@ -65,7 +65,7 @@ function Hero() {
       </p>
 
       <Link
-        href="/diary"
+        href="/hub"
         className="mt-12 px-8 py-3 border border-black/20 dark:border-white/20 text-sm text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500 tracking-wider animate-fade-in-up"
         style={{ animationDelay: "1.1s" }}
       >
@@ -367,7 +367,7 @@ function Footer() {
               產品
             </p>
             <Link
-              href="/diary"
+              href="/hub"
               className="block text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300 text-xs"
             >
               開始使用

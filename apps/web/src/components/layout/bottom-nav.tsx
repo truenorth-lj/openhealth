@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, TrendingUp, MessageSquare, Menu } from "lucide-react";
+import { CalendarDays, LayoutGrid, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/diary", label: "日記", icon: BookOpen },
-  { href: "/progress", label: "進度", icon: TrendingUp },
-  { href: "/chat", label: "AI", icon: MessageSquare },
-  { href: "/settings", label: "更多", icon: Menu },
+  { href: "/today", label: "今天", icon: CalendarDays },
+  { href: "/hub", label: "總覽", icon: LayoutGrid },
+  { href: "/settings", label: "設定", icon: Settings2 },
 ];
 
 export function BottomNav() {

@@ -62,7 +62,7 @@ export default function ProfilePage() {
     posthog.capture("user_logged_out");
     posthog.reset();
     await signOut();
-    router.push("/diary");
+    router.push("/hub");
   };
 
   return (

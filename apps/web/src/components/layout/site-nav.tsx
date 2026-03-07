@@ -50,7 +50,7 @@ export function SiteNav() {
         <div className="flex items-center gap-4">
           <ThemeToggle />
           <Link
-            href="/diary"
+            href="/hub"
             className="text-sm text-black dark:text-white hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors duration-300"
           >
             開始使用 →

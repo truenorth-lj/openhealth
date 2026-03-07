@@ -14,7 +14,7 @@ export function Header() {
     <>
       <header className="sticky top-0 z-40 border-b border-black/[0.06] dark:border-white/[0.06] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto flex h-14 max-w-lg items-center justify-between px-4">
-          <Link href="/diary" className="text-base font-light tracking-[0.3em] text-foreground transition-all duration-300 hover:opacity-60">
+          <Link href="/hub" className="text-base font-light tracking-[0.3em] text-foreground transition-all duration-300 hover:opacity-60">
             OH
           </Link>
 
