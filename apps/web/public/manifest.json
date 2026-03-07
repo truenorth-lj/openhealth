@@ -2,7 +2,7 @@
   "name": "Open Health",
   "short_name": "Open Health",
   "description": "Track your nutrition with precision",
-  "start_url": "/hub",
+  "start_url": "/today",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",

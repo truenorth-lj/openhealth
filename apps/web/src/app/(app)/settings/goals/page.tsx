@@ -15,11 +15,19 @@ export default function GoalsPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
+  const { data: waterGoal } = trpc.water.getGoal.useQuery();
+  const setWaterGoal = trpc.water.setGoal.useMutation({
+    onSuccess: () => {
+      toast.success("水分目標已儲存");
+    },
+  });
+
   const [calorieTarget, setCalorieTarget] = useState("");
   const [proteinG, setProteinG] = useState("");
   const [carbsG, setCarbsG] = useState("");
   const [fatG, setFatG] = useState("");
   const [fiberG, setFiberG] = useState("");
+  const [waterTargetMl, setWaterTargetMl] = useState("");
 
   const [initialized, setInitialized] = useState(false);
   useEffect(() => {
@@ -35,6 +43,12 @@ export default function GoalsPage() {
     }
   }, [goals, initialized]);
 
+  useEffect(() => {
+    if (waterGoal?.dailyTargetMl) {
+      setWaterTargetMl(String(waterGoal.dailyTargetMl));
+    }
+  }, [waterGoal]);
+
   const handleSave = () => {
     startTransition(async () => {
       try {
@@ -45,6 +59,12 @@ export default function GoalsPage() {
           fatG: fatG ? Number(fatG) : null,
           fiberG: fiberG ? Number(fiberG) : null,
         });
+        if (waterTargetMl) {
+          const wml = parseInt(waterTargetMl, 10);
+          if (!isNaN(wml) && wml >= 500 && wml <= 10000) {
+            setWaterGoal.mutate({ dailyTargetMl: wml });
+          }
+        }
         posthog.capture("goals_updated", { calorie_target: calorieTarget ? Number(calorieTarget) : null });
         toast.success("目標已儲存");
         router.refresh();
@@ -144,6 +164,29 @@ export default function GoalsPage() {
               kcal (目標: {calorieTarget} kcal)
             </p>
           )}
+        </div>
+      </div>
+
+      {/* Water target */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          每日飲水目標
+        </p>
+        <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-light text-sky-500">飲水量 (ml)</label>
+            <Input
+              type="number"
+              placeholder="2000"
+              value={waterTargetMl}
+              onChange={(e) => setWaterTargetMl(e.target.value)}
+              min={500}
+              max={10000}
+              step={100}
+              className="border-black/[0.06] dark:border-white/[0.06] font-light"
+            />
+            <p className="text-xs font-light text-neutral-400">建議範圍：500 - 10000 ml</p>
+          </div>
         </div>
       </div>
 

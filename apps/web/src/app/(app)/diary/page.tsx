@@ -8,7 +8,6 @@ import Link from "next/link";
 import { DateNavigator } from "@/components/diary/date-navigator";
 import { DailySummary } from "@/components/diary/daily-summary";
 import { MealSection } from "@/components/diary/meal-section";
-import { ExerciseSection } from "@/components/diary/exercise-section";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { trpc } from "@/lib/trpc-client";
@@ -55,11 +54,6 @@ function DiaryContent() {
     undefined,
     { enabled: isAuthenticated }
   );
-  const { data: exerciseData } = trpc.exercise.getDay.useQuery(
-    { date: dateStr },
-    { enabled: isAuthenticated }
-  );
-
   const calorieTarget = goals?.calorieTarget ? Number(goals.calorieTarget) : DEFAULT_CALORIE_TARGET;
   const proteinTarget = goals?.proteinG ? Number(goals.proteinG) : DEFAULT_PROTEIN_G;
   const carbsTarget = goals?.carbsG ? Number(goals.carbsG) : DEFAULT_CARBS_G;
@@ -96,7 +90,6 @@ function DiaryContent() {
         carbsTarget={carbsTarget}
         fatTarget={fatTarget}
         fiberTarget={fiberTarget}
-        exerciseCalories={exerciseData?.totalCalories ?? 0}
         date={dateStr}
         trackedNutrientIds={Array.isArray(goals?.trackedNutrientIds) ? goals.trackedNutrientIds : []}
       />
@@ -113,11 +106,6 @@ function DiaryContent() {
           />
         ))}
 
-        {/* Exercise Section */}
-        <ExerciseSection
-          logs={exerciseData?.logs ?? []}
-          totalCalories={exerciseData?.totalCalories ?? 0}
-        />
       </div>
 
       {/* Floating Action Button */}

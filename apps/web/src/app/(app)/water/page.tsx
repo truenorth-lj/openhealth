@@ -1,14 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState, useCallback } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { format, parseISO, isValid } from "date-fns";
 import { toast } from "sonner";
 import { Droplets, Plus, Undo2, Settings2, Pencil, Trash2, X } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { todayString } from "@open-health/shared/utils";
+import { DateNavigator } from "@/components/diary/date-navigator";
 import posthog from "posthog-js";
 
 const DEFAULT_QUICK_AMOUNTS = [150, 250, 350, 500];
+
+function parseDateParam(param: string | null): Date {
+  if (param) {
+    const parsed = parseISO(param);
+    if (isValid(parsed)) return parsed;
+  }
+  return new Date();
+}
 
 function formatTime(date: Date | string) {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -20,8 +30,22 @@ function isValidGoal(value: string) {
   return !isNaN(n) && n >= 500 && n <= 10000;
 }
 
-export default function WaterPage() {
-  const today = todayString();
+function WaterContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const date = parseDateParam(searchParams.get("date"));
+  const dateStr = format(date, "yyyy-MM-dd");
+
+  const handleDateChange = useCallback(
+    (newDate: Date) => {
+      const newDateStr = format(newDate, "yyyy-MM-dd");
+      const todayStr = format(new Date(), "yyyy-MM-dd");
+      const url = newDateStr === todayStr ? "/water" : `/water?date=${newDateStr}`;
+      router.replace(url);
+    },
+    [router]
+  );
+
   const utils = trpc.useUtils();
 
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
@@ -34,28 +58,28 @@ export default function WaterPage() {
     sortOrder: number;
   } | null>(null);
 
-  const { data: todayData, isLoading } = trpc.water.getToday.useQuery({ date: today });
-  const { data: logs } = trpc.water.getLogs.useQuery({ date: today });
+  const { data: todayData, isLoading } = trpc.water.getToday.useQuery({ date: dateStr });
+  const { data: logs } = trpc.water.getLogs.useQuery({ date: dateStr });
   const { data: containers } = trpc.water.getContainers.useQuery();
 
   const logWater = trpc.water.logWater.useMutation({
     onSuccess: (_data, variables) => {
-      utils.water.getToday.invalidate({ date: today });
-      utils.water.getLogs.invalidate({ date: today });
+      utils.water.getToday.invalidate({ date: dateStr });
+      utils.water.getLogs.invalidate({ date: dateStr });
       posthog.capture("water_logged", { amount_ml: variables.amountMl });
     },
   });
 
   const undoLastLog = trpc.water.undoLastLog.useMutation({
     onSuccess: () => {
-      utils.water.getToday.invalidate({ date: today });
-      utils.water.getLogs.invalidate({ date: today });
+      utils.water.getToday.invalidate({ date: dateStr });
+      utils.water.getLogs.invalidate({ date: dateStr });
     },
   });
 
   const setGoal = trpc.water.setGoal.useMutation({
     onSuccess: (_data, variables) => {
-      utils.water.getToday.invalidate({ date: today });
+      utils.water.getToday.invalidate({ date: dateStr });
       utils.water.getGoal.invalidate();
       posthog.capture("water_goal_set", { goal_ml: variables.dailyTargetMl });
       setGoalDialogOpen(false);
@@ -146,11 +170,11 @@ export default function WaterPage() {
   }
 
   return (
-    <div className="px-4 py-6 space-y-6">
-      <h1 className="text-xl font-light tracking-wide">水分追蹤</h1>
+    <div className="pb-6 space-y-6">
+      <DateNavigator date={date} onDateChange={handleDateChange} />
 
       {/* Circular progress */}
-      <div className="flex flex-col items-center py-6">
+      <div className="flex flex-col items-center py-2">
         <div className="relative flex h-40 w-40 items-center justify-center">
           <svg className="h-40 w-40 -rotate-90" viewBox="0 0 160 160">
             <circle
@@ -194,10 +218,10 @@ export default function WaterPage() {
       </div>
 
       {/* Divider */}
-      <div className="border-t border-black/[0.06] dark:border-white/[0.06]" />
+      <div className="mx-4 border-t border-black/[0.06] dark:border-white/[0.06]" />
 
       {/* Quick Add */}
-      <div className="space-y-3">
+      <div className="px-4 space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
             快速新增
@@ -214,7 +238,7 @@ export default function WaterPage() {
           {quickButtons.map((btn) => (
             <button
               key={btn.id}
-              onClick={() => logWater.mutate({ date: today, amountMl: btn.amountMl })}
+              onClick={() => logWater.mutate({ date: dateStr, amountMl: btn.amountMl })}
               disabled={logWater.isPending}
               className="flex flex-col items-center gap-1 py-3 border border-black/[0.06] dark:border-white/[0.06] rounded-lg text-sm font-light transition-all duration-300 hover:border-foreground/20 disabled:opacity-50"
             >
@@ -232,7 +256,7 @@ export default function WaterPage() {
         </div>
         <div className="flex justify-center">
           <button
-            onClick={() => undoLastLog.mutate({ date: today })}
+            onClick={() => undoLastLog.mutate({ date: dateStr })}
             disabled={undoLastLog.isPending || totalMl === 0}
             className="flex items-center gap-1 px-3 py-1.5 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-foreground disabled:opacity-30"
           >
@@ -243,12 +267,12 @@ export default function WaterPage() {
       </div>
 
       {/* Divider */}
-      <div className="border-t border-black/[0.06] dark:border-white/[0.06]" />
+      <div className="mx-4 border-t border-black/[0.06] dark:border-white/[0.06]" />
 
       {/* Log History */}
-      <div className="space-y-3">
+      <div className="px-4 space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          今日紀錄
+          當日紀錄
         </p>
         {logs && logs.length > 0 ? (
           <div className="space-y-0">
@@ -266,7 +290,7 @@ export default function WaterPage() {
           </div>
         ) : (
           <p className="text-sm font-light text-neutral-300 dark:text-neutral-700">
-            今天還沒有喝水紀錄
+            這天還沒有喝水紀錄
           </p>
         )}
       </div>
@@ -406,5 +430,21 @@ export default function WaterPage() {
         </div>
       </Dialog>
     </div>
+  );
+}
+
+export default function WaterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-4 py-6 space-y-4">
+          <div className="h-10 animate-pulse rounded bg-neutral-100 dark:bg-neutral-900" />
+          <div className="h-40 animate-pulse rounded bg-neutral-100 dark:bg-neutral-900" />
+          <div className="h-24 animate-pulse rounded bg-neutral-100 dark:bg-neutral-900" />
+        </div>
+      }
+    >
+      <WaterContent />
+    </Suspense>
   );
 }

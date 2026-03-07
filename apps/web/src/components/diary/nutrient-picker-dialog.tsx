@@ -63,14 +63,14 @@ export function NutrientPickerDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <div className="max-h-[70vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="font-light tracking-wide">
-            選擇追蹤營養素
-          </DialogTitle>
-        </DialogHeader>
+      <DialogHeader>
+        <DialogTitle className="font-light tracking-wide">
+          選擇追蹤營養素
+        </DialogTitle>
+      </DialogHeader>
 
-        <div className="space-y-5 mt-4">
+      <div className="max-h-[60vh] overflow-y-auto mt-4 -mx-6 px-6">
+        <div className="space-y-5">
           {(["macro", "vitamin", "mineral", "other"] as const).map((cat) => {
             const items = grouped[cat];
             if (!items?.length) return null;
@@ -116,21 +116,21 @@ export function NutrientPickerDialog({
             );
           })}
         </div>
+      </div>
 
-        <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-black/[0.06] dark:border-white/[0.06]">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="px-4 py-2 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-md hover:border-foreground/20 transition-all duration-200"
-          >
-            取消
-          </button>
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 text-sm font-light bg-primary text-white rounded-md hover:bg-primary/90 transition-all duration-200"
-          >
-            儲存 ({selected.size})
-          </button>
-        </div>
+      <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-black/[0.06] dark:border-white/[0.06]">
+        <button
+          onClick={() => onOpenChange(false)}
+          className="px-4 py-2 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-md hover:border-foreground/20 transition-all duration-200"
+        >
+          取消
+        </button>
+        <button
+          onClick={handleSave}
+          className="px-4 py-2 text-sm font-light bg-primary text-white rounded-md hover:bg-primary/90 transition-all duration-200"
+        >
+          儲存 ({selected.size})
+        </button>
       </div>
     </Dialog>
   );

@@ -23,7 +23,6 @@ import {
   DEFAULT_FAT_G,
   DEFAULT_FIBER_G,
 } from "@open-health/shared/constants";
-import { WaterQuickAdd } from "@/components/today/water-quick-add";
 
 function parseDateParam(param: string | null): Date {
   if (param) {
@@ -126,31 +125,30 @@ function TodayContent() {
       </Link>
 
       {/* Water Card */}
-      <div className="mx-4 py-4 border-b border-black/[0.06] dark:border-white/[0.06]">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Droplets className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
-            <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-              水分
-            </p>
-          </div>
-          <Link href="/water" className="flex items-center">
+      <Link href={`/water?date=${dateStr}`} className="block">
+        <div className="mx-4 py-4 border-b border-black/[0.06] dark:border-white/[0.06] transition-all duration-300 hover:pl-1">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Droplets className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
+              <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+                水分
+              </p>
+            </div>
             <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
-          </Link>
+          </div>
+          <div className="flex items-baseline gap-1 mb-3">
+            <span className="text-2xl font-light tabular-nums">{waterTotal.toLocaleString()}</span>
+            <span className="text-sm font-light text-neutral-400">/ {waterGoal.toLocaleString()} ml</span>
+          </div>
+          {/* Progress bar */}
+          <div className="h-1 rounded-full bg-neutral-100 dark:bg-neutral-900">
+            <div
+              className="h-full rounded-full bg-sky-400/60 transition-all duration-500"
+              style={{ width: `${Math.min((waterTotal / waterGoal) * 100, 100)}%` }}
+            />
+          </div>
         </div>
-        <div className="flex items-baseline gap-1 mb-3">
-          <span className="text-2xl font-light tabular-nums">{waterTotal.toLocaleString()}</span>
-          <span className="text-sm font-light text-neutral-400">/ {waterGoal.toLocaleString()} ml</span>
-        </div>
-        {/* Progress bar */}
-        <div className="h-1 rounded-full bg-neutral-100 dark:bg-neutral-900 mb-3">
-          <div
-            className="h-full rounded-full bg-sky-400/60 transition-all duration-500"
-            style={{ width: `${Math.min((waterTotal / waterGoal) * 100, 100)}%` }}
-          />
-        </div>
-        <WaterQuickAdd date={dateStr} isAuthenticated={isAuthenticated} />
-      </div>
+      </Link>
 
       {/* Weight Card */}
       <Link href="/progress" className="block">

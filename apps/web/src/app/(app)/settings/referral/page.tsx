@@ -6,7 +6,7 @@ import { useSession } from "@/lib/auth-client";
 import { applyReferralCode, customizeReferralCode } from "@/server/actions/referral";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Copy, Check, Pencil, Users, Gift, ChevronRight } from "lucide-react";
+import { ArrowLeft, Copy, Check, Pencil, Users, Gift, ChevronRight, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
@@ -26,6 +26,7 @@ export default function ReferralPage() {
   );
 
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [editing, setEditing] = useState(false);
   const [customCode, setCustomCode] = useState("");
   const [customError, setCustomError] = useState("");
@@ -42,6 +43,32 @@ export default function ReferralPage() {
     posthog.capture("referral_code_shared");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareUrl = codeData?.code
+    ? `https://openhealth.blog/?ref=${codeData.code}`
+    : "";
+
+  const handleShareLink = async () => {
+    if (!shareUrl) return;
+    const shareData = {
+      title: "Open Health — 免費健康追蹤工具",
+      text: `用我的推薦碼加入 Open Health，一起追蹤飲食與健康！推薦碼：${codeData?.code}`,
+      url: shareUrl,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        posthog.capture("referral_link_shared", { method: "native" });
+      } catch {
+        // User cancelled share
+      }
+    } else {
+      await navigator.clipboard.writeText(shareUrl);
+      posthog.capture("referral_link_shared", { method: "clipboard" });
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    }
   };
 
   const handleCustomize = async () => {
@@ -147,6 +174,22 @@ export default function ReferralPage() {
             <Pencil className="h-4 w-4" strokeWidth={1.5} />
           </Button>
         </div>
+
+        {/* Share link button */}
+        {codeData?.code && (
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleShareLink}
+          >
+            {linkCopied ? (
+              <Check className="h-4 w-4 mr-2 text-green-500" strokeWidth={1.5} />
+            ) : (
+              <Share2 className="h-4 w-4 mr-2" strokeWidth={1.5} />
+            )}
+            {linkCopied ? "已複製分享連結" : "分享邀請連結"}
+          </Button>
+        )}
 
         {editing && (
           <div className="space-y-2">

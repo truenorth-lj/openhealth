@@ -18,7 +18,7 @@ import {
   User,
   Settings2,
   Bell,
-  GraduationCap,
+  Apple,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -55,6 +55,7 @@ const sections: { title: string; items: HubItem[] }[] = [
       { href: "/progress", label: "進度分析", icon: TrendingUp, implemented: true },
       { href: "/settings/goals", label: "目標設定", icon: Target, implemented: true },
       { href: "/food/scan-label", label: "拍照辨識", icon: Camera, implemented: true },
+      { href: "/food", label: "食物資料庫", icon: Apple, implemented: true },
     ],
   },
   {
@@ -71,7 +72,6 @@ const sections: { title: string; items: HubItem[] }[] = [
       { href: "/settings/profile", label: "個人資料", icon: User, implemented: true },
       { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: true },
       { href: "/settings", label: "設定", icon: Settings2, implemented: true },
-      { href: "/coach", label: "教練模式", icon: GraduationCap, implemented: true },
     ],
   },
 ];
