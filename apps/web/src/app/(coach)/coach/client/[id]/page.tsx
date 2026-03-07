@@ -7,8 +7,6 @@ import { ClientInfoHeader } from "@/components/coach/client-info-header";
 import { CoachNotesEditor } from "@/components/coach/coach-notes-editor";
 import { WeekNavigator } from "@/components/coach/week-navigator";
 import { WeeklyDataTable } from "@/components/coach/weekly-data-table";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 
 function getMonday(d: Date): string {
   const date = new Date(d);
@@ -64,14 +62,6 @@ export default function ClientDetailPage({
 
   return (
     <div className="space-y-8">
-      <Link
-        href="/coach"
-        className="inline-flex items-center gap-1.5 text-sm font-light text-neutral-500 transition-all hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
-        返回學員列表
-      </Link>
-
       <ClientInfoHeader
         name={detail.client.name}
         email={detail.client.email}

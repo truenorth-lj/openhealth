@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CoachSidebar } from "@/components/coach/coach-sidebar";
 
 export default function CoachLayout({
   children,
@@ -8,7 +9,7 @@ export default function CoachLayout({
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 border-b border-black/[0.06] dark:border-white/[0.06] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+        <div className="flex h-14 items-center justify-between px-6">
           <Link
             href="/coach"
             className="text-base font-light tracking-[0.3em] text-foreground transition-all duration-300 hover:opacity-60"
@@ -23,7 +24,12 @@ export default function CoachLayout({
           </Link>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-6">{children}</main>
+      <div className="flex">
+        <CoachSidebar />
+        <main className="flex-1 px-6 py-6 overflow-auto">
+          <div className="mx-auto max-w-4xl">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }
