@@ -69,5 +69,12 @@ secrets/
 # debug logs
 debug/
 
+# IDE
+.vscode/
+
+# test artifacts (nested)
+**/test-results/
+**/playwright-report/
+
 # claude code
 .claude/worktrees/
