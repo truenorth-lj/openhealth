@@ -1,0 +1,1 @@
+ALTER TABLE "user_goals" ADD COLUMN "tracked_nutrient_ids" jsonb;

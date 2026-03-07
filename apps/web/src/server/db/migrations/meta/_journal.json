@@ -64,6 +64,20 @@
       "when": 1772863122834,
       "tag": "0008_unusual_devos",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772895156248,
+      "tag": "0009_rich_clea",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1772896321665,
+      "tag": "0010_free_roulette",
+      "breakpoints": true
     }
   ]
 }

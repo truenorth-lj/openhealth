@@ -97,6 +97,8 @@ function DiaryContent() {
         fatTarget={fatTarget}
         fiberTarget={fiberTarget}
         exerciseCalories={exerciseData?.totalCalories ?? 0}
+        date={dateStr}
+        trackedNutrientIds={Array.isArray(goals?.trackedNutrientIds) ? goals.trackedNutrientIds : []}
       />
 
       <div className="mt-4 border-t border-black/[0.06] dark:border-white/[0.06]">

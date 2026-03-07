@@ -1,5 +1,7 @@
 "use client";
 
+import { MicroNutrientSection } from "./micro-nutrient-section";
+
 interface DailySummaryProps {
   calories: number;
   protein: number;
@@ -12,6 +14,8 @@ interface DailySummaryProps {
   fatTarget: number;
   fiberTarget: number;
   exerciseCalories?: number;
+  date?: string;
+  trackedNutrientIds?: number[];
 }
 
 export function DailySummary({
@@ -26,6 +30,8 @@ export function DailySummary({
   fatTarget,
   fiberTarget,
   exerciseCalories = 0,
+  date,
+  trackedNutrientIds = [],
 }: DailySummaryProps) {
   const remaining = calorieTarget - calories + exerciseCalories;
   const caloriePercent = calorieTarget > 0 ? Math.min((calories / calorieTarget) * 100, 100) : 0;
@@ -99,6 +105,14 @@ export function DailySummary({
           color="bg-emerald-500"
         />
       </div>
+
+      {/* Micro Nutrients */}
+      {date && (
+        <MicroNutrientSection
+          date={date}
+          trackedNutrientIds={trackedNutrientIds}
+        />
+      )}
     </div>
   );
 }

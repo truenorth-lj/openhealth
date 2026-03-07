@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useTransition } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,10 @@ import { createCustomFood } from "@/server/actions/food";
 import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
-import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
+import { NUTRIENT_IDS, NUTRIENT_NAME_ZH, MACRO_NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
 import posthog from "posthog-js";
+
+const MACRO_IDS = new Set(MACRO_NUTRIENT_IDS);
 
 function CreateFoodContent() {
   const searchParams = useSearchParams();
@@ -31,22 +33,35 @@ function CreateFoodContent() {
   const [protein, setProtein] = useState("");
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
+  const [microExpanded, setMicroExpanded] = useState(false);
+  const [microValues, setMicroValues] = useState<Record<number, string>>({});
+
+  const { data: nutrientDefs } = trpc.user.getNutrientDefinitions.useQuery(
+    undefined,
+    { enabled: microExpanded }
+  );
+  const microNutrients = nutrientDefs?.filter((n) => !MACRO_IDS.has(n.id)) ?? [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
       try {
+        const allNutrients = [
+            { nutrientId: NUTRIENT_IDS.protein, amount: parseFloat(protein) || 0 },
+            { nutrientId: NUTRIENT_IDS.totalFat, amount: parseFloat(fat) || 0 },
+            { nutrientId: NUTRIENT_IDS.totalCarbs, amount: parseFloat(carbs) || 0 },
+            ...Object.entries(microValues)
+              .filter(([, v]) => v && parseFloat(v) > 0)
+              .map(([id, v]) => ({ nutrientId: Number(id), amount: parseFloat(v) })),
+          ];
+
         const result = await createCustomFood({
           name,
           brand: brand || undefined,
           servingSize: parseFloat(servingSize),
           servingUnit,
           calories: parseFloat(calories),
-          nutrients: [
-            { nutrientId: NUTRIENT_IDS.protein, amount: parseFloat(protein) || 0 },
-            { nutrientId: NUTRIENT_IDS.totalFat, amount: parseFloat(fat) || 0 },
-            { nutrientId: NUTRIENT_IDS.totalCarbs, amount: parseFloat(carbs) || 0 },
-          ],
+          nutrients: allNutrients,
         });
 
         if (result.success && result.foodId) {
@@ -181,6 +196,51 @@ function CreateFoodContent() {
               </div>
             </div>
           </CardContent>
+        </Card>
+
+        {/* Collapsible Micro Nutrients */}
+        <Card>
+          <CardHeader className="cursor-pointer" onClick={() => setMicroExpanded(!microExpanded)}>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">深度營養素</CardTitle>
+              <ChevronDown
+                className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
+                  microExpanded ? "rotate-180" : ""
+                }`}
+                strokeWidth={1.5}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground font-light">
+              纖維、鈉、反式脂肪、維生素等（選填）
+            </p>
+          </CardHeader>
+          {microExpanded && (
+            <CardContent className="space-y-3">
+              {microNutrients.map((n) => {
+                const label = NUTRIENT_NAME_ZH[n.name] || n.name;
+                return (
+                  <div key={n.id} className="flex items-center gap-3">
+                    <label className="text-sm font-light w-28 shrink-0 truncate">
+                      {label}
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0"
+                      value={microValues[n.id] || ""}
+                      onChange={(e) =>
+                        setMicroValues((prev) => ({ ...prev, [n.id]: e.target.value }))
+                      }
+                      className="flex-1"
+                    />
+                    <span className="text-xs text-muted-foreground w-8 shrink-0">
+                      {n.unit}
+                    </span>
+                  </div>
+                );
+              })}
+            </CardContent>
+          )}
         </Card>
 
         <Button type="submit" className="w-full" disabled={isPending}>

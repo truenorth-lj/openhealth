@@ -70,15 +70,18 @@ export const foods = pgTable(
   ]
 );
 
-export const nutrientDefinitions = pgTable("nutrient_definitions", {
-  id: serial("id").primaryKey(),
-  name: varchar("name", { length: 100 }).notNull(),
-  unit: varchar("unit", { length: 20 }).notNull(),
-  category: nutrientCategoryEnum("category").notNull(),
-  displayOrder: integer("display_order"),
-  dailyValue: decimal("daily_value", { precision: 10, scale: 3 }),
-  usdaNutrientId: integer("usda_nutrient_id"),
-});
+export const nutrientDefinitions = pgTable(
+  "nutrient_definitions",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 100 }).notNull().unique(),
+    unit: varchar("unit", { length: 20 }).notNull(),
+    category: nutrientCategoryEnum("category").notNull(),
+    displayOrder: integer("display_order"),
+    dailyValue: decimal("daily_value", { precision: 10, scale: 3 }),
+    usdaNutrientId: integer("usda_nutrient_id"),
+  }
+);
 
 export const foodNutrients = pgTable(
   "food_nutrients",

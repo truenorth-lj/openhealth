@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { logFoodSchema, copyMealSchema, removeEntrySchema } from "@open-health/shared/schemas";
 import { protectedProcedure, router } from "../trpc";
-import { diaryEntries, quickFoods } from "@/server/db/schema";
+import { diaryEntries, quickFoods, foodNutrients, nutrientDefinitions } from "@/server/db/schema";
 import { foods } from "@/server/db/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, inArray } from "drizzle-orm";
 import { calculateNutrition } from "@/server/services/nutrition";
 
 export const diaryRouter = router({
@@ -131,6 +131,43 @@ export const diaryRouter = router({
         );
 
       return { success: true };
+    }),
+
+  getDayNutrients: protectedProcedure
+    .input(
+      z.object({
+        date: z.string(),
+        nutrientIds: z.array(z.number()).min(1).max(50),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select({
+          nutrientId: foodNutrients.nutrientId,
+          name: nutrientDefinitions.name,
+          unit: nutrientDefinitions.unit,
+          dailyValue: nutrientDefinitions.dailyValue,
+          totalAmount: sql<string>`sum(cast(${foodNutrients.amount} as numeric) * cast(${diaryEntries.servingQty} as numeric))`,
+        })
+        .from(diaryEntries)
+        .innerJoin(foodNutrients, eq(foodNutrients.foodId, diaryEntries.foodId))
+        .innerJoin(nutrientDefinitions, eq(nutrientDefinitions.id, foodNutrients.nutrientId))
+        .where(
+          and(
+            eq(diaryEntries.userId, ctx.user.id),
+            eq(diaryEntries.date, input.date),
+            inArray(foodNutrients.nutrientId, input.nutrientIds)
+          )
+        )
+        .groupBy(foodNutrients.nutrientId, nutrientDefinitions.name, nutrientDefinitions.unit, nutrientDefinitions.dailyValue);
+
+      return results.map((r) => ({
+        nutrientId: r.nutrientId,
+        name: r.name,
+        unit: r.unit,
+        dailyValue: r.dailyValue ? Number(r.dailyValue) : null,
+        totalAmount: Number(r.totalAmount || 0),
+      }));
     }),
 
   copyMealToDate: protectedProcedure

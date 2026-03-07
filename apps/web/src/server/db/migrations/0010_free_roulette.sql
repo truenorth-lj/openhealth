@@ -1,0 +1,1 @@
+ALTER TABLE "nutrient_definitions" ADD CONSTRAINT "nutrient_definitions_name_unique" UNIQUE("name");

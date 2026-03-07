@@ -9,6 +9,7 @@ import {
   decimal,
   integer,
   boolean,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 export const unitSystemEnum = pgEnum("unit_system", ["metric", "imperial"]);
@@ -111,6 +112,7 @@ export const userGoals = pgTable("user_goals", {
   carbsPct: decimal("carbs_pct", { precision: 4, scale: 1 }),
   fatPct: decimal("fat_pct", { precision: 4, scale: 1 }),
   targetMode: targetModeEnum("target_mode").default("percentage"),
+  trackedNutrientIds: jsonb("tracked_nutrient_ids").$type<number[]>(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });

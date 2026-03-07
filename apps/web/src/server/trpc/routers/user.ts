@@ -1,6 +1,7 @@
+import { z } from "zod";
 import { updateProfileSchema, updateGoalsSchema } from "@open-health/shared/schemas";
 import { protectedProcedure, router } from "../trpc";
-import { users, userProfiles, userGoals } from "@/server/db/schema";
+import { users, userProfiles, userGoals, nutrientDefinitions } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { getAiUsage } from "@/server/services/plan";
 
@@ -84,6 +85,42 @@ export const userRouter = router({
             carbsG: input.carbsG != null ? String(input.carbsG) : null,
             fatG: input.fatG != null ? String(input.fatG) : null,
             fiberG: input.fiberG != null ? String(input.fiberG) : null,
+            updatedAt: new Date(),
+          },
+        });
+
+      return { success: true };
+    }),
+
+  getNutrientDefinitions: protectedProcedure.query(async ({ ctx }) => {
+    const defs = await ctx.db
+      .select({
+        id: nutrientDefinitions.id,
+        name: nutrientDefinitions.name,
+        unit: nutrientDefinitions.unit,
+        category: nutrientDefinitions.category,
+        dailyValue: nutrientDefinitions.dailyValue,
+        displayOrder: nutrientDefinitions.displayOrder,
+      })
+      .from(nutrientDefinitions)
+      .orderBy(nutrientDefinitions.displayOrder, nutrientDefinitions.id);
+
+    return defs;
+  }),
+
+  updateTrackedNutrients: protectedProcedure
+    .input(z.object({ nutrientIds: z.array(z.number()).max(20) }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .insert(userGoals)
+        .values({
+          userId: ctx.user.id,
+          trackedNutrientIds: input.nutrientIds.length > 0 ? input.nutrientIds : null,
+        })
+        .onConflictDoUpdate({
+          target: userGoals.userId,
+          set: {
+            trackedNutrientIds: input.nutrientIds.length > 0 ? input.nutrientIds : null,
             updatedAt: new Date(),
           },
         });

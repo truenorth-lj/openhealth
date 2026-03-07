@@ -47,6 +47,21 @@ export const NUTRIENT_IDS = {
   sodium: 31,
 } as const;
 
+// Macro nutrient IDs already shown in the daily summary (protein, fat, carbs, fiber)
+export const MACRO_NUTRIENT_IDS: readonly number[] = [
+  NUTRIENT_IDS.protein,
+  NUTRIENT_IDS.totalFat,
+  NUTRIENT_IDS.totalCarbs,
+  NUTRIENT_IDS.fiber,
+];
+
+export const NUTRIENT_CATEGORY_LABELS: Record<string, string> = {
+  macro: "巨量營養素",
+  vitamin: "維生素",
+  mineral: "礦物質",
+  other: "其他",
+};
+
 // Nutrient name translations (English → Traditional Chinese)
 export const NUTRIENT_NAME_ZH: Record<string, string> = {
   // 巨量營養素

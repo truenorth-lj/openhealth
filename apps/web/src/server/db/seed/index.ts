@@ -60,7 +60,7 @@ async function seed() {
         dailyValue: nutrient.dailyValue ? String(nutrient.dailyValue) : null,
         usdaNutrientId: nutrient.usdaNutrientId,
       })
-      .onConflictDoNothing();
+      .onConflictDoNothing({ target: nutrientDefinitions.name });
   }
   console.log(`  ${nutrientSeedData.length} nutrient definitions ready`);
 
