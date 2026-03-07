@@ -43,6 +43,9 @@ const sections: { title: string; items: HubItem[] }[] = [
       { href: "/diary", label: "飲食記錄", icon: UtensilsCrossed, implemented: true },
       { href: "/exercise", label: "運動記錄", icon: Dumbbell, implemented: true },
       { href: "/water", label: "水分追蹤", icon: Droplets, implemented: true },
+      { href: "/fasting", label: "間歇斷食", icon: Timer, implemented: true },
+      { href: "/progress?tab=weight", label: "體重紀錄", icon: Scale, implemented: true },
+      { href: "/progress?tab=steps", label: "步數紀錄", icon: Footprints, implemented: true },
     ],
   },
   {
@@ -57,9 +60,6 @@ const sections: { title: string; items: HubItem[] }[] = [
   {
     title: "生活",
     items: [
-      { href: "/fasting", label: "間歇斷食", icon: Timer, implemented: true },
-      { href: "/progress?tab=weight", label: "體重紀錄", icon: Scale, implemented: true },
-      { href: "/progress?tab=steps", label: "步數紀錄", icon: Footprints, implemented: true },
       { href: "/achievements", label: "成就", icon: Trophy, implemented: false, badge: "即將" },
     ],
   },
@@ -89,7 +89,7 @@ export default function HubPage() {
             </p>
             <div className={cn(
               "grid gap-3",
-              section.items.length === 3 ? "grid-cols-3" : "grid-cols-4"
+              section.items.length <= 3 ? "grid-cols-3" : section.items.length <= 4 ? "grid-cols-4" : "grid-cols-3"
             )}>
               {section.items.map((item) => (
                 <HubIcon key={item.href} item={item} />
