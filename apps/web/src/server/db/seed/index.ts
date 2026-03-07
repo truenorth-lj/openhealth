@@ -17,6 +17,7 @@ import { louisaFoods } from "./louisa-foods";
 import { starbucksFoods } from "./starbucks-foods";
 import { missEnergyFoods } from "./missenergy-foods";
 import { proteinBoxFoods } from "./proteinbox-foods";
+import { chickenFoodFoods } from "./chicken-food-foods";
 
 interface Dataset {
   items: Parameters<typeof seedFoods>[1];
@@ -37,6 +38,7 @@ const FOOD_DATASETS: Record<string, Dataset> = {
   starbucks: { items: starbucksFoods, label: "星巴克 Starbucks" },
   missenergy: { items: missEnergyFoods, label: "能量小姐 Miss Energy" },
   proteinbox: { items: proteinBoxFoods, label: "蛋白盒子 The Protein Box" },
+  chickenfood: { items: chickenFoodFoods, label: "十雞食堂 Chicken Food" },
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://lj@localhost:5432/food_record";
