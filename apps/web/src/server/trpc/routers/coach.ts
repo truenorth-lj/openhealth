@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { updateCoachNotesSchema } from "@open-health/shared/schemas";
+import {
+  updateCoachNotesSchema,
+  connectToCoachSchema,
+} from "@open-health/shared/schemas";
 import { protectedProcedure, router } from "../trpc";
 import {
   coachClients,
@@ -13,6 +16,7 @@ import {
 } from "@/server/db/schema";
 import { eq, and, sql, desc } from "drizzle-orm";
 import { calculateBMR, calculateTDEE, getAge } from "@/server/services/bmr";
+import { isUniqueViolation } from "@/lib/referral-code";
 
 export const coachRouter = router({
   getClients: protectedProcedure.query(async ({ ctx }) => {
@@ -326,6 +330,64 @@ export const coachRouter = router({
 
     return coaches;
   }),
+
+  connectToCoach: protectedProcedure
+    .input(connectToCoachSchema)
+    .mutation(async ({ ctx, input }) => {
+      const code = input.code.toUpperCase();
+
+      const coach = await ctx.db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.referralCode, code))
+        .limit(1);
+
+      if (coach.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "教練碼不存在" });
+      }
+
+      if (coach[0].id === ctx.user.id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "不能加入自己為教練",
+        });
+      }
+
+      try {
+        await ctx.db.insert(coachClients).values({
+          coachId: coach[0].id,
+          clientId: ctx.user.id,
+          startDate: new Date().toISOString().slice(0, 10),
+        });
+      } catch (error) {
+        if (isUniqueViolation(error)) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "你已經是此教練的學員了",
+          });
+        }
+        throw error;
+      }
+
+      return { success: true };
+    }),
+
+  disconnectFromCoach: protectedProcedure
+    .input(z.object({ coachId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(coachClients)
+        .set({ status: "inactive", updatedAt: new Date() })
+        .where(
+          and(
+            eq(coachClients.coachId, input.coachId),
+            eq(coachClients.clientId, ctx.user.id),
+            eq(coachClients.status, "active")
+          )
+        );
+
+      return { success: true };
+    }),
 
   updateClientNotes: protectedProcedure
     .input(updateCoachNotesSchema)
