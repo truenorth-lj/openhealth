@@ -172,3 +172,20 @@ export const createCustomExerciseSchema = z.object({
   category: z.enum(["cardio", "strength", "flexibility", "sport", "other"]).optional(),
   metValue: z.number().min(0).max(30).optional(),
 });
+
+export const connectToCoachSchema = z.object({
+  code: z
+    .string()
+    .min(4)
+    .max(12)
+    .regex(/^[A-Z0-9]+$/i, "教練碼只能包含英文字母和數字"),
+});
+
+export const updateCoachNotesSchema = z.object({
+  clientId: z.string(),
+  coachNotes: z.string().max(2000).optional(),
+  calorieTarget: z.number().int().positive().max(20000).nullable().optional(),
+  proteinPct: z.number().min(0).max(100).nullable().optional(),
+  carbsPct: z.number().min(0).max(100).nullable().optional(),
+  fatPct: z.number().min(0).max(100).nullable().optional(),
+});

@@ -1,0 +1,29 @@
+import Link from "next/link";
+
+export default function CoachLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-40 border-b border-black/[0.06] dark:border-white/[0.06] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+          <Link
+            href="/coach"
+            className="text-base font-light tracking-[0.3em] text-foreground transition-all duration-300 hover:opacity-60"
+          >
+            OH COACH
+          </Link>
+          <Link
+            href="/hub"
+            className="text-sm font-light text-neutral-500 transition-all duration-300 hover:text-foreground"
+          >
+            返回 App
+          </Link>
+        </div>
+      </header>
+      <main className="mx-auto max-w-6xl px-6 py-6">{children}</main>
+    </div>
+  );
+}

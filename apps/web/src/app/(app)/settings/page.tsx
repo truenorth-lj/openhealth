@@ -10,12 +10,14 @@ import {
   Sun,
   Moon,
   Monitor,
+  GraduationCap,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
   { href: "/settings/profile", label: "個人資料", icon: User },
+  { href: "/settings/coaching", label: "我的教練", icon: GraduationCap },
 ];
 
 const themeOptions = [
