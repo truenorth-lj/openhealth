@@ -2,55 +2,64 @@ import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../trpc";
-import { subscriptions } from "@/server/db/schema";
-import {
-  createCheckoutSession,
-  createCustomerPortalSession,
-} from "@/server/services/stripe";
+import { subscriptions, referrals } from "@/server/db/schema";
+import { getPaymentProvider } from "@/server/services/payment";
 
 export const subscriptionRouter = router({
   createCheckout: protectedProcedure
     .input(z.object({ interval: z.enum(["monthly", "yearly"]) }))
     .mutation(async ({ ctx, input }) => {
-      const priceId =
-        input.interval === "monthly"
-          ? process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID
-          : process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID;
+      const provider = getPaymentProvider();
+      const baseUrl =
+        process.env.NEXT_PUBLIC_APP_URL || "https://openhealth.blog";
 
-      if (!priceId) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Price ID not configured",
-        });
+      // Check referral eligibility for coupon
+      let applyCoupon = false;
+      const [referral] = await ctx.db
+        .select({ id: referrals.id })
+        .from(referrals)
+        .where(eq(referrals.refereeId, ctx.user.id))
+        .limit(1);
+
+      if (referral) {
+        const [existingSub] = await ctx.db
+          .select({ id: subscriptions.id })
+          .from(subscriptions)
+          .where(eq(subscriptions.userId, ctx.user.id))
+          .limit(1);
+        applyCoupon = !existingSub;
       }
 
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openhealth.blog";
       try {
-        const url = await createCheckoutSession(
-          ctx.user.id,
-          ctx.user.email,
-          priceId.trim(),
-          `${baseUrl}/settings/subscription?success=true`,
-          `${baseUrl}/settings/subscription?canceled=true`
-        );
-        return { url };
+        const result = await provider.createCheckout({
+          userId: ctx.user.id,
+          email: ctx.user.email,
+          interval: input.interval,
+          successUrl: `${baseUrl}/settings/subscription?success=true`,
+          cancelUrl: `${baseUrl}/settings/subscription?canceled=true`,
+          applyCoupon,
+        });
+        return { url: result.url };
       } catch (err) {
-        console.error("[createCheckout] Stripe error:", err);
+        console.error("[createCheckout] error:", err);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: err instanceof Error ? err.message : "Stripe checkout failed",
+          message:
+            err instanceof Error ? err.message : "Checkout failed",
         });
       }
     }),
 
   createPortalSession: protectedProcedure.mutation(async ({ ctx }) => {
+    const provider = getPaymentProvider();
+
     const sub = await ctx.db
       .select({ providerCustId: subscriptions.providerCustId })
       .from(subscriptions)
       .where(
         and(
           eq(subscriptions.userId, ctx.user.id),
-          eq(subscriptions.provider, "stripe")
+          eq(subscriptions.provider, provider.name)
         )
       )
       .limit(1);
@@ -62,23 +71,26 @@ export const subscriptionRouter = router({
       });
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://openhealth.blog";
-    const url = await createCustomerPortalSession(
-      sub[0].providerCustId,
-      `${baseUrl}/settings/subscription`
-    );
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL || "https://openhealth.blog";
+    const result = await provider.getPortalUrl({
+      providerCustId: sub[0].providerCustId,
+      returnUrl: `${baseUrl}/settings/subscription`,
+    });
 
-    return { url };
+    return { url: result.url };
   }),
 
   getSubscription: protectedProcedure.query(async ({ ctx }) => {
+    const provider = getPaymentProvider();
+
     const sub = await ctx.db
       .select()
       .from(subscriptions)
       .where(
         and(
           eq(subscriptions.userId, ctx.user.id),
-          eq(subscriptions.provider, "stripe")
+          eq(subscriptions.provider, provider.name)
         )
       )
       .limit(1);

@@ -92,6 +92,13 @@
       "when": 1772959688901,
       "tag": "0012_new_vulcan",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1741430400000,
+      "tag": "0013_rename_stripe_invoice_id",
+      "breakpoints": true
     }
   ]
 }

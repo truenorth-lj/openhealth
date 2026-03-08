@@ -27,7 +27,7 @@ export const referralRewards = pgTable(
     amountNtd: integer("amount_ntd"), // for revenue_share, in NTD cents
     freeDays: integer("free_days"), // for free_days type
     subscriptionMonth: text("subscription_month"), // e.g. '2026-03' for revenue_share
-    stripeInvoiceId: text("stripe_invoice_id"),
+    providerInvoiceId: text("provider_invoice_id"),
     confirmedAt: timestamp("confirmed_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()

@@ -27,6 +27,7 @@
     "@danielxceron/youtube-transcript": "^1.2.6",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
+    "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@open-health/shared": "workspace:*",
     "@sentry/nextjs": "^10.42.0",
     "@tailwindcss/postcss": "^4.2.1",

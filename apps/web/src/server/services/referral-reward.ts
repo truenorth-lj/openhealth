@@ -98,7 +98,7 @@ export async function calculateAndRecordRevenueShare(
   refereeUserId: string,
   amountNtd: number,
   subscriptionMonth: string,
-  stripeInvoiceId: string
+  providerInvoiceId: string
 ) {
   const [referral] = await db
     .select({
@@ -129,7 +129,7 @@ export async function calculateAndRecordRevenueShare(
       status: REWARD_STATUSES.PENDING,
       amountNtd: revenueShareNtd,
       subscriptionMonth,
-      stripeInvoiceId,
+      providerInvoiceId,
       confirmedAt,
     })
     .returning();
