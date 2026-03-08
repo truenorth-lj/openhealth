@@ -54,6 +54,13 @@ export type NutritionRecognitionResult = {
   saturatedFatG?: number | null;
   transFatG?: number | null;
   cholesterolMg?: number | null;
+  calciumMg?: number | null;
+  ironMg?: number | null;
+  potassiumMg?: number | null;
+  vitaminAMcg?: number | null;
+  vitaminCMg?: number | null;
+  vitaminDMcg?: number | null;
+  notes?: string | null;
 };
 
 export type OpenFoodFactsResult = {

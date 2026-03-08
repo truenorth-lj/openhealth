@@ -44,6 +44,12 @@ export const NUTRIENT_IDS = {
   saturatedFat: 7,
   transFat: 8,
   cholesterol: 11,
+  vitaminA: 12,
+  vitaminC: 13,
+  vitaminD: 14,
+  calcium: 26,
+  iron: 27,
+  potassium: 30,
   sodium: 31,
 } as const;
 

@@ -207,6 +207,7 @@ export async function POST(req: Request) {
                 servingSize: String(data.servingSize),
                 servingUnit: data.servingUnit,
                 calories: String(data.calories),
+                description: data.notes ?? undefined,
                 isPublic: true,
                 createdBy: userId,
               })
@@ -215,7 +216,7 @@ export async function POST(req: Request) {
             // Insert nutrients
             const nutrientValues: { foodId: string; nutrientId: number; amount: string }[] = [];
             const addNutrient = (id: number, val: number | null | undefined) => {
-              if (val != null) nutrientValues.push({ foodId: food.id, nutrientId: id, amount: String(val) });
+              if (val != null && !isNaN(val)) nutrientValues.push({ foodId: food.id, nutrientId: id, amount: String(val) });
             };
             addNutrient(NUTRIENT_IDS.protein, data.proteinG);
             addNutrient(NUTRIENT_IDS.totalFat, data.fatG);
@@ -226,6 +227,12 @@ export async function POST(req: Request) {
             addNutrient(NUTRIENT_IDS.transFat, data.transFatG);
             addNutrient(NUTRIENT_IDS.cholesterol, data.cholesterolMg);
             addNutrient(NUTRIENT_IDS.sodium, data.sodiumMg);
+            addNutrient(NUTRIENT_IDS.calcium, data.calciumMg);
+            addNutrient(NUTRIENT_IDS.iron, data.ironMg);
+            addNutrient(NUTRIENT_IDS.potassium, data.potassiumMg);
+            addNutrient(NUTRIENT_IDS.vitaminA, data.vitaminAMcg);
+            addNutrient(NUTRIENT_IDS.vitaminC, data.vitaminCMg);
+            addNutrient(NUTRIENT_IDS.vitaminD, data.vitaminDMcg);
 
             if (nutrientValues.length > 0) {
               await db.insert(foodNutrients).values(nutrientValues);

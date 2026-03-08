@@ -59,6 +59,13 @@ function EstimateContent() {
   const [saturatedFat, setSaturatedFat] = useState("");
   const [transFat, setTransFat] = useState("");
   const [cholesterol, setCholesterol] = useState("");
+  const [calcium, setCalcium] = useState("");
+  const [iron, setIron] = useState("");
+  const [potassium, setPotassium] = useState("");
+  const [vitaminA, setVitaminA] = useState("");
+  const [vitaminC, setVitaminC] = useState("");
+  const [vitaminD, setVitaminD] = useState("");
+  const [notes, setNotes] = useState("");
 
   const handleEstimate = async () => {
     if (!description.trim()) return;
@@ -86,6 +93,13 @@ function EstimateContent() {
         setSaturatedFat(String(data.saturatedFatG ?? ""));
         setTransFat(String(data.transFatG ?? ""));
         setCholesterol(String(data.cholesterolMg ?? ""));
+        setCalcium(String(data.calciumMg ?? ""));
+        setIron(String(data.ironMg ?? ""));
+        setPotassium(String(data.potassiumMg ?? ""));
+        setVitaminA(String(data.vitaminAMcg ?? ""));
+        setVitaminC(String(data.vitaminCMg ?? ""));
+        setVitaminD(String(data.vitaminDMcg ?? ""));
+        setNotes(data.notes ?? "");
         posthog.capture("ai_food_estimated", { success: true });
         setStage("edit");
       } else {
@@ -161,10 +175,41 @@ function EstimateContent() {
             nutrientId: NUTRIENT_IDS.sodium,
             amount: parseFloat(sodium),
           });
+        if (calcium)
+          nutrients.push({
+            nutrientId: NUTRIENT_IDS.calcium,
+            amount: parseFloat(calcium),
+          });
+        if (iron)
+          nutrients.push({
+            nutrientId: NUTRIENT_IDS.iron,
+            amount: parseFloat(iron),
+          });
+        if (potassium)
+          nutrients.push({
+            nutrientId: NUTRIENT_IDS.potassium,
+            amount: parseFloat(potassium),
+          });
+        if (vitaminA)
+          nutrients.push({
+            nutrientId: NUTRIENT_IDS.vitaminA,
+            amount: parseFloat(vitaminA),
+          });
+        if (vitaminC)
+          nutrients.push({
+            nutrientId: NUTRIENT_IDS.vitaminC,
+            amount: parseFloat(vitaminC),
+          });
+        if (vitaminD)
+          nutrients.push({
+            nutrientId: NUTRIENT_IDS.vitaminD,
+            amount: parseFloat(vitaminD),
+          });
 
         const result = await createCustomFood({
           name,
           brand: brand || undefined,
+          description: notes || undefined,
           servingSize: parseFloat(servingSize),
           servingUnit,
           calories: parseFloat(calories),
@@ -466,6 +511,43 @@ function EstimateContent() {
                     </div>
                   </div>
                 </div>
+
+                <div className="border-t pt-3 mt-3">
+                  <p className="text-xs text-muted-foreground mb-2">微量營養素</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">鈣 (mg)</label>
+                      <Input type="number" step="0.1" value={calcium} onChange={(e) => setCalcium(e.target.value)} placeholder="-" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">鐵 (mg)</label>
+                      <Input type="number" step="0.1" value={iron} onChange={(e) => setIron(e.target.value)} placeholder="-" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">鉀 (mg)</label>
+                      <Input type="number" step="0.1" value={potassium} onChange={(e) => setPotassium(e.target.value)} placeholder="-" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">維生素 A (mcg)</label>
+                      <Input type="number" step="0.1" value={vitaminA} onChange={(e) => setVitaminA(e.target.value)} placeholder="-" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">維生素 C (mg)</label>
+                      <Input type="number" step="0.1" value={vitaminC} onChange={(e) => setVitaminC(e.target.value)} placeholder="-" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">維生素 D (mcg)</label>
+                      <Input type="number" step="0.1" value={vitaminD} onChange={(e) => setVitaminD(e.target.value)} placeholder="-" />
+                    </div>
+                  </div>
+                </div>
+
+                {notes && (
+                  <div className="border-t pt-3 mt-3">
+                    <p className="text-xs text-muted-foreground mb-1">備註</p>
+                    <p className="text-sm text-muted-foreground bg-muted rounded-lg px-3 py-2">{notes}</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
