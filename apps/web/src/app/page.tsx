@@ -389,6 +389,14 @@ function Footer() {
             <p className="text-[10px] text-neutral-400 dark:text-neutral-600 uppercase tracking-[0.2em]">
               社群
             </p>
+            <Link
+              href="https://line.me/ti/g2/yoiSxP0jx7pJDEFjQtFLu87dwRsKIGnFIIkV3g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300 text-xs"
+            >
+              LINE 社群
+            </Link>
             <span className="block text-neutral-500 text-xs">
               GitHub — 敬請期待
             </span>
