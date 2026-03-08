@@ -17,6 +17,31 @@ import { usePushSubscription } from "@/hooks/use-push-subscription";
 
 const MS_PER_MINUTE = 60 * 1000;
 const CIRCLE_CIRCUMFERENCE = 540;
+const MIN_MAX_MINUTES = 5;
+const MAX_MAX_MINUTES = 480;
+
+/** Parse tRPC/Zod error into a user-friendly message */
+function friendlyError(err: { message: string }): string {
+  try {
+    const parsed = JSON.parse(err.message);
+    if (Array.isArray(parsed) && parsed[0]?.message) {
+      const zodErr = parsed[0];
+      const field = zodErr.path?.join(".") ?? "";
+      if (field === "maxMinutes") {
+        if (zodErr.code === "too_small") return `上限時間最少為 ${zodErr.minimum} 分鐘`;
+        if (zodErr.code === "too_big") return `上限時間最多為 ${zodErr.maximum} 分鐘`;
+      }
+      if (field === "name") return "請輸入姿勢名稱";
+      if (field === "emoji") return "請輸入圖示";
+      if (field === "suggestedBreak") return "請輸入超時建議動作";
+      if (field === "snoozeMinutes") return "延後時間設定不正確";
+      return zodErr.message;
+    }
+  } catch {
+    // not JSON, use as-is
+  }
+  return err.message || "發生錯誤，請稍後再試或聯絡團隊協助";
+}
 
 function formatDuration(ms: number): { minutes: string; seconds: string } {
   const totalSeconds = Math.max(0, Math.floor(ms / 1000));
@@ -94,7 +119,7 @@ export default function PosturePage() {
       setSnoozedUntil(null);
       setHasNotified(false);
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => toast.error(friendlyError(err)),
   });
 
   const stopSession = trpc.posture.stopSession.useMutation({
@@ -105,7 +130,7 @@ export default function PosturePage() {
       setHasNotified(false);
       toast.success("已停止追蹤");
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => toast.error(friendlyError(err)),
   });
 
   const upsertDefinition = trpc.posture.upsertDefinition.useMutation({
@@ -115,7 +140,7 @@ export default function PosturePage() {
       setEditingPosture(null);
       toast.success("已儲存");
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => toast.error(friendlyError(err)),
   });
 
   const deleteDefinition = trpc.posture.deleteDefinition.useMutation({
@@ -123,7 +148,7 @@ export default function PosturePage() {
       utils.posture.getDefinitions.invalidate();
       toast.success("已刪除");
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => toast.error(friendlyError(err)),
   });
 
   const upsertConfig = trpc.posture.upsertConfig.useMutation({
@@ -131,7 +156,7 @@ export default function PosturePage() {
       utils.posture.getConfig.invalidate();
       toast.success("設定已儲存");
     },
-    onError: (err) => toast.error(err.message),
+    onError: (err) => toast.error(friendlyError(err)),
   });
 
   const markReminded = trpc.posture.markReminded.useMutation();
@@ -249,6 +274,26 @@ export default function PosturePage() {
 
   const handleSavePosture = () => {
     if (!editingPosture) return;
+    if (!editingPosture.name.trim()) {
+      toast.error("請輸入姿勢名稱");
+      return;
+    }
+    if (!editingPosture.emoji.trim()) {
+      toast.error("請輸入圖示");
+      return;
+    }
+    if (editingPosture.maxMinutes < MIN_MAX_MINUTES) {
+      toast.error(`上限時間最少為 ${MIN_MAX_MINUTES} 分鐘`);
+      return;
+    }
+    if (editingPosture.maxMinutes > MAX_MAX_MINUTES) {
+      toast.error(`上限時間最多為 ${MAX_MAX_MINUTES} 分鐘`);
+      return;
+    }
+    if (!editingPosture.suggestedBreak.trim()) {
+      toast.error("請輸入超時建議動作");
+      return;
+    }
     upsertDefinition.mutate(editingPosture);
   };
 
