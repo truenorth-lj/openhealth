@@ -49,6 +49,7 @@ export const diaryEntries = pgTable(
   (table) => [
     index("diary_user_date_idx").on(table.userId, table.date),
     index("diary_user_date_meal_idx").on(table.userId, table.date, table.mealType),
+    uniqueIndex("diary_user_date_meal_food_idx").on(table.userId, table.date, table.mealType, table.foodId),
   ]
 );
 

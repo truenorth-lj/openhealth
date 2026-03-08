@@ -89,19 +89,33 @@ export const diaryRouter = router({
     .mutation(async ({ ctx, input }) => {
       const nutrition = await calculateNutrition(input.foodId, input.servingQty);
 
-      await ctx.db.insert(diaryEntries).values({
-        userId: ctx.user.id,
-        date: input.date,
-        mealType: input.mealType,
-        foodId: input.foodId,
-        servingQty: String(input.servingQty),
-        servingId: input.servingId,
-        calories: String(nutrition.calories),
-        proteinG: String(nutrition.proteinG),
-        carbsG: String(nutrition.carbsG),
-        fatG: String(nutrition.fatG),
-        fiberG: String(nutrition.fiberG),
-      });
+      // Upsert: if same food exists in the same meal, increment qty & nutrition
+      await ctx.db
+        .insert(diaryEntries)
+        .values({
+          userId: ctx.user.id,
+          date: input.date,
+          mealType: input.mealType,
+          foodId: input.foodId,
+          servingQty: String(input.servingQty),
+          servingId: input.servingId,
+          calories: String(nutrition.calories),
+          proteinG: String(nutrition.proteinG),
+          carbsG: String(nutrition.carbsG),
+          fatG: String(nutrition.fatG),
+          fiberG: String(nutrition.fiberG),
+        })
+        .onConflictDoUpdate({
+          target: [diaryEntries.userId, diaryEntries.date, diaryEntries.mealType, diaryEntries.foodId],
+          set: {
+            servingQty: sql`cast(${diaryEntries.servingQty} as numeric) + ${input.servingQty}`,
+            calories: sql`cast(${diaryEntries.calories} as numeric) + ${nutrition.calories}`,
+            proteinG: sql`cast(${diaryEntries.proteinG} as numeric) + ${nutrition.proteinG}`,
+            carbsG: sql`cast(${diaryEntries.carbsG} as numeric) + ${nutrition.carbsG}`,
+            fatG: sql`cast(${diaryEntries.fatG} as numeric) + ${nutrition.fatG}`,
+            fiberG: sql`cast(${diaryEntries.fiberG} as numeric) + ${nutrition.fiberG}`,
+          },
+        });
 
       await ctx.db
         .insert(quickFoods)
@@ -188,21 +202,35 @@ export const diaryRouter = router({
         return { success: false, error: "No entries found" };
       }
 
-      await ctx.db.insert(diaryEntries).values(
-        entries.map((entry) => ({
-          userId: ctx.user.id,
-          date: input.toDate,
-          mealType: entry.mealType,
-          foodId: entry.foodId,
-          servingQty: entry.servingQty,
-          servingId: entry.servingId,
-          calories: entry.calories,
-          proteinG: entry.proteinG,
-          carbsG: entry.carbsG,
-          fatG: entry.fatG,
-          fiberG: entry.fiberG,
-        }))
-      );
+      // Upsert each entry: if same food already exists in target meal, merge quantities
+      for (const entry of entries) {
+        await ctx.db
+          .insert(diaryEntries)
+          .values({
+            userId: ctx.user.id,
+            date: input.toDate,
+            mealType: entry.mealType,
+            foodId: entry.foodId,
+            servingQty: entry.servingQty,
+            servingId: entry.servingId,
+            calories: entry.calories,
+            proteinG: entry.proteinG,
+            carbsG: entry.carbsG,
+            fatG: entry.fatG,
+            fiberG: entry.fiberG,
+          })
+          .onConflictDoUpdate({
+            target: [diaryEntries.userId, diaryEntries.date, diaryEntries.mealType, diaryEntries.foodId],
+            set: {
+              servingQty: sql`cast(${diaryEntries.servingQty} as numeric) + cast(excluded.serving_qty as numeric)`,
+              calories: sql`cast(${diaryEntries.calories} as numeric) + cast(excluded.calories as numeric)`,
+              proteinG: sql`cast(${diaryEntries.proteinG} as numeric) + cast(excluded.protein_g as numeric)`,
+              carbsG: sql`cast(${diaryEntries.carbsG} as numeric) + cast(excluded.carbs_g as numeric)`,
+              fatG: sql`cast(${diaryEntries.fatG} as numeric) + cast(excluded.fat_g as numeric)`,
+              fiberG: sql`cast(${diaryEntries.fiberG} as numeric) + cast(excluded.fiber_g as numeric)`,
+            },
+          });
+      }
 
       return { success: true };
     }),
