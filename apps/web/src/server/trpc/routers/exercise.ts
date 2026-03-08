@@ -56,7 +56,8 @@ export const exerciseRouter = router({
       const conditions = [
         or(
           eq(exercises.isCustom, false),
-          eq(exercises.createdBy, ctx.user.id)
+          eq(exercises.createdBy, ctx.user.id),
+          eq(exercises.isPublic, true)
         ),
       ];
 
@@ -71,6 +72,8 @@ export const exerciseRouter = router({
           category: exercises.category,
           metValue: exercises.metValue,
           isCustom: exercises.isCustom,
+          isPublic: exercises.isPublic,
+          createdBy: exercises.createdBy,
         })
         .from(exercises)
         .where(and(...conditions))
@@ -87,6 +90,8 @@ export const exerciseRouter = router({
           category: exercises.category,
           metValue: exercises.metValue,
           isCustom: exercises.isCustom,
+          isPublic: exercises.isPublic,
+          createdBy: exercises.createdBy,
         })
         .from(exercises)
         .where(
@@ -94,7 +99,8 @@ export const exerciseRouter = router({
             ilike(exercises.name, `%${input.query}%`),
             or(
               eq(exercises.isCustom, false),
-              eq(exercises.createdBy, ctx.user.id)
+              eq(exercises.createdBy, ctx.user.id),
+              eq(exercises.isPublic, true)
             )
           )
         )
@@ -159,6 +165,30 @@ export const exerciseRouter = router({
           )
         );
       return { success: true };
+    }),
+
+  toggleExercisePublic: protectedProcedure
+    .input(z.object({ exerciseId: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const exercise = await ctx.db
+        .select({ isCustom: exercises.isCustom, createdBy: exercises.createdBy, isPublic: exercises.isPublic })
+        .from(exercises)
+        .where(eq(exercises.id, input.exerciseId))
+        .then((r) => r[0]);
+
+      if (!exercise || !exercise.isCustom || exercise.createdBy !== ctx.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "只能設定自己建立的自訂動作為公開",
+        });
+      }
+
+      await ctx.db
+        .update(exercises)
+        .set({ isPublic: !exercise.isPublic })
+        .where(eq(exercises.id, input.exerciseId));
+
+      return { isPublic: !exercise.isPublic };
     }),
 
   createCustomExercise: protectedProcedure

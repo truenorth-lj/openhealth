@@ -29,6 +29,7 @@ export const exercises = pgTable("exercises", {
   category: exerciseCategoryEnum("category"),
   metValue: decimal("met_value", { precision: 4, scale: 1 }),
   isCustom: boolean("is_custom").default(false).notNull(),
+  isPublic: boolean("is_public").default(false).notNull(),
   createdBy: text("created_by").references(() => users.id),
 });
 

@@ -13,6 +13,7 @@ import {
   ChevronUp,
   Save,
   Clock,
+  Globe,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
@@ -41,7 +42,7 @@ import {
 export default function ActiveWorkoutPage() {
   const router = useRouter();
   const utils = trpc.useUtils();
-  const { isAuthenticated, showLoginDialog, setShowLoginDialog } =
+  const { isAuthenticated, showLoginDialog, setShowLoginDialog, user } =
     useAuthGuard();
 
   const { data: workout, isLoading } = trpc.workout.getActive.useQuery(
@@ -75,6 +76,15 @@ export default function ActiveWorkoutPage() {
   const [showCreateCustom, setShowCreateCustom] = useState(false);
   const [customName, setCustomName] = useState("");
   const [customCategory, setCustomCategory] = useState<string>("strength");
+
+  const togglePublic = trpc.exercise.toggleExercisePublic.useMutation({
+    onSuccess: (data) => {
+      utils.exercise.getPresets.invalidate();
+      utils.exercise.searchExercises.invalidate();
+      toast.success(data.isPublic ? "已設為公開" : "已設為私人");
+    },
+    onError: (err) => toast.error(err.message),
+  });
 
   const createCustomExercise = trpc.exercise.createCustomExercise.useMutation({
     onSuccess: (data) => {
@@ -406,12 +416,14 @@ export default function ActiveWorkoutPage() {
           <div className="space-y-0 max-h-60 overflow-y-auto">
             {exerciseList && exerciseList.length > 0 ? (
               exerciseList.map((ex) => (
-                <button
+                <div
                   key={ex.id}
-                  onClick={() => handleAddExercise(ex.id)}
-                  className="w-full flex items-center justify-between py-2.5 border-b border-black/[0.04] dark:border-white/[0.04] last:border-b-0 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors text-left"
+                  className="flex items-center justify-between py-2.5 border-b border-black/[0.04] dark:border-white/[0.04] last:border-b-0 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
                 >
-                  <div>
+                  <button
+                    onClick={() => handleAddExercise(ex.id)}
+                    className="flex-1 text-left"
+                  >
                     <span className="text-sm font-light">{ex.name}</span>
                     {ex.category && (
                       <span className="ml-2 text-[10px] text-neutral-400">
@@ -421,8 +433,27 @@ export default function ActiveWorkoutPage() {
                     {ex.isCustom && (
                       <span className="ml-1.5 text-[10px] text-orange-400">自訂</span>
                     )}
-                  </div>
-                </button>
+                    {ex.isPublic && (
+                      <span className="ml-1.5 text-[10px] text-blue-400">公開</span>
+                    )}
+                  </button>
+                  {ex.isCustom && ex.createdBy === user?.id && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        togglePublic.mutate({ exerciseId: ex.id });
+                      }}
+                      title={ex.isPublic ? "設為私人" : "設為公開"}
+                      className={`ml-2 p-1.5 rounded transition-colors ${
+                        ex.isPublic
+                          ? "text-blue-400 hover:text-blue-500"
+                          : "text-neutral-300 hover:text-neutral-500"
+                      }`}
+                    >
+                      <Globe className="h-3.5 w-3.5" strokeWidth={1.5} />
+                    </button>
+                  )}
+                </div>
               ))
             ) : (
               <p className="text-sm font-light text-neutral-400 text-center py-4">
