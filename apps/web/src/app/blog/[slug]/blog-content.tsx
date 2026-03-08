@@ -83,6 +83,14 @@ export function BlogContent({ content }: { content: string }) {
               </code>
             );
           },
+          img: ({ src, alt }) => (
+            <img
+              src={src}
+              alt={alt ?? ""}
+              className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] my-6 mx-auto max-w-full"
+              loading="lazy"
+            />
+          ),
           a: ({ href, children }) => (
             <a
               href={href}
