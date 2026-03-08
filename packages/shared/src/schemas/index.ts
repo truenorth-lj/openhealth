@@ -181,6 +181,67 @@ export const connectToCoachSchema = z.object({
     .regex(/^[A-Z0-9]+$/i, "教練碼只能包含英文字母和數字"),
 });
 
+// Workout tracking schemas
+export const startWorkoutSchema = z.object({
+  name: z.string().min(1).max(200).optional(),
+  templateId: z.string().uuid().optional(),
+});
+
+export const addExerciseToWorkoutSchema = z.object({
+  workoutId: z.string().uuid(),
+  exerciseId: z.string().uuid(),
+  sortOrder: z.number().int().min(0).optional(),
+});
+
+export const logSetSchema = z.object({
+  workoutExerciseId: z.string().uuid(),
+  setNumber: z.number().int().min(1),
+  weightKg: z.number().min(0).max(9999).optional(),
+  reps: z.number().int().min(0).max(9999).optional(),
+  durationSec: z.number().int().min(0).optional(),
+  rpe: z.number().min(1).max(10).optional(),
+  isWarmup: z.boolean().optional(),
+  isDropset: z.boolean().optional(),
+});
+
+export const removeSetSchema = z.object({
+  setId: z.string().uuid(),
+});
+
+export const finishWorkoutSchema = z.object({
+  workoutId: z.string().uuid(),
+});
+
+export const discardWorkoutSchema = z.object({
+  workoutId: z.string().uuid(),
+});
+
+export const removeExerciseFromWorkoutSchema = z.object({
+  workoutExerciseId: z.string().uuid(),
+});
+
+export const createWorkoutTemplateSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  exercises: z.array(
+    z.object({
+      exerciseId: z.string().uuid(),
+      defaultSets: z.number().int().min(1).max(20).optional(),
+      defaultReps: z.number().int().min(1).max(100).optional(),
+      defaultWeightKg: z.number().min(0).max(9999).optional(),
+    })
+  ),
+});
+
+export const saveWorkoutAsTemplateSchema = z.object({
+  workoutId: z.string().uuid(),
+  name: z.string().min(1).max(200),
+});
+
+export const deleteWorkoutTemplateSchema = z.object({
+  templateId: z.string().uuid(),
+});
+
 export const updateCoachNotesSchema = z.object({
   clientId: z.string(),
   coachNotes: z.string().max(2000).optional(),

@@ -174,6 +174,17 @@ export const EXERCISE_INTENSITY_LABELS: Record<string, string> = {
   high: "高",
 };
 
+// Workout tracking
+export const REST_TIMER_OPTIONS = [30, 60, 90, 120, 180] as const;
+export const PR_TYPES = ["weight", "1rm", "volume", "reps"] as const;
+export const SET_TYPES = ["normal", "warmup", "dropset"] as const;
+
+export const SET_TYPE_LABELS: Record<string, string> = {
+  normal: "正式組",
+  warmup: "暖身組",
+  dropset: "遞減組",
+};
+
 export const APP_NAME = "Open Health";
 export const THEME_COLOR = "#16a34a";
 export const DANGER_COLOR = "#ef4444";

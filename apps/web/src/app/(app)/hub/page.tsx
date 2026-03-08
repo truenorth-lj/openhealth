@@ -20,6 +20,7 @@ import {
   Bell,
   Apple,
   Armchair,
+  Weight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -43,6 +44,7 @@ const sections: { title: string; items: HubItem[] }[] = [
     items: [
       { href: "/diary", label: "飲食記錄", icon: UtensilsCrossed, implemented: true },
       { href: "/exercise", label: "運動記錄", icon: Dumbbell, implemented: true },
+      { href: "/workout", label: "重訓記錄", icon: Weight, implemented: true, badge: "新" },
       { href: "/water", label: "水分追蹤", icon: Droplets, implemented: true },
       { href: "/fasting", label: "間歇斷食", icon: Timer, implemented: true },
       { href: "/progress?tab=weight", label: "體重紀錄", icon: Scale, implemented: true },

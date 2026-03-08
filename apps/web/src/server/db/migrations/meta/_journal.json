@@ -99,6 +99,13 @@
       "when": 1741430400000,
       "tag": "0013_rename_stripe_invoice_id",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1772987349229,
+      "tag": "0014_huge_freak",
+      "breakpoints": true
     }
   ]
 }

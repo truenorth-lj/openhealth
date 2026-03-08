@@ -14,6 +14,7 @@ import { fastingRouter } from "./routers/fasting";
 import { coachRouter } from "./routers/coach";
 import { postureRouter } from "./routers/posture";
 import { pushRouter } from "./routers/push";
+import { workoutRouter } from "./routers/workout";
 
 export const appRouter = router({
   food: foodRouter,
@@ -31,6 +32,7 @@ export const appRouter = router({
   coach: coachRouter,
   posture: postureRouter,
   push: pushRouter,
+  workout: workoutRouter,
 });
 
 export type AppRouter = typeof appRouter;
