@@ -72,6 +72,22 @@ export default function ActiveWorkoutPage() {
   >();
   const [expandedExercise, setExpandedExercise] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [showCreateCustom, setShowCreateCustom] = useState(false);
+  const [customName, setCustomName] = useState("");
+  const [customCategory, setCustomCategory] = useState<string>("strength");
+
+  const createCustomExercise = trpc.exercise.createCustomExercise.useMutation({
+    onSuccess: (data) => {
+      utils.exercise.getPresets.invalidate();
+      toast.success("已建立自訂動作");
+      setShowCreateCustom(false);
+      setCustomName("");
+      setCustomCategory("strength");
+      // Automatically add to workout
+      handleAddExercise(data.id);
+    },
+    onError: (err) => toast.error(err.message),
+  });
 
   const { data: presets } = trpc.exercise.getPresets.useQuery(
     selectedCategory
@@ -402,6 +418,9 @@ export default function ActiveWorkoutPage() {
                         {EXERCISE_CATEGORY_LABELS[ex.category] ?? ex.category}
                       </span>
                     )}
+                    {ex.isCustom && (
+                      <span className="ml-1.5 text-[10px] text-orange-400">自訂</span>
+                    )}
                   </div>
                 </button>
               ))
@@ -411,6 +430,68 @@ export default function ActiveWorkoutPage() {
               </p>
             )}
           </div>
+
+          {/* Create custom exercise */}
+          {!showCreateCustom ? (
+            <button
+              onClick={() => setShowCreateCustom(true)}
+              className="w-full py-2.5 text-sm font-light text-primary hover:text-primary/80 transition-colors border-t border-black/[0.06] dark:border-white/[0.06]"
+            >
+              + 建立自訂動作
+            </button>
+          ) : (
+            <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-3 space-y-3">
+              <p className="text-xs font-medium text-neutral-500">建立自訂動作</p>
+              <input
+                type="text"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                placeholder="動作名稱"
+                maxLength={200}
+                className="w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+              <div className="flex gap-1.5 flex-wrap">
+                {EXERCISE_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCustomCategory(cat)}
+                    className={`px-2.5 py-1 rounded-full text-xs font-light transition-all ${
+                      customCategory === cat
+                        ? "bg-primary text-white"
+                        : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500 hover:text-foreground"
+                    }`}
+                  >
+                    {EXERCISE_CATEGORY_LABELS[cat]}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setShowCreateCustom(false);
+                    setCustomName("");
+                  }}
+                  className="flex-1 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm font-light"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={() => {
+                    if (!customName.trim()) return;
+                    createCustomExercise.mutate({
+                      name: customName.trim(),
+                      category: customCategory as "cardio" | "strength" | "flexibility" | "sport" | "other",
+                    });
+                  }}
+                  disabled={!customName.trim() || createCustomExercise.isPending}
+                  className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-50"
+                >
+                  {createCustomExercise.isPending ? "建立中..." : "建立並新增"}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </Dialog>
 
