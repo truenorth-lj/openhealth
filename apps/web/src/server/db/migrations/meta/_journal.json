@@ -78,6 +78,13 @@
       "when": 1772896321665,
       "tag": "0010_free_roulette",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1772948525107,
+      "tag": "0011_slow_ultragirl",
+      "breakpoints": true
     }
   ]
 }

@@ -19,6 +19,7 @@ import {
   Settings2,
   Bell,
   Apple,
+  Armchair,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -46,6 +47,7 @@ const sections: { title: string; items: HubItem[] }[] = [
       { href: "/fasting", label: "間歇斷食", icon: Timer, implemented: true },
       { href: "/progress?tab=weight", label: "體重紀錄", icon: Scale, implemented: true },
       { href: "/progress?tab=steps", label: "步數紀錄", icon: Footprints, implemented: true },
+      { href: "/posture", label: "姿勢提醒", icon: Armchair, implemented: true, badge: "新" },
     ],
   },
   {

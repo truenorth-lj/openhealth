@@ -14,3 +14,4 @@ export * from "./ai-usage";
 export * from "./subscriptions";
 export * from "./notifications";
 export * from "./coaching";
+export * from "./posture";
