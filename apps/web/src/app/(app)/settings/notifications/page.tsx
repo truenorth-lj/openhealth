@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ArrowLeft, Droplets, BellRing } from "lucide-react";
 import Link from "next/link";
 import { requestNotificationPermission } from "@/hooks/use-water-reminder";
+import { NotificationPermissionGuard } from "@/components/notification-permission-guard";
 
 const INTERVAL_OPTIONS = [
   { value: 30, label: "30 分鐘" },
@@ -106,14 +107,8 @@ export default function NotificationSettingsPage() {
         <h1 className="text-xl font-light tracking-wide">通知設定</h1>
       </div>
 
-      {/* Browser permission warning */}
-      {permissionState === "denied" && (
-        <div className="rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30 px-4 py-3">
-          <p className="text-sm text-red-600 dark:text-red-400">
-            瀏覽器通知權限已被封鎖。請在瀏覽器設定中允許本站通知。
-          </p>
-        </div>
-      )}
+      {/* Notification permission guard — auto-detects & guides user */}
+      <NotificationPermissionGuard />
 
       {/* Water Reminder Section */}
       <div className="space-y-4">

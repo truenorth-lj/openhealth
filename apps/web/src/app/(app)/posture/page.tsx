@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { usePushSubscription } from "@/hooks/use-push-subscription";
+import { NotificationPermissionGuard } from "@/components/notification-permission-guard";
 
 const MS_PER_MINUTE = 60 * 1000;
 const CIRCLE_CIRCUMFERENCE = 540;
@@ -161,27 +161,12 @@ export default function PosturePage() {
 
   const markReminded = trpc.posture.markReminded.useMutation();
 
-  const { subscribeToPush, isSupported: pushSupported } =
-    usePushSubscription();
-  const [pushPermission, setPushPermission] = useState<NotificationPermission>(
-    typeof window !== "undefined" && "Notification" in window
-      ? Notification.permission
-      : "denied"
-  );
-
   // Timer tick
   useEffect(() => {
     if (!activeSession) return;
     const interval = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(interval);
   }, [activeSession]);
-
-  // Sync notification permission state
-  useEffect(() => {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      setPushPermission(Notification.permission);
-    }
-  }, []);
 
   // Reminder logic
   const elapsedMs = activeSession
@@ -403,28 +388,8 @@ export default function PosturePage() {
         </div>
       )}
 
-      {/* Push notification permission prompt */}
-      {pushSupported && pushPermission === "default" && (
-        <div className="rounded-lg border border-green-500/20 bg-green-500/5 p-4 text-center space-y-2">
-          <p className="text-sm font-light text-neutral-600 dark:text-neutral-400">
-            開啟推播通知，即使 App 在背景也能收到姿勢提醒
-          </p>
-          <button
-            onClick={async () => {
-              try {
-                const ok = await subscribeToPush();
-                setPushPermission(Notification.permission);
-                if (ok) toast.success("已開啟推播通知");
-              } catch {
-                toast.error("無法開啟推播通知");
-              }
-            }}
-            className="text-sm font-medium text-green-600 dark:text-green-400 underline underline-offset-2"
-          >
-            開啟通知
-          </button>
-        </div>
-      )}
+      {/* Notification permission guard — auto-detects & guides user */}
+      <NotificationPermissionGuard />
 
       {/* Posture quick-switch buttons */}
       <div className="space-y-3">
