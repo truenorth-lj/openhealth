@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/server/db";
-import { subscriptions, referrals } from "@/server/db/schema";
+import { subscriptions } from "@/server/db/schema";
 import type {
   PaymentProvider,
   SubscriptionData,
@@ -140,25 +140,6 @@ export class StripePaymentProvider implements PaymentProvider {
       metadata: { userId },
     });
     return customer.id;
-  }
-
-  /** Check if user is a first-time referred user (eligible for coupon) */
-  async isReferralEligible(userId: string): Promise<boolean> {
-    const [referral] = await db
-      .select({ id: referrals.id })
-      .from(referrals)
-      .where(eq(referrals.refereeId, userId))
-      .limit(1);
-
-    if (!referral) return false;
-
-    const [existingSub] = await db
-      .select({ id: subscriptions.id })
-      .from(subscriptions)
-      .where(eq(subscriptions.userId, userId))
-      .limit(1);
-
-    return !existingSub;
   }
 
   private mapStatus(

@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import {
   lemonSqueezySetup,
   createCheckout,
@@ -97,8 +98,6 @@ export class LemonSqueezyPaymentProvider implements PaymentProvider {
 
   /** Verify Lemon Squeezy webhook HMAC signature */
   verifyWebhook(body: string, signature: string): boolean {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const crypto = require("crypto") as typeof import("crypto");
     const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
     if (!secret) throw new Error("LEMONSQUEEZY_WEBHOOK_SECRET is not set");
 
