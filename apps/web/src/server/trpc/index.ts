@@ -14,6 +14,7 @@ import { fastingRouter } from "./routers/fasting";
 import { coachRouter } from "./routers/coach";
 import { postureRouter } from "./routers/posture";
 import { pushRouter } from "./routers/push";
+import { sleepRouter } from "./routers/sleep";
 import { workoutRouter } from "./routers/workout";
 
 export const appRouter = router({
@@ -32,6 +33,7 @@ export const appRouter = router({
   coach: coachRouter,
   posture: postureRouter,
   push: pushRouter,
+  sleep: sleepRouter,
   workout: workoutRouter,
 });
 

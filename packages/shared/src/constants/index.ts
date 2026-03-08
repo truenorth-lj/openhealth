@@ -222,3 +222,26 @@ export const REWARD_STATUSES = {
 } as const;
 
 export type RewardStatus = (typeof REWARD_STATUSES)[keyof typeof REWARD_STATUSES];
+
+// Sleep tracking
+export const SLEEP_PHASES = ["awake", "light", "deep", "rem"] as const;
+export const SLEEP_DETECTION_METHODS = ["accelerometer", "microphone", "both"] as const;
+
+export const SLEEP_PHASE_LABELS: Record<string, string> = {
+  awake: "清醒",
+  light: "淺睡",
+  deep: "深睡",
+  rem: "REM",
+};
+
+export const SLEEP_PHASE_COLORS: Record<string, string> = {
+  awake: "#ef4444",
+  light: "#60a5fa",
+  deep: "#1e40af",
+  rem: "#a78bfa",
+};
+
+export const DEFAULT_SLEEP_GOAL_HOURS = 8;
+export const DEFAULT_ALARM_WINDOW_MINUTES = 30;
+export const SLEEP_SAMPLE_INTERVAL_MS = 1000;
+export const SLEEP_EPOCH_DURATION_MS = 60_000;

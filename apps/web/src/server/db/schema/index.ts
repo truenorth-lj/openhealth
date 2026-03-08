@@ -16,4 +16,5 @@ export * from "./notifications";
 export * from "./coaching";
 export * from "./posture";
 export * from "./push-subscriptions";
+export * from "./sleep";
 export * from "./workout";

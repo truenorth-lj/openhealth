@@ -250,3 +250,30 @@ export const updateCoachNotesSchema = z.object({
   carbsPct: z.number().min(0).max(100).nullable().optional(),
   fatPct: z.number().min(0).max(100).nullable().optional(),
 });
+
+// Sleep tracking
+export const saveSleepSessionSchema = z.object({
+  startTime: z.string().datetime(),
+  endTime: z.string().datetime(),
+  sleepOnset: z.string().datetime(),
+  wakeTime: z.string().datetime(),
+  durationMinutes: z.number().int().min(0).max(1440),
+  quality: z.number().int().min(0).max(100),
+  detectionMethod: z.enum(["accelerometer", "microphone", "both"]),
+  phases: z.array(
+    z.object({
+      startTime: z.string().datetime(),
+      endTime: z.string().datetime(),
+      phase: z.enum(["awake", "light", "deep", "rem"]),
+    })
+  ),
+  movementSamples: z
+    .array(z.object({ timestamp: z.number(), intensity: z.number() }))
+    .optional(),
+  note: z.string().max(500).optional(),
+});
+
+export const updateSleepGoalSchema = z.object({
+  goalHours: z.number().min(1).max(24),
+  alarmWindowMinutes: z.number().int().min(5).max(60),
+});

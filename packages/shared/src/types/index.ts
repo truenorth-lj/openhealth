@@ -81,3 +81,36 @@ export type OpenFoodFactsResult = {
   sodium?: number;
   imageUrl?: string;
 };
+
+// Sleep tracking
+import type { SLEEP_PHASES, SLEEP_DETECTION_METHODS } from "../constants";
+
+export type SleepPhase = (typeof SLEEP_PHASES)[number];
+export type SleepDetectionMethod = (typeof SLEEP_DETECTION_METHODS)[number];
+
+export interface SleepSessionSummary {
+  startTime: string;
+  endTime: string;
+  sleepOnset: string;
+  wakeTime: string;
+  durationMinutes: number;
+  quality: number;
+  detectionMethod: SleepDetectionMethod;
+  phases: SleepPhasePeriod[];
+}
+
+export interface SleepPhasePeriod {
+  startTime: string;
+  endTime: string;
+  phase: SleepPhase;
+}
+
+export interface SleepMovementSample {
+  timestamp: number;
+  intensity: number;
+}
+
+export interface SleepAudioSample {
+  timestamp: number;
+  decibels: number;
+}
