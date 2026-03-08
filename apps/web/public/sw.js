@@ -1,4 +1,4 @@
-const CACHE_NAME = "open-health-v4";
+const CACHE_NAME = "open-health-v5";
 
 const PRECACHE_URLS = [
   "/manifest.json",
@@ -28,11 +28,43 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Listen for skip-waiting message from client
+// Listen for messages from client
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
+
+  // Show notification via SW (works even when tab is backgrounded / PWA minimized)
+  if (event.data && event.data.type === "SHOW_NOTIFICATION") {
+    const { title, body, icon, tag, url } = event.data;
+    event.waitUntil(
+      self.registration.showNotification(title, {
+        body,
+        icon: icon || "/icon.svg",
+        tag: tag || undefined,
+        data: { url: url || "/" },
+      })
+    );
+  }
+});
+
+// Handle notification click — focus or open the app
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || "/";
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clients) => {
+        for (const client of clients) {
+          if (client.url.includes(self.location.origin) && "focus" in client) {
+            return client.navigate(url).then(() => client.focus());
+          }
+        }
+        return self.clients.openWindow(url);
+      })
+  );
 });
 
 /** Network-first with cache fallback: try network, cache response, fall back to cache on failure. */

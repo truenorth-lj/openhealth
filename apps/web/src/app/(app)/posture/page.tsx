@@ -46,12 +46,26 @@ function requestNotificationPermission() {
   }
 }
 
+/** Send notification via Service Worker so it works in background / PWA */
 function sendNotification(title: string, body: string) {
-  if (
-    typeof window !== "undefined" &&
-    "Notification" in window &&
-    Notification.permission === "granted"
-  ) {
+  if (typeof window === "undefined" || !("Notification" in window)) return;
+  if (Notification.permission !== "granted") return;
+
+  // Prefer SW-based notification (works when tab is backgrounded / PWA minimized)
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.ready
+      .then((reg) => {
+        reg.showNotification(title, {
+          body,
+          icon: "/icon.svg",
+          tag: "posture-reminder",
+          data: { url: "/posture" },
+        });
+      })
+      .catch(() => {
+        new Notification(title, { body, icon: "/icon.svg" });
+      });
+  } else {
     new Notification(title, { body, icon: "/icon.svg" });
   }
 }
@@ -160,7 +174,7 @@ export default function PosturePage() {
     config?.reminderEnabled !== false &&
     !isSnoozed;
 
-  // Send browser notification when overtime
+  // Send notification when overtime (triggered by interval tick)
   useEffect(() => {
     if (shouldRemind && activeSession && !hasNotified) {
       sendNotification(
@@ -171,6 +185,32 @@ export default function PosturePage() {
       setHasNotified(true);
     }
   }, [shouldRemind, activeSession, hasNotified]);
+
+  // Precise timeout: schedule notification for exact overtime moment
+  // This fires even when setInterval is throttled in backgrounded tabs
+  useEffect(() => {
+    if (!activeSession || hasNotified || config?.reminderEnabled === false) return;
+
+    const timeUntilOvertime =
+      new Date(activeSession.startedAt).getTime() +
+      activeSession.maxMinutes * MS_PER_MINUTE -
+      Date.now();
+
+    if (timeUntilOvertime <= 0) return; // already overtime, handled above
+
+    const timer = setTimeout(() => {
+      if (Notification.permission === "granted") {
+        sendNotification(
+          `${activeSession.postureEmoji} 該換姿勢了！`,
+          `你已經維持「${activeSession.postureName}」超過 ${activeSession.maxMinutes} 分鐘。${activeSession.suggestedBreak}`
+        );
+        markReminded.mutate({ id: activeSession.id });
+        setHasNotified(true);
+      }
+    }, timeUntilOvertime);
+
+    return () => clearTimeout(timer);
+  }, [activeSession, hasNotified, config?.reminderEnabled]);
 
   const handleSnooze = useCallback(() => {
     const snoozeMs = (config?.snoozeMinutes ?? 10) * MS_PER_MINUTE;

@@ -39,11 +39,31 @@ function sendNotification(totalMl: number, goalMl: number) {
       ? `今日已喝 ${totalMl} mL，已達到目標！`
       : `今日已喝 ${totalMl} / ${goalMl} mL，還需 ${remaining} mL`;
 
-  new Notification("該喝水了！", {
-    body,
-    icon: "/icon.svg",
-    tag: "water-reminder", // replaces previous notification
-  });
+  // Prefer SW-based notification (works when tab is backgrounded / PWA minimized)
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.ready
+      .then((reg) => {
+        reg.showNotification("該喝水了！", {
+          body,
+          icon: "/icon.svg",
+          tag: "water-reminder",
+          data: { url: "/water" },
+        });
+      })
+      .catch(() => {
+        new Notification("該喝水了！", {
+          body,
+          icon: "/icon.svg",
+          tag: "water-reminder",
+        });
+      });
+  } else {
+    new Notification("該喝水了！", {
+      body,
+      icon: "/icon.svg",
+      tag: "water-reminder",
+    });
+  }
 }
 
 export function useWaterReminder() {
