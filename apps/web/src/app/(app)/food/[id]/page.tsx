@@ -234,22 +234,6 @@ export default function FoodDetailPage() {
         </div>
       )}
 
-      {/* Description */}
-      {isEditing ? (
-        <div className="mb-4">
-          <Textarea
-            value={editForm.description}
-            onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
-            placeholder="備註（選填）"
-            rows={3}
-          />
-        </div>
-      ) : (
-        food.description && (
-          <p className="text-sm text-muted-foreground mb-4 px-1 whitespace-pre-wrap">{food.description}</p>
-        )
-      )}
-
       {/* Serving info */}
       {isEditing ? (
         <div className="rounded-lg bg-muted/50 px-4 py-3 mb-4 space-y-2">
@@ -365,6 +349,25 @@ export default function FoodDetailPage() {
           </div>
         </div>
       ))}
+
+      {/* Description / Notes */}
+      {isEditing ? (
+        <div className="mb-4">
+          <Textarea
+            value={editForm.description}
+            onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+            placeholder="備註（選填）"
+            rows={3}
+          />
+        </div>
+      ) : (
+        food.description && (
+          <div className="mb-4">
+            <h2 className="text-sm font-semibold mb-2 px-1">備註</h2>
+            <p className="text-sm text-muted-foreground px-1 whitespace-pre-wrap">{food.description}</p>
+          </div>
+        )
+      )}
     </div>
   );
 }
