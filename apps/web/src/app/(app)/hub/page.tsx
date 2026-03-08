@@ -21,6 +21,7 @@ import {
   Apple,
   Armchair,
   Weight,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -76,6 +77,12 @@ const sections: { title: string; items: HubItem[] }[] = [
       { href: "/settings/profile", label: "個人資料", icon: User, implemented: true },
       { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: true },
       { href: "/settings", label: "設定", icon: Settings2, implemented: true },
+    ],
+  },
+  {
+    title: "資料管理",
+    items: [
+      { href: "/settings/export", label: "匯出資料", icon: Download, implemented: true },
     ],
   },
 ];
