@@ -15,3 +15,4 @@ export * from "./subscriptions";
 export * from "./notifications";
 export * from "./coaching";
 export * from "./posture";
+export * from "./push-subscriptions";

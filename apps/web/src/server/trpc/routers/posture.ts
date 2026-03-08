@@ -6,6 +6,10 @@ import {
   postureConfig,
 } from "@/server/db/schema";
 import { eq, and, desc, isNull } from "drizzle-orm";
+import {
+  schedulePush,
+  cancelPush,
+} from "@/server/services/posture-push-scheduler";
 
 const DEFAULT_POSTURES = [
   { name: "坐姿", emoji: "🪑", maxMinutes: 45, suggestedBreak: "站起來走動 2 分鐘", sortOrder: 0 },
@@ -180,6 +184,7 @@ export const postureRouter = router({
 
         const now = new Date();
         for (const session of existing) {
+          cancelPush(session.id);
           const durationMinutes = Math.round(
             (now.getTime() - new Date(session.startedAt).getTime()) / 60000
           );
@@ -199,6 +204,26 @@ export const postureRouter = router({
           })
           .returning();
 
+        // Look up posture definition for push notification
+        const postureDef = await tx
+          .select()
+          .from(postureDefinitions)
+          .where(eq(postureDefinitions.id, input.postureId))
+          .then((r) => r[0]);
+
+        if (postureDef) {
+          const fireAt = new Date(
+            now.getTime() + postureDef.maxMinutes * 60000
+          );
+          schedulePush(ctx.user.id, newSession.id, fireAt, {
+            type: "posture-reminder",
+            title: `${postureDef.emoji} 該換姿勢了！`,
+            body: `你已經維持「${postureDef.name}」超過 ${postureDef.maxMinutes} 分鐘。${postureDef.suggestedBreak}`,
+            tag: "posture-reminder",
+            url: "/posture",
+          });
+        }
+
         return newSession;
       });
     }),
@@ -216,6 +241,7 @@ export const postureRouter = router({
 
     const now = new Date();
     for (const session of existing) {
+      cancelPush(session.id);
       const durationMinutes = Math.round(
         (now.getTime() - new Date(session.startedAt).getTime()) / 60000
       );

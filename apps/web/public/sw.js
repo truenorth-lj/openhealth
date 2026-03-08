@@ -48,6 +48,19 @@ self.addEventListener("message", (event) => {
   }
 });
 
+// Handle Web Push notifications (server-side push)
+self.addEventListener("push", (event) => {
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || "Open Health";
+  const options = {
+    body: data.body || "",
+    icon: "/icon.svg",
+    tag: data.tag || "posture-reminder",
+    data: { url: data.url || "/posture" },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
 // Handle notification click — focus or open the app
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
