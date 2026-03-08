@@ -3,8 +3,8 @@ import Link from "next/link";
 import { SiteNav } from "@/components/layout/site-nav";
 
 export const metadata: Metadata = {
-  title: "安裝指南 — Open Health",
-  description: "了解如何將 Open Health 安裝到你的裝置上。支援 iOS、Android 與桌面瀏覽器。",
+  title: "使用指南 — Open Health",
+  description: "了解如何將 Open Health 安裝到裝置主畫面、開啟通知提醒。支援 iOS、Android 與桌面瀏覽器。",
 };
 
 function Step({
@@ -36,12 +36,53 @@ export default function DocsPage() {
         <p className="text-[10px] tracking-[0.4em] text-neutral-400 dark:text-neutral-600 uppercase mb-4">
           Documentation
         </p>
-        <h1 className="text-4xl md:text-5xl font-extralight mb-8">安裝指南</h1>
+        <h1 className="text-4xl md:text-5xl font-extralight mb-8">使用指南</h1>
         <p className="text-neutral-500 font-light mb-20 max-w-xl text-sm leading-relaxed">
           Open Health 是一個 Progressive Web App (PWA)。
           無需透過 App Store 或 Google Play 下載，直接從瀏覽器安裝到裝置主畫面，
           享受接近原生應用的體驗。
         </p>
+
+        {/* Quick Start */}
+        <section className="mb-20">
+          <h2 className="text-xl font-light mb-6">快速開始</h2>
+          <div className="border-l border-black/[0.06] dark:border-white/[0.06] pl-6 space-y-6">
+            <div>
+              <h3 className="text-sm font-light text-black dark:text-white mb-2">
+                1. 加入主畫面
+              </h3>
+              <p className="text-neutral-500 font-light text-sm leading-relaxed">
+                用瀏覽器開啟{" "}
+                <span className="text-black dark:text-white">openhealth.blog</span>
+                ，將網站加入裝置主畫面。安裝後即可像一般 App 一樣使用。
+                詳細步驟請參考下方各平台的安裝說明。
+              </p>
+            </div>
+            <div>
+              <h3 className="text-sm font-light text-black dark:text-white mb-2">
+                2. 註冊帳號
+              </h3>
+              <p className="text-neutral-500 font-light text-sm leading-relaxed">
+                從主畫面開啟 App，點選「註冊」建立帳號。支援 Email 註冊和 Google 登入。
+              </p>
+            </div>
+            <div>
+              <h3 className="text-sm font-light text-black dark:text-white mb-2">
+                3. 開啟通知
+              </h3>
+              <p className="text-neutral-500 font-light text-sm leading-relaxed">
+                進入 App 後，前往{" "}
+                <span className="text-black dark:text-white">設定 → 通知設定</span>
+                ，開啟喝水提醒或姿勢提醒。首次使用時，App 會自動請求通知權限。
+                詳細設定方式請參考下方的
+                <a href="#notifications" className="text-green-600 dark:text-green-400 underline underline-offset-2 ml-1">
+                  開啟通知
+                </a>
+                段落。
+              </p>
+            </div>
+          </div>
+        </section>
 
         {/* What is PWA */}
         <section className="mb-20">
@@ -121,6 +162,65 @@ export default function DocsPage() {
           </div>
         </section>
 
+        {/* Notifications */}
+        <section id="notifications" className="mb-20">
+          <h2 className="text-xl font-light mb-6">開啟通知</h2>
+          <p className="text-neutral-500 font-light text-sm leading-relaxed mb-10">
+            Open Health 支援推播通知，提醒你喝水和調整坐姿。
+            安裝為 PWA 後，需要額外開啟通知權限才能收到提醒。
+          </p>
+
+          <div className="space-y-10">
+            {/* iOS notification */}
+            <div>
+              <h3 className="text-xs tracking-[0.3em] text-neutral-500 uppercase mb-6 font-mono">
+                iOS / iPadOS
+              </h3>
+              <div className="border-t border-black/[0.06] dark:border-white/[0.06]">
+                <Step num="01" title="開啟設定 App">
+                  前往 iPhone / iPad 的「設定」。
+                </Step>
+                <Step num="02" title="找到 Open Health">
+                  向下滑動，在 App 列表中找到「Open Health PWA」。
+                </Step>
+                <Step num="03" title="開啟通知">
+                  點選「通知」，然後開啟「允許通知」開關。
+                  建議同時開啟「鎖定畫面」、「通知中心」和「橫幅」。
+                </Step>
+                <Step num="04" title="回到 App">
+                  返回 Open Health，前往「設定 → 通知設定」啟用提醒功能。
+                </Step>
+              </div>
+            </div>
+
+            {/* Android notification */}
+            <div>
+              <h3 className="text-xs tracking-[0.3em] text-neutral-500 uppercase mb-6 font-mono">
+                Android
+              </h3>
+              <div className="border-l border-black/[0.06] dark:border-white/[0.06] pl-6">
+                <p className="text-neutral-500 font-light text-sm leading-relaxed">
+                  Android 裝置會在 App 首次請求時彈出通知權限對話框，
+                  點選「允許」即可。如果不小心拒絕了，可以到「設定 → 應用程式 → Open Health → 通知」重新開啟。
+                </p>
+              </div>
+            </div>
+
+            {/* Desktop notification */}
+            <div>
+              <h3 className="text-xs tracking-[0.3em] text-neutral-500 uppercase mb-6 font-mono">
+                Desktop / Chrome
+              </h3>
+              <div className="border-l border-black/[0.06] dark:border-white/[0.06] pl-6">
+                <p className="text-neutral-500 font-light text-sm leading-relaxed">
+                  瀏覽器會在首次請求時彈出通知權限對話框，點選「允許」即可。
+                  如果已封鎖通知，點擊網址列左側的鎖頭圖示，將通知權限改為「允許」。
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* FAQ */}
         <section className="mb-20">
           <h2 className="text-xl font-light mb-10">常見問題</h2>
@@ -140,6 +240,17 @@ export default function DocsPage() {
               </h3>
               <p className="text-neutral-500 dark:text-neutral-600 font-light text-sm leading-relaxed">
                 基本的頁面瀏覽可以離線使用。資料同步需要網路連線。
+              </p>
+            </div>
+            <div>
+              <h3 className="text-sm font-light mb-2">
+                為什麼收不到通知？
+              </h3>
+              <p className="text-neutral-500 dark:text-neutral-600 font-light text-sm leading-relaxed">
+                iOS 使用者需要先將網站加入主畫面（安裝為 PWA），然後到「設定」App 中開啟通知權限。
+                僅在 Safari 瀏覽器中開啟是不夠的。請參考上方的
+                <a href="#notifications" className="text-green-600 dark:text-green-400 underline underline-offset-2">開啟通知</a>
+                段落。
               </p>
             </div>
             <div>
