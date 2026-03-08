@@ -151,7 +151,7 @@ export default function SubscriptionPage() {
 
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-semibold">
-                NT${interval === "monthly" ? "100" : "800"}
+                NT${interval === "monthly" ? "150" : "1,200"}
               </span>
               <span className="text-sm text-neutral-400">
                 / {interval === "monthly" ? "月" : "年"}

@@ -5,7 +5,7 @@ import { NUTRIENT_IDS } from "@open-health/shared/constants";
 import { publicProcedure, protectedProcedure, router } from "../trpc";
 import { foods, foodNutrients, nutrientDefinitions, foodServings } from "@/server/db/schema";
 import { eq, sql, desc, and, gte } from "drizzle-orm";
-import { quickFoods } from "@/server/db/schema/diary";
+import { quickFoods, diaryEntries } from "@/server/db/schema/diary";
 import { lookupOpenFoodFacts } from "@/server/services/openfoodfacts";
 import { recognizeNutritionLabel, estimateNutritionFromText } from "@/server/services/ai";
 import { checkAndIncrementAiUsage } from "@/server/services/plan";
@@ -344,6 +344,73 @@ export const foodRouter = router({
         });
       }
       return estimateNutritionFromText(input.description);
+    }),
+
+  getMyFoods: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(20),
+        cursor: z.number().min(0).default(0),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const results = await ctx.db
+        .select({
+          id: foods.id,
+          name: foods.name,
+          brand: foods.brand,
+          calories: foods.calories,
+          servingSize: foods.servingSize,
+          servingUnit: foods.servingUnit,
+          householdServing: foods.householdServing,
+          source: foods.source,
+        })
+        .from(foods)
+        .where(
+          and(
+            eq(foods.createdBy, ctx.user.id),
+            eq(foods.source, "user")
+          )
+        )
+        .orderBy(desc(foods.createdAt))
+        .limit(input.limit)
+        .offset(input.cursor);
+
+      return results;
+    }),
+
+  deleteFood: protectedProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      const food = await ctx.db.query.foods.findFirst({
+        where: eq(foods.id, input.id),
+      });
+
+      if (!food) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "找不到食物",
+        });
+      }
+
+      if (food.createdBy !== ctx.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "只能刪除自己建立的食物",
+        });
+      }
+
+      // Delete diary entries referencing this food
+      await ctx.db.delete(diaryEntries).where(eq(diaryEntries.foodId, input.id));
+      // Delete quick foods (has cascade but be explicit)
+      await ctx.db.delete(quickFoods).where(eq(quickFoods.foodId, input.id));
+      // Delete nutrients and servings
+      await ctx.db.delete(foodNutrients).where(eq(foodNutrients.foodId, input.id));
+      await ctx.db.delete(foodServings).where(eq(foodServings.foodId, input.id));
+      // Delete the food itself
+      await ctx.db.delete(foods).where(eq(foods.id, input.id));
+
+      return { success: true };
     }),
 
   updateFood: protectedProcedure

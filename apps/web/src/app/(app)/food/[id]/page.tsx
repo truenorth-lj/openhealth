@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Pencil, Save, X } from "lucide-react";
+import { ArrowLeft, Pencil, Save, X, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +38,19 @@ export default function FoodDetailPage() {
       setIsEditing(false);
     },
   });
+
+  const deleteMutation = trpc.food.deleteFood.useMutation({
+    onSuccess: () => {
+      router.push("/food/search");
+      router.refresh();
+    },
+  });
+
+  const handleDelete = () => {
+    if (!food) return;
+    if (!window.confirm("確定要刪除這個食物嗎？相關的日記紀錄也會一併刪除。")) return;
+    deleteMutation.mutate({ id: food.id });
+  };
 
   const [editForm, setEditForm] = useState({
     name: "",
@@ -173,9 +186,20 @@ export default function FoodDetailPage() {
           )}
         </div>
         {isOwner && !isEditing && (
-          <Button variant="ghost" size="icon" onClick={startEditing}>
-            <Pencil className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-1">
+            <Button variant="ghost" size="icon" onClick={startEditing}>
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending}
+              className="text-destructive hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         )}
         {isEditing && (
           <div className="flex gap-1">

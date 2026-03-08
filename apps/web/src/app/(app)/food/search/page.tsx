@@ -9,6 +9,7 @@ import { trpc } from "@/lib/trpc-client";
 import { logFood } from "@/server/actions/diary";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
 import posthog from "posthog-js";
@@ -34,6 +35,7 @@ function FoodSearchContent() {
   const [query, setQuery] = useState("");
   const [isPending, startTransition] = useTransition();
   const [pendingFoodId, setPendingFoodId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<"all" | "mine">("all");
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } = useAuthGuard();
   const utils = trpc.useUtils();
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -55,7 +57,13 @@ function FoodSearchContent() {
   // Global popular foods (infinite, fallback when no user frequent)
   const globalPopularQuery = trpc.food.getGlobalPopular.useInfiniteQuery(
     { limit: PAGE_SIZE },
-    { enabled: !frequentQuery.isLoading && !hasUserFrequent, staleTime: 10 * 60 * 1000, ...infiniteOpts }
+    { enabled: !frequentQuery.isLoading && !hasUserFrequent && filter === "all", staleTime: 10 * 60 * 1000, ...infiniteOpts }
+  );
+
+  // My foods (user-created)
+  const myFoodsQuery = trpc.food.getMyFoods.useInfiniteQuery(
+    { limit: PAGE_SIZE },
+    { enabled: isAuthenticated && filter === "mine" && query.length < 1, staleTime: 5 * 60 * 1000, ...infiniteOpts }
   );
 
   const mealLabels: Record<string, string> = {
@@ -68,14 +76,18 @@ function FoodSearchContent() {
   // Determine which query is active
   const activeQuery = query.length >= 1
     ? searchQuery
-    : hasUserFrequent
-      ? frequentQuery
-      : globalPopularQuery;
+    : filter === "mine"
+      ? myFoodsQuery
+      : hasUserFrequent
+        ? frequentQuery
+        : globalPopularQuery;
 
   const displayFoods = activeQuery.data?.pages.flat() ?? [];
   const isLoadingInitial = query.length >= 1
     ? searchQuery.isLoading
-    : frequentQuery.isLoading || (!hasUserFrequent && globalPopularQuery.isLoading);
+    : filter === "mine"
+      ? myFoodsQuery.isLoading
+      : frequentQuery.isLoading || (!hasUserFrequent && globalPopularQuery.isLoading);
 
   // Intersection Observer for infinite scroll
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = activeQuery;
@@ -139,9 +151,11 @@ function FoodSearchContent() {
 
   const sectionLabel = query.length >= 1
     ? "搜尋結果"
-    : hasUserFrequent
-      ? "常用食物"
-      : "最多人使用";
+    : filter === "mine"
+      ? "我建立的食物"
+      : hasUserFrequent
+        ? "常用食物"
+        : "最多人使用";
 
   return (
     <div className="px-4 pb-4">
@@ -173,7 +187,7 @@ function FoodSearchContent() {
         </Link>
       </div>
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-3">
         <Link href={`/food/create?date=${date}&meal=${meal}`}>
           <Button variant="outline" size="sm">
             自訂食物
@@ -192,6 +206,34 @@ function FoodSearchContent() {
           </Button>
         </Link>
       </div>
+
+      {/* Filter tabs */}
+      {isAuthenticated && (
+        <div className="flex gap-1 mb-4">
+          <button
+            onClick={() => setFilter("all")}
+            className={cn(
+              "rounded-full px-3 py-1 text-xs transition-colors",
+              filter === "all"
+                ? "bg-foreground text-background font-medium"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            )}
+          >
+            全部
+          </button>
+          <button
+            onClick={() => setFilter("mine")}
+            className={cn(
+              "rounded-full px-3 py-1 text-xs transition-colors",
+              filter === "mine"
+                ? "bg-foreground text-background font-medium"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            )}
+          >
+            我的食物
+          </button>
+        </div>
+      )}
 
       <p className="text-xs text-muted-foreground mb-2 px-1">
         {sectionLabel}

@@ -39,7 +39,8 @@ export default function ReferralPage() {
 
   const handleCopy = async () => {
     if (!codeData?.code) return;
-    await navigator.clipboard.writeText(codeData.code);
+    const shareText = `推薦你一起來用 Open Health 記錄飲食、變得更健康！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉\n\nhttps://openhealth.blog/?ref=${codeData.code}`;
+    await navigator.clipboard.writeText(shareText);
     posthog.capture("referral_code_shared");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -49,22 +50,23 @@ export default function ReferralPage() {
     ? `https://openhealth.blog/?ref=${codeData.code}`
     : "";
 
+  const shareFullText = `推薦你一起來用 Open Health 記錄飲食、變得更健康！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉\n\n${shareUrl}`;
+
   const handleShareLink = async () => {
     if (!shareUrl) return;
-    const shareData = {
-      title: "Open Health — 免費健康追蹤工具",
-      text: `用我的推薦碼加入 Open Health，一起追蹤飲食與健康！推薦碼：${codeData?.code}`,
-      url: shareUrl,
-    };
     if (navigator.share) {
       try {
-        await navigator.share(shareData);
+        await navigator.share({
+          title: "Open Health — 免費健康追蹤工具",
+          text: `推薦你一起來用 Open Health 記錄飲食、變得更健康！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉`,
+          url: shareUrl,
+        });
         posthog.capture("referral_link_shared", { method: "native" });
       } catch {
         // User cancelled share
       }
     } else {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(shareFullText);
       posthog.capture("referral_link_shared", { method: "clipboard" });
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
