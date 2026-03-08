@@ -12,7 +12,7 @@ import {
   chatSessions,
   chatMessages,
 } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, eq, ilike } from "drizzle-orm";
 import { getTaiwanDate } from "@/lib/date";
 import { users } from "@/server/db/schema";
 import {
@@ -20,6 +20,7 @@ import {
   checkAndIncrementAiUsage,
 } from "@/server/services/plan";
 import { estimateNutritionFromText } from "@/server/services/ai";
+import { calculateNutrition } from "@/server/services/nutrition";
 import { NUTRIENT_IDS } from "@open-health/shared/constants";
 
 export async function POST(req: Request) {
@@ -197,49 +198,79 @@ export async function POST(req: Request) {
 
             const data = estimation.data;
 
-            // Create food in DB
-            const [food] = await db
-              .insert(foods)
-              .values({
-                name: data.foodName,
-                brand: data.brand ?? undefined,
-                source: "user",
-                servingSize: String(data.servingSize),
-                servingUnit: data.servingUnit,
-                calories: String(data.calories),
-                description: data.notes ?? undefined,
-                isPublic: true,
-                createdBy: userId,
-              })
-              .returning();
+            // Search for existing food with same name created by this user
+            const existingFood = await db.query.foods.findFirst({
+              where: and(
+                ilike(foods.name, data.foodName),
+                eq(foods.source, "user"),
+                eq(foods.createdBy, userId),
+              ),
+            });
 
-            // Insert nutrients
-            const nutrientValues: { foodId: string; nutrientId: number; amount: string }[] = [];
-            const addNutrient = (id: number, val: number | null | undefined) => {
-              if (val != null && !isNaN(val)) nutrientValues.push({ foodId: food.id, nutrientId: id, amount: String(val) });
-            };
-            addNutrient(NUTRIENT_IDS.protein, data.proteinG);
-            addNutrient(NUTRIENT_IDS.totalFat, data.fatG);
-            addNutrient(NUTRIENT_IDS.totalCarbs, data.carbsG);
-            addNutrient(NUTRIENT_IDS.fiber, data.fiberG);
-            addNutrient(NUTRIENT_IDS.sugar, data.sugarG);
-            addNutrient(NUTRIENT_IDS.saturatedFat, data.saturatedFatG);
-            addNutrient(NUTRIENT_IDS.transFat, data.transFatG);
-            addNutrient(NUTRIENT_IDS.cholesterol, data.cholesterolMg);
-            addNutrient(NUTRIENT_IDS.sodium, data.sodiumMg);
-            addNutrient(NUTRIENT_IDS.calcium, data.calciumMg);
-            addNutrient(NUTRIENT_IDS.iron, data.ironMg);
-            addNutrient(NUTRIENT_IDS.potassium, data.potassiumMg);
-            addNutrient(NUTRIENT_IDS.vitaminA, data.vitaminAMcg);
-            addNutrient(NUTRIENT_IDS.vitaminC, data.vitaminCMg);
-            addNutrient(NUTRIENT_IDS.vitaminD, data.vitaminDMcg);
+            let foodId: string;
 
-            if (nutrientValues.length > 0) {
-              await db.insert(foodNutrients).values(nutrientValues);
+            if (existingFood) {
+              // Reuse existing food record — return its stored nutrition data
+              const nutrition = await calculateNutrition(existingFood.id, 1);
+              return {
+                foodId: existingFood.id,
+                foodName: existingFood.name,
+                calories: nutrition.calories,
+                proteinG: nutrition.proteinG,
+                fatG: nutrition.fatG,
+                carbsG: nutrition.carbsG,
+                fiberG: nutrition.fiberG,
+                servingSize: Number(existingFood.servingSize),
+                servingUnit: existingFood.servingUnit,
+                mealType,
+                date,
+              };
+            } else {
+              // Create new food in DB
+              const [food] = await db
+                .insert(foods)
+                .values({
+                  name: data.foodName,
+                  brand: data.brand ?? undefined,
+                  source: "user",
+                  servingSize: String(data.servingSize),
+                  servingUnit: data.servingUnit,
+                  calories: String(data.calories),
+                  description: data.notes ?? undefined,
+                  isPublic: true,
+                  createdBy: userId,
+                })
+                .returning();
+              foodId = food.id;
+
+              // Insert nutrients only for new foods
+              const nutrientValues: { foodId: string; nutrientId: number; amount: string }[] = [];
+              const addNutrient = (id: number, val: number | null | undefined) => {
+                if (val != null && !isNaN(val)) nutrientValues.push({ foodId, nutrientId: id, amount: String(val) });
+              };
+              addNutrient(NUTRIENT_IDS.protein, data.proteinG);
+              addNutrient(NUTRIENT_IDS.totalFat, data.fatG);
+              addNutrient(NUTRIENT_IDS.totalCarbs, data.carbsG);
+              addNutrient(NUTRIENT_IDS.fiber, data.fiberG);
+              addNutrient(NUTRIENT_IDS.sugar, data.sugarG);
+              addNutrient(NUTRIENT_IDS.saturatedFat, data.saturatedFatG);
+              addNutrient(NUTRIENT_IDS.transFat, data.transFatG);
+              addNutrient(NUTRIENT_IDS.cholesterol, data.cholesterolMg);
+              addNutrient(NUTRIENT_IDS.sodium, data.sodiumMg);
+              addNutrient(NUTRIENT_IDS.calcium, data.calciumMg);
+              addNutrient(NUTRIENT_IDS.iron, data.ironMg);
+              addNutrient(NUTRIENT_IDS.potassium, data.potassiumMg);
+              addNutrient(NUTRIENT_IDS.vitaminA, data.vitaminAMcg);
+              addNutrient(NUTRIENT_IDS.vitaminC, data.vitaminCMg);
+              addNutrient(NUTRIENT_IDS.vitaminD, data.vitaminDMcg);
+
+              if (nutrientValues.length > 0) {
+                await db.insert(foodNutrients).values(nutrientValues);
+              }
             }
 
             return {
-              foodId: food.id,
+              foodId,
               foodName: data.foodName,
               calories: data.calories,
               proteinG: data.proteinG,
