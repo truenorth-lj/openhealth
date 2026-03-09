@@ -277,3 +277,19 @@ export const updateSleepGoalSchema = z.object({
   goalHours: z.number().min(1).max(24),
   alarmWindowMinutes: z.number().int().min(5).max(60),
 });
+
+// Posture detection (AirPods)
+export const savePostureDetectionSessionSchema = z.object({
+  startTime: z.string().datetime(),
+  endTime: z.string().datetime(),
+  baselinePitch: z.number(),
+  thresholdDegrees: z.number(),
+  totalDurationMinutes: z.number().int().min(0),
+  goodPostureMinutes: z.number().int().min(0),
+  badPostureMinutes: z.number().int().min(0),
+  averageDeviation: z.number(),
+  maxDeviation: z.number(),
+  slouchCount: z.number().int().min(0),
+  notificationCount: z.number().int().min(0),
+  score: z.number().int().min(0).max(100),
+});

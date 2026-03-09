@@ -4,6 +4,8 @@ import {
   postureDefinitions,
   postureSessions,
   postureConfig,
+  postureDetectionSessions,
+  postureDetectionConfig,
 } from "@/server/db/schema";
 import { eq, and, desc, isNull } from "drizzle-orm";
 import {
@@ -294,5 +296,98 @@ export const postureRouter = router({
         .limit(input.limit);
 
       return logs;
+    }),
+
+  // ─── AirPods Posture Detection ─────────────────────────────
+
+  saveDetectionSession: protectedProcedure
+    .input(
+      z.object({
+        startTime: z.string().datetime(),
+        endTime: z.string().datetime(),
+        baselinePitch: z.number(),
+        thresholdDegrees: z.number(),
+        totalDurationMinutes: z.number().int().min(0),
+        goodPostureMinutes: z.number().int().min(0),
+        badPostureMinutes: z.number().int().min(0),
+        averageDeviation: z.number(),
+        maxDeviation: z.number(),
+        slouchCount: z.number().int().min(0),
+        notificationCount: z.number().int().min(0),
+        score: z.number().int().min(0).max(100),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const [session] = await ctx.db
+        .insert(postureDetectionSessions)
+        .values({
+          userId: ctx.user.id,
+          startedAt: new Date(input.startTime),
+          endedAt: new Date(input.endTime),
+          baselinePitch: String(input.baselinePitch),
+          thresholdDegrees: String(input.thresholdDegrees),
+          totalDurationMinutes: input.totalDurationMinutes,
+          goodPostureMinutes: input.goodPostureMinutes,
+          badPostureMinutes: input.badPostureMinutes,
+          averageDeviation: String(input.averageDeviation),
+          maxDeviation: String(input.maxDeviation),
+          slouchCount: input.slouchCount,
+          notificationCount: input.notificationCount,
+          score: input.score,
+        })
+        .returning();
+      return session;
+    }),
+
+  getDetectionHistory: protectedProcedure
+    .input(
+      z.object({ limit: z.number().int().min(1).max(50).default(20) })
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.db
+        .select()
+        .from(postureDetectionSessions)
+        .where(eq(postureDetectionSessions.userId, ctx.user.id))
+        .orderBy(desc(postureDetectionSessions.startedAt))
+        .limit(input.limit);
+    }),
+
+  getDetectionConfig: protectedProcedure.query(async ({ ctx }) => {
+    const config = await ctx.db.query.postureDetectionConfig.findFirst({
+      where: eq(postureDetectionConfig.userId, ctx.user.id),
+    });
+    return config ?? {
+      thresholdDegrees: "8.5",
+      notificationCooldownSeconds: 120,
+      enabled: true,
+    };
+  }),
+
+  upsertDetectionConfig: protectedProcedure
+    .input(
+      z.object({
+        thresholdDegrees: z.number().min(3).max(30),
+        notificationCooldownSeconds: z.number().int().min(30).max(600),
+        enabled: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .insert(postureDetectionConfig)
+        .values({
+          userId: ctx.user.id,
+          thresholdDegrees: String(input.thresholdDegrees),
+          notificationCooldownSeconds: input.notificationCooldownSeconds,
+          enabled: input.enabled,
+        })
+        .onConflictDoUpdate({
+          target: postureDetectionConfig.userId,
+          set: {
+            thresholdDegrees: String(input.thresholdDegrees),
+            notificationCooldownSeconds: input.notificationCooldownSeconds,
+            enabled: input.enabled,
+          },
+        });
+      return { success: true };
     }),
 });

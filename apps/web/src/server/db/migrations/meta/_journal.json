@@ -127,6 +127,13 @@
       "when": 1772995514577,
       "tag": "0017_sharp_paper_doll",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1773025980455,
+      "tag": "0018_striped_marvex",
+      "breakpoints": true
     }
   ]
 }
