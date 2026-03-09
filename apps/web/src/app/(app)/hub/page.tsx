@@ -22,6 +22,8 @@ import {
   Armchair,
   Weight,
   Download,
+  Moon,
+  GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -37,6 +39,7 @@ interface HubItem {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   implemented: boolean;
   badge?: string;
+  platform?: "web" | "mobile";
 }
 
 const sections: { title: string; items: HubItem[] }[] = [
@@ -48,6 +51,7 @@ const sections: { title: string; items: HubItem[] }[] = [
       { href: "/workout", label: "重訓記錄", icon: Weight, implemented: true, badge: "新" },
       { href: "/water", label: "水分追蹤", icon: Droplets, implemented: true },
       { href: "/fasting", label: "間歇斷食", icon: Timer, implemented: true },
+      { href: "", label: "睡眠追蹤", icon: Moon, implemented: true, badge: "新", platform: "mobile" },
       { href: "/progress?tab=weight", label: "體重紀錄", icon: Scale, implemented: true },
       { href: "/progress?tab=steps", label: "步數紀錄", icon: Footprints, implemented: true },
       { href: "/posture", label: "姿勢提醒", icon: Armchair, implemented: true, badge: "新" },
@@ -76,6 +80,7 @@ const sections: { title: string; items: HubItem[] }[] = [
       { href: "/settings/subscription", label: "訂閱方案", icon: CreditCard, implemented: true },
       { href: "/settings/profile", label: "個人資料", icon: User, implemented: true },
       { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: true },
+      { href: "", label: "教練模式", icon: GraduationCap, implemented: true, platform: "mobile" },
       { href: "/settings", label: "設定", icon: Settings2, implemented: true },
     ],
   },
@@ -103,7 +108,7 @@ export default function HubPage() {
               section.items.length <= 3 ? "grid-cols-3" : section.items.length <= 4 ? "grid-cols-4" : "grid-cols-3"
             )}>
               {section.items.map((item) => (
-                <HubIcon key={item.href} item={item} />
+                <HubIcon key={`${item.href}-${item.label}`} item={item} />
               ))}
             </div>
           </div>
@@ -114,18 +119,26 @@ export default function HubPage() {
 }
 
 function HubIcon({ item }: { item: HubItem }) {
+  const isDisabled = !item.implemented || item.platform === "mobile";
+  const tooltipText = item.platform === "mobile" ? "僅限 App" : "敬請期待";
+
+  const badgeText = item.platform === "mobile" ? "App" : item.badge;
+  const badgeStyle = item.platform === "mobile"
+    ? "bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400"
+    : item.badge === "新"
+      ? "bg-primary text-primary-foreground"
+      : "bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400";
+
   const content = (
     <div className="flex flex-col items-center gap-2">
       <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-black/[0.06] dark:border-white/[0.06] transition-all duration-300 group-hover:border-foreground/20 group-hover:shadow-sm">
         <item.icon className="h-5 w-5 text-neutral-500 dark:text-neutral-400" strokeWidth={1.5} />
-        {item.badge && (
+        {badgeText && (
           <span className={cn(
             "absolute -top-1.5 -right-1.5 px-1.5 py-0.5 text-[9px] font-medium rounded-full",
-            item.badge === "新"
-              ? "bg-primary text-primary-foreground"
-              : "bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400"
+            badgeStyle
           )}>
-            {item.badge}
+            {badgeText}
           </span>
         )}
       </div>
@@ -135,7 +148,7 @@ function HubIcon({ item }: { item: HubItem }) {
     </div>
   );
 
-  if (!item.implemented) {
+  if (isDisabled) {
     return (
       <Tooltip>
         <TooltipTrigger asChild>
@@ -144,7 +157,7 @@ function HubIcon({ item }: { item: HubItem }) {
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <p>敬請期待</p>
+          <p>{tooltipText}</p>
         </TooltipContent>
       </Tooltip>
     );
