@@ -19,6 +19,7 @@
     "enrich": "tsx scripts/enrich-nutrients.ts",
     "enrich:fiber": "tsx scripts/enrich-fiber.ts",
     "huberman": "tsx scripts/huberman-digest.ts",
+    "test": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

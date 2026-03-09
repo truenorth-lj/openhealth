@@ -11,6 +11,9 @@
     "./types": "./src/types/index.ts",
     "./utils": "./src/utils/index.ts"
   },
+  "scripts": {
+    "test": "vitest run"
+  },
   "dependencies": {
     "zod": "^4.3.6"
   },
