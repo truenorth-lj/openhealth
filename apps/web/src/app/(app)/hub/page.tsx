@@ -80,7 +80,7 @@ const sections: { title: string; items: HubItem[] }[] = [
       { href: "/settings/subscription", label: "訂閱方案", icon: CreditCard, implemented: true },
       { href: "/settings/profile", label: "個人資料", icon: User, implemented: true },
       { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: true },
-      { href: "", label: "教練模式", icon: GraduationCap, implemented: true, platform: "mobile" },
+      { href: "/settings/coaching", label: "我的教練", icon: GraduationCap, implemented: true },
       { href: "/settings", label: "設定", icon: Settings2, implemented: true },
     ],
   },
