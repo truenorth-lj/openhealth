@@ -43,6 +43,7 @@ export const sleepSessions = pgTable(
     // Aggregated per-minute movement data for trend graphs (kept 30 days)
     movementSamples: jsonb("movement_samples"),
     note: text("note"),
+    factors: jsonb("factors").$type<string[]>(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

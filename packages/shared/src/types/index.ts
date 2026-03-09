@@ -97,6 +97,7 @@ export interface SleepSessionSummary {
   quality: number;
   detectionMethod: SleepDetectionMethod;
   phases: SleepPhasePeriod[];
+  factors?: string[];
 }
 
 export interface SleepPhasePeriod {

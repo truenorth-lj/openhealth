@@ -271,6 +271,7 @@ export const saveSleepSessionSchema = z.object({
     .array(z.object({ timestamp: z.number(), intensity: z.number() }))
     .optional(),
   note: z.string().max(500).optional(),
+  factors: z.array(z.string()).optional(),
 });
 
 export const updateSleepGoalSchema = z.object({

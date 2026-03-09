@@ -241,6 +241,22 @@ export const SLEEP_PHASE_COLORS: Record<string, string> = {
   rem: "#a78bfa",
 };
 
+export const SLEEP_FACTORS = [
+  { id: "caffeine", label: "\u5496\u5561\u56e0", icon: "\u2615" },
+  { id: "alcohol", label: "\u9152\u7cbe", icon: "\ud83c\udf77" },
+  { id: "exercise", label: "\u904b\u52d5", icon: "\ud83c\udfc3" },
+  { id: "stress", label: "\u58d3\u529b\u5927", icon: "\ud83d\ude30" },
+  { id: "late_meal", label: "\u5403\u592a\u665a", icon: "\ud83c\udf7d\ufe0f" },
+  { id: "screen_time", label: "\u9577\u6642\u9593\u7528\u624b\u6a5f", icon: "\ud83d\udcf1" },
+  { id: "reading", label: "\u95b1\u8b80", icon: "\ud83d\udcd6" },
+  { id: "meditation", label: "\u51a5\u60f3", icon: "\ud83e\uddd8" },
+  { id: "medication", label: "\u85e5\u7269", icon: "\ud83d\udc8a" },
+  { id: "sick", label: "\u8eab\u9ad4\u4e0d\u9069", icon: "\ud83e\udd27" },
+  { id: "travel", label: "\u51fa\u5dee/\u65c5\u884c", icon: "\u2708\ufe0f" },
+] as const;
+
+export type SleepFactorId = (typeof SLEEP_FACTORS)[number]["id"];
+
 export const DEFAULT_SLEEP_GOAL_HOURS = 8;
 export const DEFAULT_ALARM_WINDOW_MINUTES = 30;
 export const SLEEP_SAMPLE_INTERVAL_MS = 1000;

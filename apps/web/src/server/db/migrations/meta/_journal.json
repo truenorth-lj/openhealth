@@ -134,6 +134,13 @@
       "when": 1773025980455,
       "tag": "0018_striped_marvex",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1773048943701,
+      "tag": "0019_green_penance",
+      "breakpoints": true
     }
   ]
 }
