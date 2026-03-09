@@ -11,8 +11,16 @@ import {
   userGoals,
   chatSessions,
   chatMessages,
+  weightLogs,
+  waterLogs,
+  waterGoals,
+  exerciseLogs,
+  exercises,
+  workouts,
+  workoutExercises,
+  workoutSets,
 } from "@/server/db/schema";
-import { and, eq, ilike } from "drizzle-orm";
+import { and, eq, ilike, desc, sql, gte } from "drizzle-orm";
 import { getTaiwanDate } from "@/lib/date";
 import { users } from "@/server/db/schema";
 import {
@@ -94,12 +102,12 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: minimax("MiniMax-M2.5"),
-    system: `你是一位專業的台灣營養顧問，名叫「小健」。你的任務是根據使用者的飲食紀錄和營養目標，提供個人化的飲食建議。
+    system: `你是一位專業的台灣健康顧問，名叫「小健」。你的任務是根據使用者的健康數據（飲食、體重、運動、重訓、水分），提供個人化的健康建議。
 
 規則：
 1. 一律使用繁體中文回應。
 2. 回應簡潔實用，避免過長的說教。
-3. 當使用者詢問飲食相關問題時，主動使用工具查詢他們的飲食紀錄和營養目標。
+3. 當使用者詢問健康相關問題時，主動使用工具查詢他們的數據（飲食紀錄、營養目標、體重趨勢、運動紀錄、水分攝取等）。
 4. 根據實際數據提供具體建議，而非泛泛而談。
 5. 使用台灣常見的食物和料理舉例。
 6. 適當使用 markdown 格式（粗體、列表等）讓回應更易讀。
@@ -107,7 +115,11 @@ export async function POST(req: Request) {
 8. 當使用者要求記錄食物時（例如「幫我記錄…」「我剛吃了…」「新增…」「記一下…」），使用 createFood 工具。
 9. 推測餐別：根據對話上下文或當前時間（05-10 點 breakfast、10-14 點 lunch、14-17 點 snack、17-21 點 dinner、其他 snack）。使用者明確說了餐別就用使用者說的。
 10. 日期預設為今天，除非使用者明確提到其他日期。
-11. 使用 createFood 後，簡短告知使用者估算結果（不需重複所有數字），提醒他們可以在卡片上確認或編輯。`,
+11. 使用 createFood 後，簡短告知使用者估算結果（不需重複所有數字），提醒他們可以在卡片上確認或編輯。
+12. 當使用者要求記錄體重時（例如「我現在 70 公斤」「體重 65.5」「記一下體重…」），使用 logWeight 工具。
+13. 當使用者要求記錄喝水時（例如「我喝了一杯水」「喝了 500ml」「記一下水…」），使用 logWater 工具。常見容量推測：一杯水 250ml、一瓶水 600ml、一大杯 500ml。
+14. 當使用者詢問體重趨勢、運動紀錄、重訓歷史、水分攝取等，主動使用對應的查詢工具。
+15. 綜合分析時，可以同時查詢多個面向的數據（例如飲食 + 體重 + 運動），給出整合性的建議。`,
     messages,
     tools: {
       getDailyFood: tool({
@@ -285,6 +297,333 @@ export async function POST(req: Request) {
           } catch (error) {
             console.error("createFood tool error:", error);
             return { error: "建立食物時發生錯誤，請稍後再試" };
+          }
+        },
+      }),
+      // ── Weight tools ──
+      getWeightHistory: tool({
+        description:
+          "查詢使用者的體重紀錄，包含最近的體重趨勢",
+        inputSchema: z.object({
+          days: z
+            .number()
+            .optional()
+            .describe("查詢最近幾天的體重紀錄，預設 30 天"),
+        }),
+        execute: async ({ days = 30 }) => {
+          try {
+            const since = new Date();
+            since.setDate(since.getDate() - days);
+            const sinceStr = since.toISOString().split("T")[0];
+
+            const logs = await db
+              .select({
+                date: weightLogs.date,
+                weightKg: weightLogs.weightKg,
+                note: weightLogs.note,
+              })
+              .from(weightLogs)
+              .where(
+                and(
+                  eq(weightLogs.userId, userId),
+                  gte(weightLogs.date, sinceStr)
+                )
+              )
+              .orderBy(desc(weightLogs.date));
+
+            if (logs.length === 0) {
+              return { message: "使用者在此期間沒有體重紀錄" };
+            }
+
+            const latest = Number(logs[0].weightKg);
+            const oldest = Number(logs[logs.length - 1].weightKg);
+            const change = latest - oldest;
+
+            return {
+              logs: logs.map((l) => ({
+                date: l.date,
+                weightKg: Number(l.weightKg),
+                note: l.note,
+              })),
+              summary: {
+                latest,
+                oldest,
+                change: Math.round(change * 100) / 100,
+                count: logs.length,
+              },
+            };
+          } catch {
+            return { error: "查詢體重紀錄時發生錯誤" };
+          }
+        },
+      }),
+      logWeight: tool({
+        description:
+          "記錄使用者的體重。當使用者提到體重數字或要求記錄體重時使用。",
+        inputSchema: z.object({
+          weightKg: z.number().min(20).max(300).describe("體重（公斤）"),
+          date: z.string().optional().describe("日期 YYYY-MM-DD，預設今天"),
+          note: z.string().optional().describe("備註"),
+        }),
+        execute: async ({ weightKg, date: dateInput, note }) => {
+          const date = dateInput ?? getTaiwanDate();
+          try {
+            await db
+              .insert(weightLogs)
+              .values({
+                userId,
+                date,
+                weightKg: String(weightKg),
+                note: note ?? null,
+              })
+              .onConflictDoUpdate({
+                target: [weightLogs.userId, weightLogs.date],
+                set: {
+                  weightKg: String(weightKg),
+                  note: note ?? null,
+                },
+              });
+            return { success: true, weightKg, date, note };
+          } catch {
+            return { error: "記錄體重時發生錯誤" };
+          }
+        },
+      }),
+
+      // ── Water tools ──
+      getWaterIntake: tool({
+        description:
+          "查詢使用者指定日期的水分攝取量和目標",
+        inputSchema: z.object({
+          date: z
+            .string()
+            .optional()
+            .describe("要查詢的日期，格式 YYYY-MM-DD，預設今天"),
+        }),
+        execute: async ({ date: dateInput } = {}) => {
+          const date = dateInput ?? getTaiwanDate();
+          try {
+            const logs = await db
+              .select({
+                amountMl: waterLogs.amountMl,
+                loggedAt: waterLogs.loggedAt,
+              })
+              .from(waterLogs)
+              .where(
+                and(
+                  eq(waterLogs.userId, userId),
+                  eq(waterLogs.date, date)
+                )
+              )
+              .orderBy(desc(waterLogs.loggedAt));
+
+            const totalMl = logs.reduce((sum, l) => sum + l.amountMl, 0);
+
+            const goal = await db.query.waterGoals.findFirst({
+              where: eq(waterGoals.userId, userId),
+            });
+            const targetMl = goal?.dailyTargetMl ?? 2500;
+
+            return {
+              date,
+              totalMl,
+              targetMl,
+              percentage: Math.round((totalMl / targetMl) * 100),
+              logCount: logs.length,
+            };
+          } catch {
+            return { error: "查詢水分攝取時發生錯誤" };
+          }
+        },
+      }),
+      logWater: tool({
+        description:
+          "記錄使用者的飲水量。當使用者提到喝水或要求記錄水分時使用。",
+        inputSchema: z.object({
+          amountMl: z.number().min(1).max(5000).describe("飲水量（毫升）"),
+          date: z.string().optional().describe("日期 YYYY-MM-DD，預設今天"),
+        }),
+        execute: async ({ amountMl, date: dateInput }) => {
+          const date = dateInput ?? getTaiwanDate();
+          try {
+            await db.insert(waterLogs).values({
+              userId,
+              date,
+              amountMl,
+            });
+
+            // Return updated total for the day
+            const [result] = await db
+              .select({
+                totalMl: sql<number>`coalesce(sum(${waterLogs.amountMl}), 0)`,
+              })
+              .from(waterLogs)
+              .where(
+                and(
+                  eq(waterLogs.userId, userId),
+                  eq(waterLogs.date, date)
+                )
+              );
+
+            const goal = await db.query.waterGoals.findFirst({
+              where: eq(waterGoals.userId, userId),
+            });
+            const targetMl = goal?.dailyTargetMl ?? 2500;
+
+            return {
+              success: true,
+              amountMl,
+              date,
+              totalMl: Number(result.totalMl),
+              targetMl,
+            };
+          } catch {
+            return { error: "記錄飲水時發生錯誤" };
+          }
+        },
+      }),
+
+      // ── Exercise tools ──
+      getExerciseLogs: tool({
+        description:
+          "查詢使用者指定日期的運動（有氧）紀錄",
+        inputSchema: z.object({
+          date: z
+            .string()
+            .optional()
+            .describe("要查詢的日期，格式 YYYY-MM-DD，預設今天"),
+        }),
+        execute: async ({ date: dateInput } = {}) => {
+          const date = dateInput ?? getTaiwanDate();
+          try {
+            const logs = await db
+              .select({
+                exerciseName: exercises.name,
+                category: exercises.category,
+                durationMin: exerciseLogs.durationMin,
+                caloriesBurned: exerciseLogs.caloriesBurned,
+                intensity: exerciseLogs.intensity,
+                note: exerciseLogs.note,
+              })
+              .from(exerciseLogs)
+              .innerJoin(exercises, eq(exerciseLogs.exerciseId, exercises.id))
+              .where(
+                and(
+                  eq(exerciseLogs.userId, userId),
+                  eq(exerciseLogs.date, date)
+                )
+              );
+
+            const totalCalories = logs.reduce(
+              (sum, l) => sum + Number(l.caloriesBurned || 0),
+              0
+            );
+            const totalMinutes = logs.reduce(
+              (sum, l) => sum + Number(l.durationMin || 0),
+              0
+            );
+
+            return {
+              date,
+              logs: logs.map((l) => ({
+                ...l,
+                caloriesBurned: Number(l.caloriesBurned || 0),
+              })),
+              summary: { totalCalories, totalMinutes, count: logs.length },
+            };
+          } catch {
+            return { error: "查詢運動紀錄時發生錯誤" };
+          }
+        },
+      }),
+
+      // ── Workout (strength training) tools ──
+      getWorkoutHistory: tool({
+        description:
+          "查詢使用者最近的重訓紀錄，包含每次訓練的動作、組數、重量和次數",
+        inputSchema: z.object({
+          limit: z
+            .number()
+            .optional()
+            .describe("查詢最近幾次重訓，預設 5 次"),
+        }),
+        execute: async ({ limit = 5 }) => {
+          try {
+            const recentWorkouts = await db
+              .select({
+                id: workouts.id,
+                name: workouts.name,
+                startedAt: workouts.startedAt,
+                completedAt: workouts.completedAt,
+                durationSec: workouts.durationSec,
+                note: workouts.note,
+              })
+              .from(workouts)
+              .where(
+                and(
+                  eq(workouts.userId, userId),
+                  sql`${workouts.completedAt} IS NOT NULL`
+                )
+              )
+              .orderBy(desc(workouts.startedAt))
+              .limit(limit);
+
+            if (recentWorkouts.length === 0) {
+              return { message: "使用者沒有重訓紀錄" };
+            }
+
+            const results = [];
+            for (const w of recentWorkouts) {
+              const wExercises = await db
+                .select({
+                  weId: workoutExercises.id,
+                  exerciseName: exercises.name,
+                })
+                .from(workoutExercises)
+                .innerJoin(
+                  exercises,
+                  eq(workoutExercises.exerciseId, exercises.id)
+                )
+                .where(eq(workoutExercises.workoutId, w.id))
+                .orderBy(workoutExercises.sortOrder);
+
+              const exerciseDetails = [];
+              for (const we of wExercises) {
+                const sets = await db
+                  .select({
+                    setNumber: workoutSets.setNumber,
+                    weightKg: workoutSets.weightKg,
+                    reps: workoutSets.reps,
+                    isWarmup: workoutSets.isWarmup,
+                  })
+                  .from(workoutSets)
+                  .where(eq(workoutSets.workoutExerciseId, we.weId))
+                  .orderBy(workoutSets.setNumber);
+
+                exerciseDetails.push({
+                  name: we.exerciseName,
+                  sets: sets.map((s) => ({
+                    set: s.setNumber,
+                    weightKg: s.weightKg ? Number(s.weightKg) : null,
+                    reps: s.reps,
+                    isWarmup: s.isWarmup,
+                  })),
+                });
+              }
+
+              results.push({
+                name: w.name,
+                date: w.startedAt?.toISOString().split("T")[0],
+                durationMin: w.durationSec
+                  ? Math.round(w.durationSec / 60)
+                  : null,
+                exercises: exerciseDetails,
+              });
+            }
+
+            return { workouts: results };
+          } catch {
+            return { error: "查詢重訓紀錄時發生錯誤" };
           }
         },
       }),

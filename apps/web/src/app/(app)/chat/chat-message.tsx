@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import { Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FoodCreationCard } from "./food-creation-card";
+import { ActionConfirmCard } from "./action-confirm-card";
 
 const PROSE_STYLES =
   "prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&_table]:w-full [&_table]:text-xs [&_table]:border-collapse [&_th]:border [&_th]:border-border/50 [&_th]:px-2 [&_th]:py-1 [&_th]:text-left [&_th]:font-light [&_td]:border [&_td]:border-border/50 [&_td]:px-2 [&_td]:py-1 [&_.table-wrapper]:overflow-x-auto";
@@ -22,10 +23,10 @@ export function ChatMessage({ message }: ChatMessageProps) {
   ) ?? [];
   const textContent = textParts.map((p) => p.text).join("");
 
+  const CARD_TOOLS = new Set(["createFood", "logWeight", "logWater"]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const toolParts = (message.parts ?? []).filter((p: any) => {
-    if (p.type === "dynamic-tool" && p.toolName === "createFood") return true;
-    // Also handle typed tool parts (type: "tool-createFood")
+    if (p.type === "dynamic-tool" && CARD_TOOLS.has(p.toolName)) return true;
     if (typeof p.type === "string" && p.type === "tool-createFood") return true;
     return false;
   });
@@ -82,6 +83,9 @@ export function ChatMessage({ message }: ChatMessageProps) {
         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
         {toolParts.map((part: any) => {
           const key = part.toolCallId ?? part.id ?? Math.random();
+          if (part.toolName === "logWeight" || part.toolName === "logWater") {
+            return <ActionConfirmCard key={key} part={part} />;
+          }
           return <FoodCreationCard key={key} part={part} />;
         })}
       </div>
