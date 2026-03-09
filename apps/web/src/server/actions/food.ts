@@ -14,6 +14,6 @@ export async function createCustomFood(
   const validated = createFoodSchema.parse(input);
   const result = await createCustomFoodService(db, user.id, validated);
 
-  revalidatePath("/food");
+  revalidatePath("/hub/food");
   return { success: true, foodId: result.foodId };
 }

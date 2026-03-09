@@ -101,7 +101,7 @@ function TodayContent() {
       <DateNavigator date={date} onDateChange={handleDateChange} />
 
       {/* Calorie Card */}
-      <Link href={`/diary?date=${dateStr}`} className="block">
+      <Link href={`/hub/diary?date=${dateStr}`} className="block">
         <div className="mx-4 py-4 border-b border-black/[0.06] dark:border-white/[0.06] transition-all duration-300 hover:pl-1">
           <div className="flex items-center justify-between mb-3">
             <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
@@ -125,7 +125,7 @@ function TodayContent() {
       </Link>
 
       {/* Water Card */}
-      <Link href={`/water?date=${dateStr}`} className="block">
+      <Link href={`/hub/water?date=${dateStr}`} className="block">
         <div className="mx-4 py-4 border-b border-black/[0.06] dark:border-white/[0.06] transition-all duration-300 hover:pl-1">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -151,7 +151,7 @@ function TodayContent() {
       </Link>
 
       {/* Weight Card */}
-      <Link href="/progress" className="block">
+      <Link href="/hub/progress" className="block">
         <div className="mx-4 py-4 border-b border-black/[0.06] dark:border-white/[0.06] transition-all duration-300 hover:pl-1">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -177,7 +177,7 @@ function TodayContent() {
       </Link>
 
       {/* Steps Card */}
-      <Link href="/progress" className="block">
+      <Link href="/hub/progress" className="block">
         <div className="mx-4 py-4 border-b border-black/[0.06] dark:border-white/[0.06] transition-all duration-300 hover:pl-1">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -198,7 +198,7 @@ function TodayContent() {
       </Link>
 
       {/* AI Card */}
-      <Link href="/chat" className="block">
+      <Link href="/hub/chat" className="block">
         <div className="mx-4 py-4 transition-all duration-300 hover:pl-1">
           <div className="flex items-center gap-3">
             <Bot className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />

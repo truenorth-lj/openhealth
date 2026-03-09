@@ -31,7 +31,7 @@ export function ExerciseSection({ logs, totalCalories }: ExerciseSectionProps) {
             </span>
           )}
         </div>
-        <Link href="/exercise">
+        <Link href="/hub/exercise">
           <button className="p-1.5 text-neutral-400 transition-all duration-300 hover:text-foreground">
             <Dumbbell className="h-4 w-4" strokeWidth={1.5} />
           </button>
@@ -40,7 +40,7 @@ export function ExerciseSection({ logs, totalCalories }: ExerciseSectionProps) {
 
       {logs.length === 0 ? (
         <Link
-          href="/exercise"
+          href="/hub/exercise"
           className="block border-b border-dashed border-black/[0.06] dark:border-white/[0.06] py-3 text-center text-sm font-light text-neutral-400 transition-all duration-300 hover:text-orange-500"
         >
           點擊新增運動

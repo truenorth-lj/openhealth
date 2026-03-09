@@ -16,7 +16,7 @@ test.describe("Landing page", () => {
     await page.goto("/");
     const ctaLink = page.getByRole("link", { name: /開始使用/ }).first();
     await expect(ctaLink).toBeVisible();
-    await expect(ctaLink).toHaveAttribute("href", "/diary");
+    await expect(ctaLink).toHaveAttribute("href", "/hub");
   });
 
   test("has correct meta title", async ({ page }) => {

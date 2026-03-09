@@ -27,8 +27,8 @@ export async function logWeight(input: z.infer<typeof logWeightSchema>) {
       },
     });
 
-  revalidatePath("/progress");
-  revalidatePath("/weight");
+  revalidatePath("/hub/progress");
+  revalidatePath("/hub/weight");
   return { success: true };
 }
 
@@ -66,7 +66,7 @@ export async function logMeasurements(
       },
     });
 
-  revalidatePath("/progress");
+  revalidatePath("/hub/progress");
   return { success: true };
 }
 
@@ -90,7 +90,7 @@ export async function logSteps(input: z.infer<typeof logStepsSchema>) {
       },
     });
 
-  revalidatePath("/progress");
-  revalidatePath("/steps");
+  revalidatePath("/hub/progress");
+  revalidatePath("/hub/steps");
   return { success: true };
 }

@@ -222,7 +222,7 @@ export const postureRouter = router({
             title: `${postureDef.emoji} 該換姿勢了！`,
             body: `你已經維持「${postureDef.name}」超過 ${postureDef.maxMinutes} 分鐘。${postureDef.suggestedBreak}`,
             tag: "posture-reminder",
-            url: "/posture",
+            url: "/hub/posture",
           });
         }
 

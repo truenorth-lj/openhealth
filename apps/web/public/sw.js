@@ -56,7 +56,7 @@ self.addEventListener("push", (event) => {
     body: data.body || "",
     icon: "/icon.svg",
     tag: data.tag || "posture-reminder",
-    data: { url: data.url || "/posture" },
+    data: { url: data.url || "/hub/posture" },
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });

@@ -107,7 +107,7 @@ export async function startWorkout(
     }
   }
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { workoutId: workout.id, alreadyActive: false };
 }
 
@@ -151,7 +151,7 @@ export async function addExerciseToWorkout(
     setNumber: 1,
   });
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { workoutExerciseId: we.id };
 }
 
@@ -181,7 +181,7 @@ export async function removeExerciseFromWorkout(
     .delete(workoutExercises)
     .where(eq(workoutExercises.id, validated.workoutExerciseId));
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { success: true };
 }
 
@@ -244,7 +244,7 @@ export async function logSet(input: z.infer<typeof logSetSchema>) {
     });
   }
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { success: true };
 }
 
@@ -271,7 +271,7 @@ export async function removeSet(input: z.infer<typeof removeSetSchema>) {
 
   await db.delete(workoutSets).where(eq(workoutSets.id, validated.setId));
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { success: true };
 }
 
@@ -305,7 +305,7 @@ export async function finishWorkout(
   // PR detection
   await detectPersonalRecords(user.id, validated.workoutId);
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { success: true, durationSec };
 }
 
@@ -322,7 +322,7 @@ export async function discardWorkout(
       and(eq(workouts.id, validated.workoutId), eq(workouts.userId, user.id))
     );
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { success: true };
 }
 
@@ -355,7 +355,7 @@ export async function createWorkoutTemplate(
     });
   }
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { templateId: template.id };
 }
 
@@ -412,7 +412,7 @@ export async function saveWorkoutAsTemplate(
     });
   }
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { templateId: template.id };
 }
 
@@ -432,7 +432,7 @@ export async function deleteWorkoutTemplate(
       )
     );
 
-  revalidatePath("/workout");
+  revalidatePath("/hub/workout");
   return { success: true };
 }
 

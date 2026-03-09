@@ -11,7 +11,7 @@ async function login(page: Page) {
 test.describe("Water tracking page", () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
-    await page.goto("/water");
+    await page.goto("/hub/water");
     await expect(page.locator("text=水分追蹤")).toBeVisible({ timeout: 10_000 });
   });
 

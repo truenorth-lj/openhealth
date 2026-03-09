@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 // Helper: open login dialog by clicking the FAB (+ button) on diary page
 async function openLoginDialog(page: import("@playwright/test").Page) {
-  await page.goto("/diary");
+  await page.goto("/hub/diary");
   const fab = page.getByTestId("add-entry-fab");
   await expect(fab).toBeVisible({ timeout: 15_000 });
   await fab.click();

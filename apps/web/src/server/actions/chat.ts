@@ -29,6 +29,6 @@ export async function deleteChatSession(sessionId: string) {
       and(eq(chatSessions.id, sessionId), eq(chatSessions.userId, user.id))
     );
 
-  revalidatePath("/chat");
+  revalidatePath("/hub/chat");
   return { success: true };
 }

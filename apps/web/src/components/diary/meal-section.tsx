@@ -59,7 +59,7 @@ export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenti
     }
   };
 
-  const addHref = `/food/search?date=${date}&meal=${mealType}`;
+  const addHref = `/hub/food/search?date=${date}&meal=${mealType}`;
 
   return (
     <div className="mx-4 mt-4">
@@ -117,7 +117,7 @@ function EntryRow({ entry, mealType }: { entry: DiaryEntry; mealType: MealType }
         isPending ? "opacity-30" : ""
       }`}
     >
-      <Link href={`/food/${entry.foodId}`} className="flex-1 min-w-0">
+      <Link href={`/hub/food/${entry.foodId}`} className="flex-1 min-w-0">
         <p className="text-sm font-light truncate">{entry.foodName}</p>
         <p className="text-xs text-neutral-400 dark:text-neutral-600">
           {entry.servingQty} x {entry.foodServingSize}

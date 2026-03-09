@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/diary", "/food", "/progress", "/water", "/settings", "/hub"],
+      disallow: ["/api/", "/hub", "/settings"],
     },
     sitemap: "https://openhealth.blog/sitemap.xml",
   };

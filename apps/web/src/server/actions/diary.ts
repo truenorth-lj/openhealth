@@ -12,7 +12,7 @@ export async function logFood(input: z.infer<typeof logFoodSchema>) {
   const validated = logFoodSchema.parse(input);
   await diaryService.logFood(db, user.id, validated);
 
-  revalidatePath(`/diary`);
+  revalidatePath(`/hub/diary`);
   return { success: true };
 }
 
@@ -20,7 +20,7 @@ export async function removeEntry(entryId: string) {
   const user = await getSession();
   await diaryService.removeEntry(db, user.id, entryId);
 
-  revalidatePath(`/diary`);
+  revalidatePath(`/hub/diary`);
   return { success: true };
 }
 
@@ -32,6 +32,6 @@ export async function copyMealToDate(
   const user = await getSession();
   const result = await diaryService.copyMealToDate(db, user.id, { fromDate, toDate, mealType });
 
-  revalidatePath(`/diary`);
+  revalidatePath(`/hub/diary`);
   return result;
 }

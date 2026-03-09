@@ -17,6 +17,6 @@ export async function createFoodFromBarcode(
   const validated = createFoodFromBarcodeSchema.parse(input);
   const result = await createFoodFromBarcodeService(db, user.id, validated);
 
-  revalidatePath("/food");
+  revalidatePath("/hub/food");
   return { success: true, foodId: result.foodId };
 }

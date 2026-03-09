@@ -47,7 +47,7 @@ function sendNotification(totalMl: number, goalMl: number) {
           body,
           icon: "/icon.svg",
           tag: "water-reminder",
-          data: { url: "/water" },
+          data: { url: "/hub/water" },
         });
       })
       .catch(() => {
