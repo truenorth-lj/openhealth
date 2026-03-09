@@ -39,7 +39,7 @@ export default function ReferralPage() {
 
   const handleCopy = async () => {
     if (!codeData?.code) return;
-    const shareText = `推薦你一起來用 Open Health 記錄飲食、變得更健康！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉\n\nhttps://openhealth.blog/?ref=${codeData.code}`;
+    const shareText = `推薦你一起來用 Open Health——飲食、運動、睡眠、體重全都追蹤！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉\n\nhttps://openhealth.blog/?ref=${codeData.code}`;
     await navigator.clipboard.writeText(shareText);
     posthog.capture("referral_code_shared");
     setCopied(true);
@@ -50,15 +50,15 @@ export default function ReferralPage() {
     ? `https://openhealth.blog/?ref=${codeData.code}`
     : "";
 
-  const shareFullText = `推薦你一起來用 Open Health 記錄飲食、變得更健康！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉\n\n${shareUrl}`;
+  const shareFullText = `推薦你一起來用 Open Health——飲食、運動、睡眠、體重全都追蹤！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉\n\n${shareUrl}`;
 
   const handleShareLink = async () => {
     if (!shareUrl) return;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Open Health — 免費健康追蹤工具",
-          text: `推薦你一起來用 Open Health 記錄飲食、變得更健康！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉`,
+          title: "Open Health — All-in-One Health OS",
+          text: `推薦你一起來用 Open Health——飲食、運動、睡眠、體重全都追蹤！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉`,
           url: shareUrl,
         });
         posthog.capture("referral_link_shared", { method: "native" });

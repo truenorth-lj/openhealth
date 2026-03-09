@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "部落格 — Open Health",
-  description: "關於健康、營養與生活方式的見解與思考。",
+  description: "營養科學、訓練方法、睡眠優化——來自 Open Health 的深度健康內容。",
 };
 
 async function getPosts() {
@@ -44,7 +44,7 @@ export default async function BlogPage() {
         </p>
         <h1 className="text-4xl md:text-5xl font-extralight mb-8">部落格</h1>
         <p className="text-neutral-500 font-light mb-20 max-w-xl text-sm">
-          關於健康、營養與生活方式的見解與思考。
+          營養科學、訓練方法、睡眠優化——來自 Open Health 的深度健康內容。
         </p>
 
         {posts.length === 0 ? (

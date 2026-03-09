@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Open Health – Open Source Health Tracking & AI Nutrition Assistant";
+export const alt = "Open Health – All-in-One Health OS";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -65,7 +65,7 @@ export default function OgImage() {
             marginBottom: 24,
           }}
         >
-          Open Source Health Tracking & AI Nutrition Assistant
+          All-in-One Health OS
         </div>
 
         {/* URL */}

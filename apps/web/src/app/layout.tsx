@@ -8,15 +8,15 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Open Health — Open Source Health Tracking & AI Nutrition Assistant",
+  title: "Open Health — All-in-One Health OS",
   description:
-    "Open source alternative to MyFitnessPal. Track meals, scan nutrition labels with AI, and get personalized dietary insights. Self-hostable and privacy-first.",
+    "開放的健康作業系統。飲食、運動、睡眠、體重——所有健康數據整合在一個開源平台，由 AI 驅動，完全屬於你。",
   manifest: "/manifest.json",
   metadataBase: new URL("https://openhealth.blog"),
   openGraph: {
-    title: "Open Health — Open Source Health Tracking & AI Nutrition Assistant",
+    title: "Open Health — All-in-One Health OS",
     description:
-      "Open source alternative to MyFitnessPal. Track meals, scan nutrition labels with AI, and get personalized dietary insights.",
+      "開放的健康作業系統。飲食、運動、睡眠、體重——所有健康數據整合在一個開源平台，由 AI 驅動，完全屬於你。",
     url: "https://openhealth.blog",
     siteName: "Open Health",
     locale: "zh_TW",
@@ -24,17 +24,18 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Health — Open Source Health Tracking",
+    title: "Open Health — All-in-One Health OS",
     description:
-      "Open source alternative to MyFitnessPal. Track meals, scan nutrition labels with AI.",
+      "開放的健康作業系統。飲食、運動、睡眠、體重——所有健康數據整合在一個平台。",
   },
   keywords: [
-    "open source health tracker",
-    "calorie tracker",
+    "health os",
+    "all in one health tracking",
+    "open source health platform",
+    "AI health assistant",
     "nutrition tracking",
-    "MyFitnessPal alternative",
-    "AI nutrition",
-    "food diary",
+    "sleep tracking",
+    "fitness tracking",
     "self-hosted health",
   ],
   appleWebApp: {

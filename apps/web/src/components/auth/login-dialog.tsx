@@ -110,8 +110,8 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
         </DialogTitle>
         <DialogDescription className="text-center">
           {mode === "login"
-            ? "登入後即可記錄食物和追蹤營養"
-            : "註冊帳號開始追蹤你的營養"}
+            ? "登入後即可使用完整的健康追蹤功能"
+            : "註冊帳號，開啟你的健康作業系統"}
         </DialogDescription>
       </DialogHeader>
 

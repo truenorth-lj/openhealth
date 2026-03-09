@@ -4,7 +4,7 @@ import { SiteNav } from "@/components/layout/site-nav";
 
 export const metadata: Metadata = {
   title: "使用指南 — Open Health",
-  description: "了解如何將 Open Health 安裝到裝置主畫面、開啟通知提醒。支援 iOS、Android 與桌面瀏覽器。",
+  description: "了解如何將 Open Health 安裝到你的裝置、開啟通知提醒。支援 iOS、Android 與桌面瀏覽器。",
 };
 
 function Step({
@@ -40,7 +40,7 @@ export default function DocsPage() {
         <p className="text-neutral-500 font-light mb-20 max-w-xl text-sm leading-relaxed">
           Open Health 是一個 Progressive Web App (PWA)。
           無需透過 App Store 或 Google Play 下載，直接從瀏覽器安裝到裝置主畫面，
-          享受接近原生應用的體驗。
+          你的全方位健康作業系統隨時隨地可用。
         </p>
 
         {/* Quick Start */}
@@ -166,7 +166,7 @@ export default function DocsPage() {
         <section id="notifications" className="mb-20">
           <h2 className="text-xl font-light mb-6">開啟通知</h2>
           <p className="text-neutral-500 font-light text-sm leading-relaxed mb-10">
-            Open Health 支援推播通知，提醒你喝水和調整坐姿。
+            Open Health 支援推播通知，提醒你喝水、調整坐姿等日常健康習慣。
             安裝為 PWA 後，需要額外開啟通知權限才能收到提醒。
           </p>
 

@@ -9,9 +9,9 @@ import { eq, desc } from "drizzle-orm";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Open Health — 追蹤健康的本質",
+  title: "Open Health — All-in-One Health OS",
   description:
-    "開源的健康追蹤平台。以簡約與科技的力量，重新定義健康管理。",
+    "開放的健康作業系統。飲食、運動、睡眠、體重——所有健康數據整合在一個開源平台。",
 };
 
 
@@ -54,14 +54,14 @@ function Hero() {
         className="mt-6 text-lg md:text-xl font-light text-neutral-500 dark:text-neutral-400 tracking-wide animate-fade-in-up"
         style={{ animationDelay: "0.7s" }}
       >
-        追蹤健康的本質
+        All-in-One Health OS
       </p>
 
       <p
         className="mt-4 text-sm text-neutral-400 dark:text-neutral-600 font-light max-w-md text-center animate-fade-in-up"
         style={{ animationDelay: "0.9s" }}
       >
-        開源、屬於你的健康追蹤平台
+        開放的健康作業系統——飲食、運動、睡眠、體重，一個平台全部搞定
       </p>
 
       <Link
@@ -91,21 +91,21 @@ function Philosophy() {
       </p>
 
       <blockquote className="text-2xl md:text-3xl lg:text-4xl font-extralight text-black dark:text-white leading-relaxed">
-        健康追蹤，
+        你的健康，
         <br />
-        不該複雜。
+        不該被分散在十個 App 裡。
       </blockquote>
 
       <div className="w-8 h-[1px] bg-neutral-200 dark:bg-neutral-800 mx-auto my-12" />
 
       <p className="text-neutral-500 font-light leading-loose max-w-xl mx-auto text-sm md:text-base">
-        Open Health 將科技與簡約結合，
+        Open Health 是一個開放的健康作業系統，
         <br className="hidden md:block" />
-        讓你專注於真正重要的事——你的健康。
+        將飲食、運動、睡眠、體重整合在同一個平台。
       </p>
 
       <p className="mt-6 text-neutral-300 dark:text-neutral-700 font-light text-xs md:text-sm tracking-wide">
-        不是另一個 MyFitnessPal。是重新思考。
+        不是另一個追蹤 App。是你的健康 OS。
       </p>
     </section>
   );
@@ -114,27 +114,27 @@ function Philosophy() {
 const features = [
   {
     num: "01",
-    title: "智能食物追蹤",
-    en: "Smart Food Tracking",
-    desc: "記錄每一餐的營養攝取，精確到 82 種以上營養素。從碳水、蛋白質到微量元素，全面掌握。",
+    title: "全方位健康追蹤",
+    en: "All-in-One Tracking",
+    desc: "飲食、運動、睡眠、體重、水分、斷食——不再需要多個 App。一個平台涵蓋所有健康面向，數據自然互通。",
   },
   {
     num: "02",
-    title: "AI 營養辨識",
-    en: "AI Recognition",
-    desc: "拍照即可辨識營養標籤與食物內容。讓記錄變得毫不費力，科技為你服務。",
+    title: "AI 智能助手",
+    en: "AI-Powered",
+    desc: "拍照辨識營養標籤、AI 教練分析你的健康數據，給出個人化建議。讓科技為你的健康服務。",
   },
   {
     num: "03",
     title: "數據視覺化",
     en: "Data Visualization",
-    desc: "視覺化你的健康趨勢。體重、營養攝取、飲水量，一目瞭然。用數據驅動決策。",
+    desc: "體重趨勢、營養攝取、睡眠品質、運動表現——所有數據一目瞭然。用整合的視角做出更好的決策。",
   },
   {
     num: "04",
-    title: "開源透明",
-    en: "Open Source",
-    desc: "完全屬於你的數據，沒有隱藏的追蹤，沒有付費牆。程式碼將於服務穩定後完全開源——敬請期待。",
+    title: "開源開放",
+    en: "Open Platform",
+    desc: "數據完全屬於你，沒有鎖定、沒有付費牆。開源架構，社群驅動，任何人都可以貢獻與擴展。",
   },
 ];
 
@@ -263,10 +263,10 @@ function BlogPreview({ posts }: { posts: BlogPost[] }) {
         Journal
       </p>
       <h2 className="text-3xl md:text-4xl font-extralight text-black dark:text-white mb-4">
-        關於健康的思考
+        健康知識庫
       </h2>
       <p className="text-neutral-400 dark:text-neutral-600 font-light mb-16 text-sm">
-        健康、營養與生活方式的見解。
+        營養科學、訓練方法、睡眠優化的深度內容。
       </p>
 
       {posts.length === 0 ? (

@@ -4,7 +4,7 @@ import { SiteNav } from "@/components/layout/site-nav";
 
 export const metadata: Metadata = {
   title: "隱私權政策 - Open Health",
-  description: "Open Health 隱私權政策，說明我們如何收集、使用與保護你的個人資料。",
+  description: "Open Health 隱私權政策——說明我們如何收集、使用與保護你的健康數據與個人資料。",
 };
 
 export default function PrivacyPage() {
