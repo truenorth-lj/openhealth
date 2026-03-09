@@ -7,10 +7,16 @@ export async function register() {
       const { db } = await import("./server/db");
       // Path is relative to CWD. Migration files are included in standalone build
       // via outputFileTracingIncludes in next.config.ts.
-      await migrate(db, { migrationsFolder: "./src/server/db/migrations" });
-
-      // Auto-seed preset exercises if table is empty
-      await seedPresetExercises(db);
+      try {
+        await migrate(db, { migrationsFolder: "./src/server/db/migrations" });
+        // Auto-seed preset exercises if table is empty
+        await seedPresetExercises(db);
+      } catch (err) {
+        console.error("[migration] Failed to run migrations:", err);
+        // Report to Sentry but don't crash the server — existing tables still work
+        const Sentry = await import("@sentry/nextjs");
+        Sentry.captureException(err);
+      }
     }
   }
 
