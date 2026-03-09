@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from "vitest";
 import { eq, and, sql } from "drizzle-orm";
 

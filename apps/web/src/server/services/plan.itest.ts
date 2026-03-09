@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { setupTestDb, teardownTestDb, getTestDb, cleanTables } from "@/test/setup-db";
 import type { TestDb } from "@/test/setup-db";
-import { users, aiUsage } from "@/server/db/schema";
+import { users } from "@/server/db/schema";
 
 // Mock DB and date modules to use test DB
 vi.mock("@/server/db", () => {
