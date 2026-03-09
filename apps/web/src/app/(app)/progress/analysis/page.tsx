@@ -16,6 +16,7 @@ import {
   Tooltip,
 } from "recharts";
 import { ArrowLeft } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DEFAULT_WATER_GOAL_ML } from "@open-health/shared/constants";
 
 const RANGES = [
@@ -91,11 +92,7 @@ export default function AnalysisPage() {
         ))}
       </div>
 
-      {isLoading && (
-        <div className="flex items-center justify-center py-20">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        </div>
-      )}
+      {isLoading && <LoadingSpinner />}
 
       {!isLoading && (
         <>

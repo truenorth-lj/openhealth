@@ -9,10 +9,11 @@ import { signOut, useSession } from "@/lib/auth-client";
 import { trpc } from "@/lib/trpc-client";
 import { updateProfile } from "@/server/actions/profile";
 import posthog from "posthog-js";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
-  const { data: profile } = trpc.user.getProfile.useQuery();
+  const { data: session, isPending: sessionPending } = useSession();
+  const { data: profile, isLoading: profileLoading } = trpc.user.getProfile.useQuery();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
@@ -64,6 +65,8 @@ export default function ProfilePage() {
     await signOut();
     router.push("/hub");
   };
+
+  if (sessionPending || profileLoading) return <LoadingSpinner />;
 
   return (
     <div className="px-4 py-6 space-y-6">

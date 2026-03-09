@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc-client";
 import { logSteps } from "@/server/actions/progress";
 import { format, parseISO, isValid, isToday } from "date-fns";
 import { DateNavigator } from "@/components/diary/date-navigator";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Footprints } from "lucide-react";
 import {
   BarChart,
@@ -44,7 +45,7 @@ function StepsContent() {
 
   const utils = trpc.useUtils();
 
-  const { data: dateSteps } = trpc.progress.getDateSteps.useQuery({ date: dateStr });
+  const { data: dateSteps, isLoading } = trpc.progress.getDateSteps.useQuery({ date: dateStr });
   const { data: stepsHistory } = trpc.progress.getStepsHistory.useQuery({ limit: 7 });
   const { data: analytics } = trpc.progress.getAnalytics.useQuery({ days: selectedRange });
 
@@ -97,6 +98,8 @@ function StepsContent() {
     stepsHistory && stepsHistory.length > 0
       ? stepsHistory.reduce((sum, s) => sum + Number(s.steps), 0)
       : null;
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="space-y-6">

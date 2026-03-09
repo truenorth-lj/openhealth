@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc-client";
 import { updateGoals } from "@/server/actions/goals";
 import posthog from "posthog-js";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function GoalsPage() {
-  const { data: goals } = trpc.user.getGoals.useQuery();
+  const { data: goals, isLoading: goalsLoading } = trpc.user.getGoals.useQuery();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -73,6 +74,8 @@ export default function GoalsPage() {
       }
     });
   };
+
+  if (goalsLoading) return <LoadingSpinner />;
 
   return (
     <div className="px-4 py-6 space-y-6">

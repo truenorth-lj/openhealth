@@ -7,6 +7,7 @@ import { ArrowLeft, Droplets, BellRing } from "lucide-react";
 import Link from "next/link";
 import { requestNotificationPermission } from "@/hooks/use-water-reminder";
 import { NotificationPermissionGuard } from "@/components/notification-permission-guard";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const INTERVAL_OPTIONS = [
   { value: 30, label: "30 分鐘" },
@@ -86,13 +87,7 @@ export default function NotificationSettingsPage() {
       intervalMinutes !== settings.intervalMinutes ||
       stopWhenGoalReached !== settings.stopWhenGoalReached);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="px-4 py-6 space-y-6">

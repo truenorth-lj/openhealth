@@ -21,22 +21,25 @@ import { startWorkout } from "@/server/actions/workout";
 import { formatDuration } from "@/hooks/use-workout-timer";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { deleteWorkoutTemplate } from "@/server/actions/workout";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function WorkoutPage() {
   const router = useRouter();
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } =
     useAuthGuard();
 
-  const { data: activeWorkout } = trpc.workout.getActive.useQuery(undefined, {
+  const { data: activeWorkout, isLoading: activeLoading } = trpc.workout.getActive.useQuery(undefined, {
     enabled: isAuthenticated,
   });
-  const { data: templates } = trpc.workout.getTemplates.useQuery(undefined, {
+  const { data: templates, isLoading: templatesLoading } = trpc.workout.getTemplates.useQuery(undefined, {
     enabled: isAuthenticated,
   });
   const { data: history } = trpc.workout.getHistory.useQuery(
     { limit: 5 },
     { enabled: isAuthenticated }
   );
+
+  const isLoading = isAuthenticated && (activeLoading || templatesLoading);
 
   const [starting, setStarting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -92,6 +95,8 @@ export default function WorkoutPage() {
       weekday: "short",
     });
   };
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="px-4 py-6 space-y-6">

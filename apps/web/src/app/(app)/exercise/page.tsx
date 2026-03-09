@@ -8,6 +8,7 @@ import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { todayString } from "@open-health/shared/utils";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   EXERCISE_CATEGORIES,
   DEFAULT_EXERCISE_CALORIE_GOAL,
@@ -143,13 +144,7 @@ export default function ExercisePage() {
   const exerciseList = searchQuery.length >= 1 ? searchResults : presets;
   const totalCalories = dayData?.totalCalories ?? 0;
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="px-4 py-6 space-y-6">

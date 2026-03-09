@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DateNavigator } from "@/components/diary/date-navigator";
 import { NotificationPermissionGuard } from "@/components/notification-permission-guard";
 
@@ -236,13 +237,7 @@ export default function PosturePage() {
 
   const isLoading = defsLoading || sessionLoading;
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-green-500 border-t-transparent" />
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="px-4 py-6 space-y-6">

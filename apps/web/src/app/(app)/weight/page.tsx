@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc-client";
 import { logWeight } from "@/server/actions/progress";
 import { format, parseISO, isValid, isToday } from "date-fns";
 import { DateNavigator } from "@/components/diary/date-navigator";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   TrendingDown,
   TrendingUp,
@@ -49,7 +50,7 @@ function WeightContent() {
 
   const utils = trpc.useUtils();
 
-  const { data: dateWeight } = trpc.progress.getDateWeight.useQuery({ date: dateStr });
+  const { data: dateWeight, isLoading } = trpc.progress.getDateWeight.useQuery({ date: dateStr });
   const { data: goals } = trpc.user.getGoals.useQuery();
   const { data: weightHistory } = trpc.progress.getWeightHistory.useQuery({ limit: 7 });
   const { data: analytics } = trpc.progress.getAnalytics.useQuery({ days: selectedRange });
@@ -110,6 +111,8 @@ function WeightContent() {
     latestWeight !== null && oldestWeight !== null
       ? +(latestWeight - oldestWeight).toFixed(1)
       : null;
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="space-y-6">

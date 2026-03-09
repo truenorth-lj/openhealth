@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Timer, Play, Square, Settings2, Trash2, Check, X } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import posthog from "posthog-js";
 
 const MS_PER_HOUR = 3600 * 1000;
@@ -163,13 +164,7 @@ export default function FastingPage() {
 
   const isLoading = configLoading || fastLoading;
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-green-500 border-t-transparent" />
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="px-4 py-6 space-y-6">

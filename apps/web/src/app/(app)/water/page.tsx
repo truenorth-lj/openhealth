@@ -8,6 +8,7 @@ import { Droplets, Plus, Undo2, Settings2, Pencil, Trash2, X } from "lucide-reac
 import { trpc } from "@/lib/trpc-client";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DateNavigator } from "@/components/diary/date-navigator";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import posthog from "posthog-js";
 
 const DEFAULT_QUICK_AMOUNTS = [150, 250, 350, 500];
@@ -161,13 +162,7 @@ function WaterContent() {
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="pb-6 space-y-6">
