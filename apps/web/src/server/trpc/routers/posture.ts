@@ -7,7 +7,7 @@ import {
   postureDetectionSessions,
   postureDetectionConfig,
 } from "@/server/db/schema";
-import { eq, and, desc, isNull } from "drizzle-orm";
+import { eq, and, desc, isNull, gte, lt } from "drizzle-orm";
 import {
   schedulePush,
   cancelPush,
@@ -273,9 +273,23 @@ export const postureRouter = router({
 
   getHistory: protectedProcedure
     .input(
-      z.object({ limit: z.number().int().min(1).max(50).default(20) })
+      z.object({
+        limit: z.number().int().min(1).max(50).default(20),
+        date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+      })
     )
     .query(async ({ ctx, input }) => {
+      const conditions = [eq(postureSessions.userId, ctx.user.id)];
+
+      if (input.date) {
+        // Use Asia/Taipei timezone (UTC+8) for date boundaries
+        const dayStart = new Date(`${input.date}T00:00:00+08:00`);
+        const dayEnd = new Date(`${input.date}T00:00:00+08:00`);
+        dayEnd.setDate(dayEnd.getDate() + 1);
+        conditions.push(gte(postureSessions.startedAt, dayStart));
+        conditions.push(lt(postureSessions.startedAt, dayEnd));
+      }
+
       const logs = await ctx.db
         .select({
           id: postureSessions.id,
@@ -291,7 +305,7 @@ export const postureRouter = router({
           postureDefinitions,
           eq(postureSessions.postureId, postureDefinitions.id)
         )
-        .where(eq(postureSessions.userId, ctx.user.id))
+        .where(and(...conditions))
         .orderBy(desc(postureSessions.startedAt))
         .limit(input.limit);
 

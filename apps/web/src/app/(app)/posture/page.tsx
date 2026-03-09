@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { format } from "date-fns";
 import { toast } from "sonner";
 import {
   Settings2,
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DateNavigator } from "@/components/diary/date-navigator";
 import { NotificationPermissionGuard } from "@/components/notification-permission-guard";
 
 const MS_PER_MINUTE = 60 * 1000;
@@ -81,13 +83,16 @@ export default function PosturePage() {
   } | null>(null);
   const [snoozedUntil, setSnoozedUntil] = useState<number | null>(null);
   const [hasNotified, setHasNotified] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
+
+  const dateStr = format(selectedDate, "yyyy-MM-dd");
 
   const { data: definitions, isLoading: defsLoading } =
     trpc.posture.getDefinitions.useQuery();
   const { data: activeSession, isLoading: sessionLoading } =
     trpc.posture.getActiveSession.useQuery();
   const { data: config } = trpc.posture.getConfig.useQuery();
-  const { data: history } = trpc.posture.getHistory.useQuery({ limit: 20 });
+  const { data: history } = trpc.posture.getHistory.useQuery({ limit: 50, date: dateStr });
 
   const switchPosture = trpc.posture.switchPosture.useMutation({
     onSuccess: () => {
@@ -392,11 +397,11 @@ export default function PosturePage() {
       {/* Divider */}
       <div className="border-t border-black/[0.06] dark:border-white/[0.06]" />
 
+      {/* Date Navigator */}
+      <DateNavigator date={selectedDate} onDateChange={setSelectedDate} />
+
       {/* History */}
       <div className="space-y-3">
-        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          今日紀錄
-        </p>
         {history && history.length > 0 ? (
           <div className="space-y-0">
             {history.map((log) => (
