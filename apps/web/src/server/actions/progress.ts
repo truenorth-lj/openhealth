@@ -28,6 +28,7 @@ export async function logWeight(input: z.infer<typeof logWeightSchema>) {
     });
 
   revalidatePath("/progress");
+  revalidatePath("/weight");
   return { success: true };
 }
 
@@ -90,5 +91,6 @@ export async function logSteps(input: z.infer<typeof logStepsSchema>) {
     });
 
   revalidatePath("/progress");
+  revalidatePath("/steps");
   return { success: true };
 }
