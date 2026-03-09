@@ -26,6 +26,8 @@ const MAX_RETRIES = 3;
 const SOURCE_LABELS: Record<string, string> = {
   seven: "7-ELEVEN",
   family: "全家 FamilyMart",
+  getpower: "給力盒子 GET POWER",
+  verified: "驗證品牌",
   usda: "USDA",
   openfoodfacts: "Open Food Facts",
   user: "使用者自建",
