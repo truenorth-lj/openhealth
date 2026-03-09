@@ -16,7 +16,7 @@ import {
 } from "@/server/db/schema";
 import { eq, and, sql, desc } from "drizzle-orm";
 import { calculateBMR, calculateTDEE, getAge } from "@/server/services/bmr";
-import { isUniqueViolation } from "@/lib/referral-code";
+import * as coachingService from "@/server/services/coaching-mutation";
 
 export const coachRouter = router({
   getClients: protectedProcedure.query(async ({ ctx }) => {
@@ -334,58 +334,23 @@ export const coachRouter = router({
   connectToCoach: protectedProcedure
     .input(connectToCoachSchema)
     .mutation(async ({ ctx, input }) => {
-      const code = input.code.toUpperCase();
-
-      const coach = await ctx.db
-        .select({ id: users.id })
-        .from(users)
-        .where(eq(users.referralCode, code))
-        .limit(1);
-
-      if (coach.length === 0) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "教練碼不存在" });
-      }
-
-      if (coach[0].id === ctx.user.id) {
+      const result = await coachingService.connectToCoach(ctx.db, ctx.user.id, input.code);
+      if (!result.success) {
         throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "不能加入自己為教練",
+          code: result.error === "教練碼不存在" ? "NOT_FOUND"
+            : result.error === "不能加入自己為教練" ? "BAD_REQUEST"
+            : result.error === "你已經是此教練的學員了" ? "CONFLICT"
+            : "INTERNAL_SERVER_ERROR",
+          message: result.error,
         });
       }
-
-      try {
-        await ctx.db.insert(coachClients).values({
-          coachId: coach[0].id,
-          clientId: ctx.user.id,
-          startDate: new Date().toISOString().slice(0, 10),
-        });
-      } catch (error) {
-        if (isUniqueViolation(error)) {
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: "你已經是此教練的學員了",
-          });
-        }
-        throw error;
-      }
-
       return { success: true };
     }),
 
   disconnectFromCoach: protectedProcedure
     .input(z.object({ coachId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(coachClients)
-        .set({ status: "inactive", updatedAt: new Date() })
-        .where(
-          and(
-            eq(coachClients.coachId, input.coachId),
-            eq(coachClients.clientId, ctx.user.id),
-            eq(coachClients.status, "active")
-          )
-        );
-
+      await coachingService.disconnectFromCoach(ctx.db, ctx.user.id, input.coachId);
       return { success: true };
     }),
 

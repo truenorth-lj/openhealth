@@ -1,9 +1,10 @@
 import { z } from "zod";
 import { updateProfileSchema, updateGoalsSchema } from "@open-health/shared/schemas";
 import { protectedProcedure, router } from "../trpc";
-import { users, userProfiles, userGoals, nutrientDefinitions } from "@/server/db/schema";
+import { userProfiles, userGoals, nutrientDefinitions } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { getAiUsage } from "@/server/services/plan";
+import * as userService from "@/server/services/user-mutation";
 
 export const userRouter = router({
   getProfile: protectedProcedure.query(async ({ ctx }) => {
@@ -23,31 +24,7 @@ export const userRouter = router({
   updateProfile: protectedProcedure
     .input(updateProfileSchema)
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(users)
-        .set({ name: input.name, updatedAt: new Date() })
-        .where(eq(users.id, ctx.user.id));
-
-      await ctx.db
-        .insert(userProfiles)
-        .values({
-          userId: ctx.user.id,
-          sex: input.sex,
-          heightCm: input.heightCm ? String(input.heightCm) : null,
-          dateOfBirth: input.dateOfBirth,
-          activityLevel: input.activityLevel,
-        })
-        .onConflictDoUpdate({
-          target: userProfiles.userId,
-          set: {
-            sex: input.sex,
-            heightCm: input.heightCm ? String(input.heightCm) : null,
-            dateOfBirth: input.dateOfBirth,
-            activityLevel: input.activityLevel,
-            updatedAt: new Date(),
-          },
-        });
-
+      await userService.updateProfile(ctx.db, ctx.user.id, input);
       return { success: true };
     }),
 
@@ -67,28 +44,7 @@ export const userRouter = router({
   updateGoals: protectedProcedure
     .input(updateGoalsSchema)
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .insert(userGoals)
-        .values({
-          userId: ctx.user.id,
-          calorieTarget: input.calorieTarget,
-          proteinG: input.proteinG != null ? String(input.proteinG) : null,
-          carbsG: input.carbsG != null ? String(input.carbsG) : null,
-          fatG: input.fatG != null ? String(input.fatG) : null,
-          fiberG: input.fiberG != null ? String(input.fiberG) : null,
-        })
-        .onConflictDoUpdate({
-          target: userGoals.userId,
-          set: {
-            calorieTarget: input.calorieTarget,
-            proteinG: input.proteinG != null ? String(input.proteinG) : null,
-            carbsG: input.carbsG != null ? String(input.carbsG) : null,
-            fatG: input.fatG != null ? String(input.fatG) : null,
-            fiberG: input.fiberG != null ? String(input.fiberG) : null,
-            updatedAt: new Date(),
-          },
-        });
-
+      await userService.updateGoals(ctx.db, ctx.user.id, input);
       return { success: true };
     }),
 

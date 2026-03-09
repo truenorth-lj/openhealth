@@ -13,70 +13,19 @@ import {
 } from "@open-health/shared/schemas";
 import { REFERRAL, PAYOUT_METHODS, REWARD_TYPES, REWARD_STATUSES } from "@open-health/shared/constants";
 import type { RefereeStatus } from "@open-health/shared/constants";
-import { isUniqueViolation } from "@/lib/referral-code";
-import { grantAchievement } from "@/server/services/referral";
-import { grantReferralTrialDays } from "@/server/services/referral-reward";
+import * as referralService from "@/server/services/referral-mutation";
 
 export const referralRouter = router({
   applyCode: protectedProcedure
     .input(applyReferralCodeSchema)
     .mutation(async ({ ctx, input }) => {
-      const code = input.code.toUpperCase();
-      const referrer = await ctx.db
-        .select({ id: users.id })
-        .from(users)
-        .where(eq(users.referralCode, code))
-        .limit(1);
-
-      if (referrer.length === 0) {
-        return { success: false as const, error: "推薦碼不存在" };
-      }
-      if (referrer[0].id === ctx.user.id) {
-        return { success: false as const, error: "不能使用自己的推薦碼" };
-      }
-
-      let referralId: string;
-      try {
-        const [inserted] = await ctx.db
-          .insert(referrals)
-          .values({
-            referrerId: referrer[0].id,
-            refereeId: ctx.user.id,
-          })
-          .returning({ id: referrals.id });
-        referralId = inserted.id;
-      } catch (error) {
-        if (isUniqueViolation(error)) {
-          return { success: false as const, error: "你已經使用過推薦碼了" };
-        }
-        throw error;
-      }
-
-      await Promise.all([
-        grantAchievement(referrer[0].id, "推薦達人"),
-        grantAchievement(ctx.user.id, "受邀新星"),
-        grantReferralTrialDays(referralId, referrer[0].id, ctx.user.id),
-      ]);
-
-      return { success: true as const };
+      return referralService.applyReferralCode(ctx.db, ctx.user.id, input.code);
     }),
 
   customizeCode: protectedProcedure
     .input(customizeReferralCodeSchema)
     .mutation(async ({ ctx, input }) => {
-      const code = input.code.toUpperCase();
-      try {
-        await ctx.db
-          .update(users)
-          .set({ referralCode: code, updatedAt: new Date() })
-          .where(eq(users.id, ctx.user.id));
-      } catch (error) {
-        if (isUniqueViolation(error)) {
-          return { success: false as const, error: "此推薦碼已被使用" };
-        }
-        throw error;
-      }
-      return { success: true as const };
+      return referralService.customizeReferralCode(ctx.db, ctx.user.id, input.code);
     }),
 
   getMyCode: protectedProcedure.query(async ({ ctx }) => {
