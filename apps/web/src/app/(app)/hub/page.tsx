@@ -104,7 +104,7 @@ const sections: { title: string; items: HubItem[] }[] = [
     title: "社群",
     items: [
       { href: "https://line.me/ti/g2/yoiSxP0jx7pJDEFjQtFLu87dwRsKIGnFIIkV3g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", label: "Line 社群", icon: LineIcon, implemented: true, external: true },
-      { href: "https://github.com/truenorth-lj/open-health/issues", label: "問題回報", icon: MessageCircle, implemented: true, external: true },
+      { href: "https://line.me/ti/g2/yoiSxP0jx7pJDEFjQtFLu87dwRsKIGnFIIkV3g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", label: "問題回報", icon: MessageCircle, implemented: true, external: true },
     ],
   },
 ];
