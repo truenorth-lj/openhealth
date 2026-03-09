@@ -7,20 +7,14 @@ import { trpc } from "@/lib/trpc-client";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import posthog from "posthog-js";
+import { FASTING_PROTOCOLS, type FastingProtocol } from "@open-health/shared/constants";
 
 const MS_PER_HOUR = 3600 * 1000;
 // SVG circle circumference: 2 * PI * r(86) ≈ 540
 const CIRCLE_CIRCUMFERENCE = 540;
 
-const PROTOCOLS = [
-  { value: "16_8" as const, label: "16:8", fasting: 16, eating: 8, desc: "16 小時斷食 / 8 小時進食" },
-  { value: "18_6" as const, label: "18:6", fasting: 18, eating: 6, desc: "18 小時斷食 / 6 小時進食" },
-  { value: "20_4" as const, label: "20:4", fasting: 20, eating: 4, desc: "20 小時斷食 / 4 小時進食" },
-  { value: "omad" as const, label: "OMAD", fasting: 23, eating: 1, desc: "每天只吃一餐" },
-];
-
 function getProtocolHours(protocol: string): number {
-  return PROTOCOLS.find((p) => p.value === protocol)?.fasting ?? 16;
+  return FASTING_PROTOCOLS.find((p) => p.value === protocol)?.fasting ?? 16;
 }
 
 function formatDuration(ms: number): { hours: string; minutes: string; seconds: string } {
@@ -117,7 +111,7 @@ export default function FastingPage() {
     setConfigDialogOpen(true);
   }, [config]);
 
-  const handleProtocolSelect = (protocol: typeof PROTOCOLS[number]) => {
+  const handleProtocolSelect = (protocol: typeof FASTING_PROTOCOLS[number]) => {
     setSelectedProtocol(protocol.value);
     const start = customEatingStart || "12:00";
     const startHour = parseInt(start.split(":")[0], 10);
@@ -127,7 +121,7 @@ export default function FastingPage() {
 
   const handleEatingStartChange = (value: string) => {
     setCustomEatingStart(value);
-    const proto = PROTOCOLS.find((p) => p.value === selectedProtocol);
+    const proto = FASTING_PROTOCOLS.find((p) => p.value === selectedProtocol);
     if (proto) {
       const startHour = parseInt(value.split(":")[0], 10);
       const startMin = value.split(":")[1];
@@ -138,7 +132,7 @@ export default function FastingPage() {
 
   const handleSaveConfig = () => {
     upsertConfig.mutate({
-      protocol: selectedProtocol as "16_8" | "18_6" | "20_4" | "omad" | "custom",
+      protocol: selectedProtocol as FastingProtocol | "custom",
       eatingStart: customEatingStart,
       eatingEnd: customEatingEnd,
     });
@@ -182,7 +176,7 @@ export default function FastingPage() {
       {config && (
         <div className="text-center">
           <p className="text-sm font-light text-neutral-400">
-            {PROTOCOLS.find((p) => p.value === config.protocol)?.label ?? "自訂"} 模式
+            {FASTING_PROTOCOLS.find((p) => p.value === config.protocol)?.label ?? "自訂"} 模式
             <span className="mx-2">·</span>
             進食時間 {config.eatingStart.slice(0, 5)} - {config.eatingEnd.slice(0, 5)}
           </p>
@@ -337,7 +331,7 @@ export default function FastingPage() {
           <div className="space-y-2">
             <label className="text-sm font-light text-neutral-500">斷食模式</label>
             <div className="grid grid-cols-2 gap-2">
-              {PROTOCOLS.map((p) => (
+              {FASTING_PROTOCOLS.map((p) => (
                 <button
                   key={p.value}
                   onClick={() => handleProtocolSelect(p)}

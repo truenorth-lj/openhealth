@@ -223,6 +223,16 @@ export const REWARD_STATUSES = {
 
 export type RewardStatus = (typeof REWARD_STATUSES)[keyof typeof REWARD_STATUSES];
 
+// Fasting protocols
+export const FASTING_PROTOCOLS = [
+  { value: "16_8" as const, label: "16:8", fasting: 16, eating: 8, desc: "16 小時斷食 / 8 小時進食" },
+  { value: "18_6" as const, label: "18:6", fasting: 18, eating: 6, desc: "18 小時斷食 / 6 小時進食" },
+  { value: "20_4" as const, label: "20:4", fasting: 20, eating: 4, desc: "20 小時斷食 / 4 小時進食" },
+  { value: "omad" as const, label: "OMAD", fasting: 23, eating: 1, desc: "每天只吃一餐" },
+] as const;
+
+export type FastingProtocol = (typeof FASTING_PROTOCOLS)[number]["value"];
+
 // Sleep tracking
 export const SLEEP_PHASES = ["awake", "light", "deep", "rem"] as const;
 export const SLEEP_DETECTION_METHODS = ["accelerometer", "microphone", "both"] as const;
