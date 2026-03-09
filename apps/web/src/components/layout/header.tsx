@@ -5,10 +5,12 @@ import { User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { LoginDialog } from "@/components/auth/login-dialog";
+import { useTranslation } from "react-i18next";
 
 export function Header() {
   const { data: session } = useSession();
   const [showLogin, setShowLogin] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -30,7 +32,7 @@ export function Header() {
               onClick={() => setShowLogin(true)}
               className="text-sm font-light text-neutral-500 transition-all duration-300 hover:text-foreground"
             >
-              登入
+              {t("auth.login")}
             </button>
           )}
         </div>

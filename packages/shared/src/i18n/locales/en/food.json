@@ -1,0 +1,15 @@
+{
+  "title": "Food Database",
+  "search": "Search food",
+  "scanLabel": "Scan Label",
+  "recentFoods": "Recent Foods",
+  "servingSize": "Serving Size",
+  "calories": "Calories",
+  "protein": "Protein",
+  "carbs": "Carbohydrates",
+  "fat": "Fat",
+  "fiber": "Dietary Fiber",
+  "sugar": "Sugar",
+  "sodium": "Sodium",
+  "noResults": "No food found"
+}

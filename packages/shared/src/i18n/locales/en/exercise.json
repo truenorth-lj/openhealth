@@ -1,0 +1,9 @@
+{
+  "title": "Exercise Log",
+  "addExercise": "Add Exercise",
+  "duration": "Duration",
+  "caloriesBurned": "Calories Burned",
+  "minutes": "minutes",
+  "workout": "Workout Log",
+  "noEntries": "No exercise entries for today"
+}

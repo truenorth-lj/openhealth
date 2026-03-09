@@ -1,0 +1,11 @@
+{
+  "title": "飲食記錄",
+  "breakfast": "早餐",
+  "lunch": "午餐",
+  "dinner": "晚餐",
+  "snack": "點心",
+  "addFood": "新增食物",
+  "totalCalories": "總熱量",
+  "noEntries": "今天還沒有記錄",
+  "deleteEntry": "刪除記錄"
+}

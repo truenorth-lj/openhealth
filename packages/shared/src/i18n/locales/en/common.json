@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "today": "Today",
+    "hub": "Hub",
+    "settings": "Settings",
+    "home": "Home",
+    "blog": "Blog",
+    "docs": "Docs",
+    "getStarted": "Get Started →"
+  },
+  "auth": {
+    "login": "Sign In",
+    "logout": "Sign Out",
+    "register": "Sign Up"
+  },
+  "theme": {
+    "label": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "confirm": "Confirm",
+    "back": "Back",
+    "close": "Close",
+    "search": "Search",
+    "loading": "Loading...",
+    "retry": "Retry"
+  },
+  "toast": {
+    "saveSuccess": "Saved successfully",
+    "saveFailed": "Failed to save",
+    "deleteSuccess": "Deleted successfully",
+    "deleteFailed": "Failed to delete",
+    "error": "An error occurred",
+    "networkError": "Network error, please try again later"
+  },
+  "empty": {
+    "noData": "No data yet",
+    "noResults": "No results found"
+  },
+  "time": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow"
+  },
+  "units": {
+    "kcal": "kcal",
+    "g": "g",
+    "mg": "mg",
+    "ml": "ml",
+    "kg": "kg",
+    "cm": "cm"
+  }
+}

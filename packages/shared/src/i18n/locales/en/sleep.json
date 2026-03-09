@@ -1,0 +1,9 @@
+{
+  "title": "Sleep Tracking",
+  "bedtime": "Bedtime",
+  "wakeTime": "Wake Time",
+  "duration": "Sleep Duration",
+  "quality": "Sleep Quality",
+  "hours": "hours",
+  "noEntries": "No sleep entries for today"
+}

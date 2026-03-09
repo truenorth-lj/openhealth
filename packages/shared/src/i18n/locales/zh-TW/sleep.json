@@ -1,0 +1,9 @@
+{
+  "title": "睡眠追蹤",
+  "bedtime": "就寢時間",
+  "wakeTime": "起床時間",
+  "duration": "睡眠時長",
+  "quality": "睡眠品質",
+  "hours": "小時",
+  "noEntries": "今天還沒有睡眠記錄"
+}

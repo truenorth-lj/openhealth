@@ -4,15 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CalendarDays, LayoutGrid, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const navItems = [
-  { href: "/today", label: "今天", icon: CalendarDays },
-  { href: "/hub", label: "總覽", icon: LayoutGrid },
-  { href: "/settings", label: "設定", icon: Settings2 },
+  { href: "/today", labelKey: "nav.today" as const, icon: CalendarDays },
+  { href: "/hub", labelKey: "nav.hub" as const, icon: LayoutGrid },
+  { href: "/settings", labelKey: "nav.settings" as const, icon: Settings2 },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <nav data-testid="bottom-nav" className="fixed bottom-0 left-0 right-0 z-50 border-t border-black/[0.06] dark:border-white/[0.06] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -31,7 +33,7 @@ export function BottomNav() {
               )}
             >
               <item.icon className="h-5 w-5" strokeWidth={1.5} />
-              <span>{item.label}</span>
+              <span>{t(item.labelKey)}</span>
             </Link>
           );
         })}

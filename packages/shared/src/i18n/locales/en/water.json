@@ -1,0 +1,8 @@
+{
+  "title": "Water Tracking",
+  "addWater": "Add Water",
+  "dailyGoal": "Daily Goal",
+  "consumed": "Consumed",
+  "remaining": "Remaining",
+  "noEntries": "No water entries for today"
+}

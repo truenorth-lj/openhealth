@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/i18n"; // Initialize i18next (side-effect)
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";

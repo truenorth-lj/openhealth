@@ -1,0 +1,15 @@
+{
+  "title": "食物資料庫",
+  "search": "搜尋食物",
+  "scanLabel": "拍照辨識",
+  "recentFoods": "最近食物",
+  "servingSize": "份量",
+  "calories": "熱量",
+  "protein": "蛋白質",
+  "carbs": "碳水化合物",
+  "fat": "脂肪",
+  "fiber": "膳食纖維",
+  "sugar": "糖",
+  "sodium": "鈉",
+  "noResults": "找不到食物"
+}

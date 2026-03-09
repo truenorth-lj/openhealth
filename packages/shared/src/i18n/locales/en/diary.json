@@ -1,0 +1,11 @@
+{
+  "title": "Food Diary",
+  "breakfast": "Breakfast",
+  "lunch": "Lunch",
+  "dinner": "Dinner",
+  "snack": "Snack",
+  "addFood": "Add Food",
+  "totalCalories": "Total Calories",
+  "noEntries": "No entries for today",
+  "deleteEntry": "Delete Entry"
+}

@@ -11,34 +11,47 @@ import {
   Moon,
   Monitor,
   GraduationCap,
+  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
+import type { SupportedLanguage } from "@open-health/shared/i18n";
 
 const menuItems = [
-  { href: "/settings/profile", label: "個人資料", icon: User },
-  { href: "/settings/coaching", label: "我的教練", icon: GraduationCap },
+  { href: "/settings/profile", labelKey: "settings:profile" as const, icon: User },
+  { href: "/settings/coaching", labelKey: "settings:coaching" as const, icon: GraduationCap },
 ];
 
 const themeOptions = [
-  { value: "light", label: "淺色", icon: Sun },
-  { value: "dark", label: "深色", icon: Moon },
-  { value: "system", label: "系統", icon: Monitor },
+  { value: "light", labelKey: "theme.light" as const, icon: Sun },
+  { value: "dark", labelKey: "theme.dark" as const, icon: Moon },
+  { value: "system", labelKey: "theme.system" as const, icon: Monitor },
 ] as const;
+
+const languageOptions = [
+  { value: "zh-TW" as SupportedLanguage, labelKey: "settings:languageZhTW" as const },
+  { value: "en" as SupportedLanguage, labelKey: "settings:languageEn" as const },
+];
 
 export default function SettingsPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+  const { t, i18n } = useTranslation(["common", "settings"]);
 
   const handleSignOut = async () => {
     await signOut();
     router.push("/hub");
   };
 
+  const handleLanguageChange = (lng: SupportedLanguage) => {
+    i18n.changeLanguage(lng);
+  };
+
   return (
     <div className="px-4 py-6 space-y-6">
-      <h1 className="text-xl font-light tracking-wide">設定</h1>
+      <h1 className="text-xl font-light tracking-wide">{t("settings:title")}</h1>
 
       {session?.user && (
         <div className="flex items-center gap-3 py-2">
@@ -57,7 +70,7 @@ export default function SettingsPage() {
       {/* Theme selector */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          外觀
+          {t("theme.label")}
         </p>
         <div className="flex gap-2">
           {themeOptions.map((option) => (
@@ -72,7 +85,31 @@ export default function SettingsPage() {
               )}
             >
               <option.icon className="h-4 w-4" strokeWidth={1.5} />
-              {option.label}
+              {t(option.labelKey)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Language selector */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          {t("settings:language")}
+        </p>
+        <div className="flex gap-2">
+          {languageOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => handleLanguageChange(option.value)}
+              className={cn(
+                "flex flex-1 items-center justify-center gap-2 rounded-lg border py-2.5 text-sm font-light transition-all duration-300",
+                i18n.language === option.value
+                  ? "border-foreground/20 text-foreground"
+                  : "border-black/[0.06] dark:border-white/[0.06] text-neutral-400 dark:text-neutral-600 hover:text-foreground hover:border-foreground/10"
+              )}
+            >
+              <Globe className="h-4 w-4" strokeWidth={1.5} />
+              {t(option.labelKey)}
             </button>
           ))}
         </div>
@@ -81,7 +118,7 @@ export default function SettingsPage() {
       {/* Menu items */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          帳號
+          {t("settings:account")}
         </p>
         <div className="border-t border-black/[0.06] dark:border-white/[0.06]">
           {menuItems.map((item) => (
@@ -92,7 +129,7 @@ export default function SettingsPage() {
             >
               <div className="flex items-center gap-3">
                 <item.icon className="h-4 w-4 text-neutral-400 dark:text-neutral-600" strokeWidth={1.5} />
-                <span className="text-sm font-light">{item.label}</span>
+                <span className="text-sm font-light">{t(item.labelKey)}</span>
               </div>
               <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
             </Link>
@@ -106,7 +143,7 @@ export default function SettingsPage() {
           className="flex w-full items-center justify-center gap-2 py-3 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-destructive"
         >
           <LogOut className="h-4 w-4" strokeWidth={1.5} />
-          登出
+          {t("auth.logout")}
         </button>
       )}
     </div>
