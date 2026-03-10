@@ -35,13 +35,12 @@ import {
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   EXERCISE_CATEGORIES,
-  EXERCISE_CATEGORY_LABELS,
   REST_TIMER_OPTIONS,
 } from "@open-health/shared/constants";
 import { useTranslation } from "react-i18next";
 
 export default function ActiveWorkoutPage() {
-  const { t } = useTranslation(["workout", "common"]);
+  const { t } = useTranslation(["workout", "common", "exercise"]);
   const router = useRouter();
   const utils = trpc.useUtils();
   const { isAuthenticated, showLoginDialog, setShowLoginDialog, user } =
@@ -409,7 +408,7 @@ export default function ActiveWorkoutPage() {
                       : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500 hover:text-foreground"
                   }`}
                 >
-                  {EXERCISE_CATEGORY_LABELS[cat]}
+                  {t(`exercise:categories.${cat}`)}
                 </button>
               ))}
             </div>
@@ -429,7 +428,7 @@ export default function ActiveWorkoutPage() {
                     <span className="text-sm font-light">{ex.name}</span>
                     {ex.category && (
                       <span className="ml-2 text-[10px] text-neutral-400">
-                        {EXERCISE_CATEGORY_LABELS[ex.category] ?? ex.category}
+                        {t(`exercise:categories.${ex.category}`, { defaultValue: ex.category })}
                       </span>
                     )}
                     {ex.isCustom && (
@@ -495,7 +494,7 @@ export default function ActiveWorkoutPage() {
                         : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500 hover:text-foreground"
                     }`}
                   >
-                    {EXERCISE_CATEGORY_LABELS[cat]}
+                    {t(`exercise:categories.${cat}`)}
                   </button>
                 ))}
               </div>
@@ -662,7 +661,7 @@ function ExerciseCard({
   onAddSet: (weId: string, nextSetNumber: number) => void;
   onRemoveExercise: (weId: string) => void;
 }) {
-  const { t } = useTranslation(["workout", "common"]);
+  const { t } = useTranslation(["workout", "common", "exercise"]);
   // Previous performance hints
   const { data: prevHistory } = trpc.workout.getExerciseHistory.useQuery(
     { exerciseId: exercise.exerciseId, limit: 1 },
@@ -684,8 +683,7 @@ function ExerciseCard({
           </span>
           {exercise.exerciseCategory && (
             <span className="text-[10px] text-neutral-400">
-              {EXERCISE_CATEGORY_LABELS[exercise.exerciseCategory] ??
-                exercise.exerciseCategory}
+              {t(`exercise:categories.${exercise.exerciseCategory}`, { defaultValue: exercise.exerciseCategory })}
             </span>
           )}
         </div>

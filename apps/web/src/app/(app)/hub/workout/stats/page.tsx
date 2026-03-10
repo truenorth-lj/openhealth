@@ -8,7 +8,6 @@ import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import {
   EXERCISE_CATEGORIES,
-  EXERCISE_CATEGORY_LABELS,
 } from "@open-health/shared/constants";
 import { useTranslation } from "react-i18next";
 
@@ -22,7 +21,7 @@ const PR_TYPE_KEYS: Record<string, string> = {
 };
 
 export default function WorkoutStatsPage() {
-  const { t } = useTranslation(["workout", "common"]);
+  const { t } = useTranslation(["workout", "common", "exercise"]);
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } =
     useAuthGuard();
 
@@ -131,7 +130,7 @@ export default function WorkoutStatsPage() {
                     : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500"
                 }`}
               >
-                {EXERCISE_CATEGORY_LABELS[cat]}
+                {t(`exercise:categories.${cat}`)}
               </button>
             ))}
           </div>

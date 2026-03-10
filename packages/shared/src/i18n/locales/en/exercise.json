@@ -36,5 +36,23 @@
   "creating": "Creating...",
   "create": "Create",
   "customCreated": "Custom exercise created",
-  "intensitySuffix": "intensity"
+  "intensitySuffix": " intensity",
+  "categories": {
+    "cardio": "Cardio",
+    "strength": "Strength",
+    "flexibility": "Flexibility",
+    "sport": "Sport",
+    "other": "Other"
+  },
+  "intensity": {
+    "low": "Low",
+    "moderate": "Med",
+    "high": "High"
+  },
+  "deleteLog": "Delete Log",
+  "deleteLogConfirm": "Are you sure you want to delete this exercise log?",
+  "logFailed": "Log failed",
+  "createFailed": "Create failed",
+  "dayLog": "Day's Log",
+  "noDayLog": "No exercise entries for this day"
 }

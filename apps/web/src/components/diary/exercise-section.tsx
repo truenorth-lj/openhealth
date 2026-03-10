@@ -2,7 +2,6 @@
 
 import { Dumbbell, Flame } from "lucide-react";
 import Link from "next/link";
-import { EXERCISE_CATEGORY_LABELS } from "@open-health/shared/constants";
 import { useTranslation } from "react-i18next";
 
 interface ExerciseLog {
@@ -19,7 +18,7 @@ interface ExerciseSectionProps {
 }
 
 export function ExerciseSection({ logs, totalCalories }: ExerciseSectionProps) {
-  const { t } = useTranslation(["diary", "common"]);
+  const { t } = useTranslation(["diary", "common", "exercise"]);
   return (
     <div className="mx-4 mt-4">
       <div className="flex items-center justify-between mb-2">
@@ -58,7 +57,7 @@ export function ExerciseSection({ logs, totalCalories }: ExerciseSectionProps) {
                 <p className="text-sm font-light truncate">{log.exerciseName}</p>
                 <p className="text-xs text-neutral-400 dark:text-neutral-600">
                   {log.durationMin} {t("common:time.minutes")}
-                  {log.exerciseCategory && ` · ${EXERCISE_CATEGORY_LABELS[log.exerciseCategory] ?? log.exerciseCategory}`}
+                  {log.exerciseCategory && ` · ${t(`exercise:categories.${log.exerciseCategory}`, { defaultValue: log.exerciseCategory })}`}
                 </p>
               </div>
               <span className="text-sm font-light tabular-nums text-orange-500 ml-2">

@@ -21,12 +21,11 @@ import {
 } from "@/server/actions/workout";
 import {
   EXERCISE_CATEGORIES,
-  EXERCISE_CATEGORY_LABELS,
 } from "@open-health/shared/constants";
 import { useTranslation } from "react-i18next";
 
 export default function WorkoutTemplatesPage() {
-  const { t } = useTranslation(["workout", "common"]);
+  const { t } = useTranslation(["workout", "common", "exercise"]);
   const router = useRouter();
   const utils = trpc.useUtils();
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } =
@@ -316,7 +315,7 @@ export default function WorkoutTemplatesPage() {
                       : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500"
                   }`}
                 >
-                  {EXERCISE_CATEGORY_LABELS[cat]}
+                  {t(`exercise:categories.${cat}`)}
                 </button>
               ))}
             </div>
@@ -335,7 +334,7 @@ export default function WorkoutTemplatesPage() {
                   <span className="text-sm font-light">{ex.name}</span>
                   {ex.category && (
                     <span className="text-[10px] text-neutral-400">
-                      {EXERCISE_CATEGORY_LABELS[ex.category]}
+                      {t(`exercise:categories.${ex.category}`, { defaultValue: ex.category })}
                     </span>
                   )}
                 </button>

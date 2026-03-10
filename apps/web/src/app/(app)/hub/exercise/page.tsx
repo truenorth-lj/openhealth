@@ -12,8 +12,6 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import {
   EXERCISE_CATEGORIES,
   DEFAULT_EXERCISE_CALORIE_GOAL,
-  EXERCISE_CATEGORY_LABELS,
-  EXERCISE_INTENSITY_LABELS,
 } from "@open-health/shared/constants";
 import posthog from "posthog-js";
 import { useTranslation } from "react-i18next";
@@ -222,7 +220,7 @@ export default function ExercisePage() {
                     <span className="text-sm font-light truncate">{log.exerciseName}</span>
                     {log.exerciseCategory && (
                       <span className="text-[10px] text-neutral-400 dark:text-neutral-600">
-                        {EXERCISE_CATEGORY_LABELS[log.exerciseCategory] ?? log.exerciseCategory}
+                        {t(`categories.${log.exerciseCategory}`, { defaultValue: log.exerciseCategory })}
                       </span>
                     )}
                   </div>
@@ -232,7 +230,7 @@ export default function ExercisePage() {
                     </span>
                     {log.intensity && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-900 text-neutral-500">
-                        {EXERCISE_INTENSITY_LABELS[log.intensity]}{t("intensitySuffix")}
+                        {t(`intensity.${log.intensity}`)}{t("intensitySuffix")}
                       </span>
                     )}
                     <span className="text-xs text-neutral-400 tabular-nums">
@@ -313,7 +311,7 @@ export default function ExercisePage() {
                           : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500 hover:text-foreground"
                       }`}
                     >
-                      {EXERCISE_CATEGORY_LABELS[cat]}
+                      {t(`categories.${cat}`)}
                     </button>
                   ))}
                 </div>
@@ -332,7 +330,7 @@ export default function ExercisePage() {
                         <span className="text-sm font-light">{ex.name}</span>
                         {ex.category && (
                           <span className="ml-2 text-[10px] text-neutral-400">
-                            {EXERCISE_CATEGORY_LABELS[ex.category] ?? ex.category}
+                            {t(`categories.${ex.category}`, { defaultValue: ex.category })}
                           </span>
                         )}
                       </div>
@@ -365,7 +363,7 @@ export default function ExercisePage() {
                   <span className="text-sm font-light">{selectedExercise.name}</span>
                   {selectedExercise.category && (
                     <span className="ml-2 text-[10px] text-neutral-400">
-                      {EXERCISE_CATEGORY_LABELS[selectedExercise.category] ?? selectedExercise.category}
+                      {t(`categories.${selectedExercise.category}`, { defaultValue: selectedExercise.category })}
                     </span>
                   )}
                 </div>
@@ -405,7 +403,7 @@ export default function ExercisePage() {
                           : "border-black/[0.06] dark:border-white/[0.06] text-neutral-400 hover:text-foreground"
                       }`}
                     >
-                      {EXERCISE_INTENSITY_LABELS[level]}
+                      {t(`intensity.${level}`)}
                     </button>
                   ))}
                 </div>
@@ -481,7 +479,7 @@ export default function ExercisePage() {
                       : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500 hover:text-foreground"
                   }`}
                 >
-                  {EXERCISE_CATEGORY_LABELS[cat]}
+                  {t(`categories.${cat}`)}
                 </button>
               ))}
             </div>

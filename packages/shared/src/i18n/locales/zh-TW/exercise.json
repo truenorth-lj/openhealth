@@ -36,5 +36,23 @@
   "creating": "建立中...",
   "create": "建立",
   "customCreated": "已建立自訂運動",
-  "intensitySuffix": "強度"
+  "intensitySuffix": "強度",
+  "categories": {
+    "cardio": "有氧",
+    "strength": "肌力",
+    "flexibility": "柔軟度",
+    "sport": "運動",
+    "other": "其他"
+  },
+  "intensity": {
+    "low": "低",
+    "moderate": "中",
+    "high": "高"
+  },
+  "deleteLog": "刪除記錄",
+  "deleteLogConfirm": "確定要刪除此運動記錄嗎？",
+  "logFailed": "記錄失敗",
+  "createFailed": "建立失敗",
+  "dayLog": "當日紀錄",
+  "noDayLog": "當天沒有運動紀錄"
 }

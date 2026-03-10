@@ -7,7 +7,6 @@ import { trpc } from "@/lib/trpc-client";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { formatDuration } from "@/hooks/use-workout-timer";
-import { EXERCISE_CATEGORY_LABELS } from "@open-health/shared/constants";
 import { useTranslation } from "react-i18next";
 
 export default function WorkoutDetailPage({
@@ -15,7 +14,7 @@ export default function WorkoutDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { t } = useTranslation(["workout", "common"]);
+  const { t } = useTranslation(["workout", "common", "exercise"]);
   const { id } = use(params);
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } =
     useAuthGuard();
@@ -163,8 +162,7 @@ export default function WorkoutDetailPage({
                 </span>
                 {ex.exerciseCategory && (
                   <span className="text-[10px] text-neutral-400">
-                    {EXERCISE_CATEGORY_LABELS[ex.exerciseCategory] ??
-                      ex.exerciseCategory}
+                    {t(`exercise:categories.${ex.exerciseCategory}`, { defaultValue: ex.exerciseCategory })}
                   </span>
                 )}
               </div>
