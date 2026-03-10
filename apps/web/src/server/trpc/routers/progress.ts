@@ -237,10 +237,32 @@ export const progressRouter = router({
         where: eq(waterGoals.userId, ctx.user.id),
       });
 
+      // Generate all dates in the range to fill gaps
+      const allDates: string[] = [];
+      const cursor = new Date(since);
+      const today = new Date();
+      while (cursor <= today) {
+        allDates.push(cursor.toISOString().split("T")[0]);
+        cursor.setDate(cursor.getDate() + 1);
+      }
+
+      // Build lookup maps
+      const weightMap = new Map(weights.map((w) => [w.date, Number(w.value)]));
+      const stepsMap = new Map(steps.map((s) => [s.date, Number(s.value)]));
+      const waterMap = new Map(waterDaily.map((w) => [w.date, w.totalMl]));
+
       return {
-        weight: weights.map((w) => ({ date: w.date, value: Number(w.value) })),
-        steps: steps.map((s) => ({ date: s.date, value: Number(s.value) })),
-        water: waterDaily.map((w) => ({ date: w.date, value: w.totalMl })),
+        weight: allDates
+          .filter((d) => weightMap.has(d))
+          .map((d) => ({ date: d, value: weightMap.get(d)! })),
+        steps: allDates.map((d) => ({
+          date: d,
+          value: stepsMap.get(d) ?? 0,
+        })),
+        water: allDates.map((d) => ({
+          date: d,
+          value: waterMap.get(d) ?? 0,
+        })),
         waterGoalMl: waterGoal?.dailyTargetMl ?? DEFAULT_WATER_GOAL_ML,
       };
     }),
