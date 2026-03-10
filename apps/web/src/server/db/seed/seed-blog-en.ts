@@ -25,26 +25,11 @@ const TITLE = "Open Health Complete Guide: From Food Tracking to Workout Logging
 const SUMMARY =
   "A complete walkthrough of all Open Health features, including food diary, AI food recognition, water tracking, exercise log, intermittent fasting, weight tracking, and the brand-new workout log.";
 const TAGS = ["Guide", "Features", "Workout", "Nutrition Tracking"];
-const THUMBNAIL = "/screenshots/en/01-today.png";
+const THUMBNAIL = "/screenshots/en/01-hub.png";
 
 const CONTENT = `## What is Open Health?
 
 Open Health is an open-source health tracking app that helps you log your diet, exercise, water intake, weight, and more. With AI-powered food recognition, nutrition tracking has never been easier.
-
----
-
-## Today's Overview
-
-The "Today" page is your personal health dashboard — see all your daily health data at a glance:
-
-- **Calorie Intake**: Consumed / Remaining / Target at a glance
-- **Macronutrients**: Track protein, carbs, fat, and fiber separately
-- **Water Intake**: Daily hydration tracking
-- **Weight Log**: Latest weight and 7-day trend
-- **Steps**: Daily step count
-- **AI Nutrition Advisor**: Get dietary advice anytime
-
-![Today's Overview](/screenshots/en/01-today.png)
 
 ---
 
@@ -61,7 +46,35 @@ From the Hub page you can quickly access all feature modules:
 - Weight & Body Data
 - AI Nutrition Advisor
 
-![Feature Hub](/screenshots/en/05-hub.png)
+![Feature Hub](/screenshots/en/01-hub.png)
+
+---
+
+## Today's Overview
+
+The "Today" page is your personal health dashboard — see all your daily health data at a glance:
+
+- **Calorie Intake**: Consumed / Remaining / Target at a glance
+- **Macronutrients**: Track protein, carbs, fat, and fiber separately
+- **Water Intake**: Daily hydration tracking
+- **Weight Log**: Latest weight and 7-day trend
+- **Steps**: Daily step count
+- **AI Nutrition Advisor**: Get dietary advice anytime
+
+![Today's Overview](/screenshots/en/02-today.png)
+
+---
+
+## AI Nutrition Advisor
+
+Built-in AI nutrition advisor that can:
+
+- Analyze your dietary records
+- Provide personalized nutrition advice
+- Answer nutrition-related questions
+- Suggest meal plans
+
+![AI Advisor](/screenshots/en/03-ai-chat.png)
 
 ---
 
@@ -76,7 +89,13 @@ Multiple ways to add food:
 3. **Nutrition Label Scan** — Scan packaged food labels for automatic nutrient detection
 4. **Create Custom Food** — Manually enter food and nutrient details
 
-![Food Search](/screenshots/en/02-food-search.png)
+![Food Search](/screenshots/en/04-food-search.png)
+
+### Daily Food Log
+
+Your food diary shows all meals for the day — breakfast, lunch, dinner, and snacks — with a calorie and macro summary at the top.
+
+![Food Diary](/screenshots/en/05-diary.png)
 
 ### Food Details
 
@@ -103,19 +122,6 @@ Simply take a photo or upload a food image — AI will identify the food and est
 
 ---
 
-## AI Nutrition Advisor
-
-Built-in AI nutrition advisor that can:
-
-- Analyze your dietary records
-- Provide personalized nutrition advice
-- Answer nutrition-related questions
-- Suggest meal plans
-
-![AI Advisor](/screenshots/en/03-ai-chat.png)
-
----
-
 ## Weight & Progress Tracking
 
 Track your weight over time with trend charts and progress analysis:
@@ -124,7 +130,7 @@ Track your weight over time with trend charts and progress analysis:
 - Progress photo comparisons
 - BMI and body composition data
 
-![Progress Tracking](/screenshots/en/04-progress.png)
+![Progress Tracking](/screenshots/en/09-progress.png)
 
 ---
 
