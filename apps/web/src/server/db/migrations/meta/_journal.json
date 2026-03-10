@@ -148,6 +148,13 @@
       "when": 1773140248014,
       "tag": "0020_broken_lyja",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1773148948064,
+      "tag": "0021_lazy_slapstick",
+      "breakpoints": true
     }
   ]
 }

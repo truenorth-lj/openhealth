@@ -41,7 +41,7 @@ export const blogPosts = pgTable(
   },
   (table) => [
     uniqueIndex("blog_posts_slug_locale_idx").on(table.slug, table.locale),
-    uniqueIndex("blog_posts_youtube_video_id_idx").on(table.youtubeVideoId),
+    uniqueIndex("blog_posts_youtube_video_locale_idx").on(table.youtubeVideoId, table.locale),
     index("blog_posts_status_created_idx").on(table.status, table.createdAt),
     index("blog_posts_locale_idx").on(table.locale),
   ]
