@@ -57,9 +57,9 @@ function formatDuration(ms: number): { minutes: string; seconds: string } {
   };
 }
 
-function formatTime(date: Date | string) {
+function formatTime(date: Date | string, locale = "zh-TW") {
   const d = typeof date === "string" ? new Date(date) : date;
-  return d.toLocaleString("zh-TW", {
+  return d.toLocaleString(locale, {
     month: "numeric",
     day: "numeric",
     hour: "2-digit",
@@ -90,8 +90,9 @@ export default function PosturePage() {
 
   const dateStr = format(selectedDate, "yyyy-MM-dd");
 
+  const { i18n } = useTranslation();
   const { data: definitions, isLoading: defsLoading } =
-    trpc.posture.getDefinitions.useQuery();
+    trpc.posture.getDefinitions.useQuery({ lang: i18n.language });
   const { data: activeSession, isLoading: sessionLoading } =
     trpc.posture.getActiveSession.useQuery();
   const { data: config } = trpc.posture.getConfig.useQuery();
@@ -421,8 +422,8 @@ export default function PosturePage() {
                       )}
                     </p>
                     <p className="text-xs text-neutral-400 tabular-nums">
-                      {formatTime(log.startedAt)}
-                      {log.endedAt && ` — ${formatTime(log.endedAt)}`}
+                      {formatTime(log.startedAt, i18n.language === "en" ? "en-US" : "zh-TW")}
+                      {log.endedAt && ` — ${formatTime(log.endedAt, i18n.language === "en" ? "en-US" : "zh-TW")}`}
                     </p>
                   </div>
                 </div>

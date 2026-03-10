@@ -13,16 +13,27 @@ import {
   cancelPush,
 } from "@/server/services/posture-push-scheduler";
 
-const DEFAULT_POSTURES = [
-  { name: "坐姿", emoji: "🪑", maxMinutes: 45, suggestedBreak: "站起來走動 2 分鐘", sortOrder: 0 },
-  { name: "站姿", emoji: "🧍", maxMinutes: 60, suggestedBreak: "坐下休息或走動一下", sortOrder: 1 },
-  { name: "走路", emoji: "🚶", maxMinutes: 120, suggestedBreak: "找個地方坐下休息", sortOrder: 2 },
-  { name: "躺姿", emoji: "🛌", maxMinutes: 30, suggestedBreak: "起來活動一下", sortOrder: 3 },
-  { name: "半躺", emoji: "🛋️", maxMinutes: 45, suggestedBreak: "變換姿勢、伸展一下", sortOrder: 4 },
-];
+const DEFAULT_POSTURES: Record<string, { name: string; emoji: string; maxMinutes: number; suggestedBreak: string; sortOrder: number }[]> = {
+  "zh-TW": [
+    { name: "坐姿", emoji: "🪑", maxMinutes: 45, suggestedBreak: "站起來走動 2 分鐘", sortOrder: 0 },
+    { name: "站姿", emoji: "🧍", maxMinutes: 60, suggestedBreak: "坐下休息或走動一下", sortOrder: 1 },
+    { name: "走路", emoji: "🚶", maxMinutes: 120, suggestedBreak: "找個地方坐下休息", sortOrder: 2 },
+    { name: "躺姿", emoji: "🛌", maxMinutes: 30, suggestedBreak: "起來活動一下", sortOrder: 3 },
+    { name: "半躺", emoji: "🛋️", maxMinutes: 45, suggestedBreak: "變換姿勢、伸展一下", sortOrder: 4 },
+  ],
+  en: [
+    { name: "Sitting", emoji: "🪑", maxMinutes: 45, suggestedBreak: "Stand up and walk for 2 min", sortOrder: 0 },
+    { name: "Standing", emoji: "🧍", maxMinutes: 60, suggestedBreak: "Sit down or take a short walk", sortOrder: 1 },
+    { name: "Walking", emoji: "🚶", maxMinutes: 120, suggestedBreak: "Find a place to sit and rest", sortOrder: 2 },
+    { name: "Lying", emoji: "🛌", maxMinutes: 30, suggestedBreak: "Get up and move around", sortOrder: 3 },
+    { name: "Reclining", emoji: "🛋️", maxMinutes: 45, suggestedBreak: "Switch posture and stretch", sortOrder: 4 },
+  ],
+};
 
 export const postureRouter = router({
-  getDefinitions: protectedProcedure.query(async ({ ctx }) => {
+  getDefinitions: protectedProcedure
+    .input(z.object({ lang: z.string().optional() }).optional())
+    .query(async ({ ctx, input }) => {
     const defs = await ctx.db
       .select()
       .from(postureDefinitions)
@@ -36,10 +47,12 @@ export const postureRouter = router({
 
     // If user has no definitions, seed defaults
     if (defs.length === 0) {
+      const lang = input?.lang ?? "zh-TW";
+      const postures = DEFAULT_POSTURES[lang] ?? DEFAULT_POSTURES["zh-TW"];
       const seeded = await ctx.db
         .insert(postureDefinitions)
         .values(
-          DEFAULT_POSTURES.map((p) => ({
+          postures.map((p) => ({
             userId: ctx.user.id,
             ...p,
           }))
