@@ -183,7 +183,7 @@ export const postureRouter = router({
   }),
 
   switchPosture: protectedProcedure
-    .input(z.object({ postureId: z.string().uuid() }))
+    .input(z.object({ postureId: z.string().uuid(), lang: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.transaction(async (tx) => {
         // End any active session
@@ -230,10 +230,15 @@ export const postureRouter = router({
           const fireAt = new Date(
             now.getTime() + postureDef.maxMinutes * 60000
           );
+          const isEn = input.lang === "en";
           schedulePush(ctx.user.id, newSession.id, fireAt, {
             type: "posture-reminder",
-            title: `${postureDef.emoji} 該換姿勢了！`,
-            body: `你已經維持「${postureDef.name}」超過 ${postureDef.maxMinutes} 分鐘。${postureDef.suggestedBreak}`,
+            title: isEn
+              ? `${postureDef.emoji} Time to switch posture!`
+              : `${postureDef.emoji} 該換姿勢了！`,
+            body: isEn
+              ? `You've been "${postureDef.name}" for over ${postureDef.maxMinutes} min. ${postureDef.suggestedBreak}`
+              : `你已經維持「${postureDef.name}」超過 ${postureDef.maxMinutes} 分鐘。${postureDef.suggestedBreak}`,
             tag: "posture-reminder",
             url: "/hub/posture",
           });

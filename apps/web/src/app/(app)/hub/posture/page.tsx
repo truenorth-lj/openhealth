@@ -188,7 +188,7 @@ export default function PosturePage() {
   }, [config?.snoozeMinutes]);
 
   const handleSwitchPosture = (postureId: string) => {
-    switchPosture.mutate({ postureId });
+    switchPosture.mutate({ postureId, lang: i18n.language });
   };
 
   const handleEditPosture = (posture?: NonNullable<typeof definitions>[number]) => {
