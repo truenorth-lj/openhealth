@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { SiteNav } from "@/components/layout/site-nav";
+import { useLocalePath } from "@/hooks/use-locale-path";
 
 export function PrivacyContent() {
   const { t } = useTranslation("privacy");
+  const lp = useLocalePath();
 
   return (
     <div className="bg-white dark:bg-black text-black dark:text-white min-h-screen">
@@ -150,7 +152,7 @@ export function PrivacyContent() {
 
         <div className="mt-20 pt-8 border-t border-black/[0.06] dark:border-white/[0.06]">
           <Link
-            href="/"
+            href={lp("/")}
             className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-black dark:hover:text-white transition-colors duration-300 tracking-wider"
           >
             {t("backToHome")}

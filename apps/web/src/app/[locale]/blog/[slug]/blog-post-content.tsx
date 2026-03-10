@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import { useLocalePath } from "@/hooks/use-locale-path";
 import { BlogContent } from "./blog-content";
 
 interface BlogPost {
@@ -21,6 +22,7 @@ interface BlogPost {
 
 export function BlogPostContent({ post }: { post: BlogPost }) {
   const { t, i18n } = useTranslation("blog");
+  const lp = useLocalePath();
   const dateLocale = i18n.language === "en" ? "en-US" : "zh-TW";
 
   return (
@@ -113,7 +115,7 @@ export function BlogPostContent({ post }: { post: BlogPost }) {
       {/* Back link */}
       <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-8">
         <Link
-          href="/blog"
+          href={lp("/blog")}
           className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-black dark:hover:text-white transition-colors duration-300 tracking-wider"
         >
           {t("allPosts")}

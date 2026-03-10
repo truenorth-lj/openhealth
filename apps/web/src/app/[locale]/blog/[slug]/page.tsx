@@ -5,11 +5,19 @@ import { blogPosts } from "@/server/db/schema";
 import { eq, and } from "drizzle-orm";
 import { SiteNav } from "@/components/layout/site-nav";
 import { BlogPostContent } from "./blog-post-content";
+import { defaultLocale, type Locale } from "@/lib/i18n-config";
 
 export const dynamic = "force-dynamic";
 
+const BASE_URL = "https://openhealth.blog";
+
+const notFoundTitles: Record<Locale, string> = {
+  "zh-TW": "找不到頁面 — Open Health",
+  en: "Not Found — Open Health",
+};
+
 interface Props {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ locale: string; slug: string }>;
 }
 
 async function getPost(slug: string) {
@@ -22,9 +30,10 @@ async function getPost(slug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
+  const lang = (locale as Locale) || defaultLocale;
   const post = await getPost(slug);
-  if (!post) return { title: "文章未找到 — Open Health" };
+  if (!post) return { title: notFoundTitles[lang] };
 
   return {
     title: `${post.title} — Open Health`,
@@ -34,6 +43,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.summary?.slice(0, 160) ?? "",
       type: "article",
       images: post.thumbnailUrl ? [{ url: post.thumbnailUrl }] : [],
+    },
+    alternates: {
+      canonical: `${BASE_URL}/blog/${slug}`,
+      languages: {
+        "zh-TW": `${BASE_URL}/blog/${slug}`,
+        en: `${BASE_URL}/en/blog/${slug}`,
+      },
     },
   };
 }

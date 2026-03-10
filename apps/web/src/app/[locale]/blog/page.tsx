@@ -4,13 +4,42 @@ import { blogPosts } from "@/server/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { SiteNav } from "@/components/layout/site-nav";
 import { BlogListContent } from "./blog-list-content";
+import { defaultLocale, type Locale } from "@/lib/i18n-config";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "部落格 — Open Health",
-  description: "營養科學、訓練方法、睡眠優化——來自 Open Health 的深度健康內容。",
+const BASE_URL = "https://openhealth.blog";
+
+interface Props {
+  params: Promise<{ locale: string }>;
+}
+
+const descriptions: Record<Locale, string> = {
+  "zh-TW": "營養科學、訓練方法、睡眠優化——來自 Open Health 的深度健康內容。",
+  en: "Nutrition science, training methods, sleep optimization — in-depth health content from Open Health.",
 };
+
+const titles: Record<Locale, string> = {
+  "zh-TW": "部落格 — Open Health",
+  en: "Blog — Open Health",
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const lang = (locale as Locale) || defaultLocale;
+
+  return {
+    title: titles[lang],
+    description: descriptions[lang],
+    alternates: {
+      canonical: `${BASE_URL}/blog`,
+      languages: {
+        "zh-TW": `${BASE_URL}/blog`,
+        en: `${BASE_URL}/en/blog`,
+      },
+    },
+  };
+}
 
 async function getPosts() {
   return db

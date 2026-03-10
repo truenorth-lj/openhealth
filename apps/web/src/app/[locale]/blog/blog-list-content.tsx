@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import { useLocalePath } from "@/hooks/use-locale-path";
 
 interface BlogPost {
   id: string;
@@ -17,6 +18,7 @@ interface BlogPost {
 
 export function BlogListContent({ posts }: { posts: BlogPost[] }) {
   const { t, i18n } = useTranslation("blog");
+  const lp = useLocalePath();
   const dateLocale = i18n.language === "en" ? "en-US" : "zh-TW";
 
   return (
@@ -60,7 +62,7 @@ export function BlogListContent({ posts }: { posts: BlogPost[] }) {
           {posts.map((post) => (
             <Link
               key={post.id}
-              href={`/blog/${post.slug}`}
+              href={lp(`/blog/${post.slug}`)}
               className="group block border border-black/[0.06] dark:border-white/[0.06] hover:border-black/[0.12] dark:hover:border-white/[0.12] transition-colors duration-300"
             >
               <div className="flex flex-col md:flex-row">
@@ -111,7 +113,7 @@ export function BlogListContent({ posts }: { posts: BlogPost[] }) {
 
       <div className="mt-16 border-t border-black/[0.06] dark:border-white/[0.06] pt-8">
         <Link
-          href="/"
+          href={lp("/")}
           className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-black dark:hover:text-white transition-colors duration-300 tracking-wider"
         >
           {t("backToHome")}

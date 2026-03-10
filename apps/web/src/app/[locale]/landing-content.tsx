@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import { useLocalePath } from "@/hooks/use-locale-path";
 
 interface BlogPost {
   id: string;
@@ -160,6 +161,7 @@ function Features() {
 
 function Install() {
   const { t } = useTranslation("landing");
+  const lp = useLocalePath();
 
   return (
     <section id="install" className="max-w-4xl mx-auto px-6 py-32">
@@ -215,7 +217,7 @@ function Install() {
 
       <div className="mt-20 pt-8 border-t border-black/[0.06] dark:border-white/[0.06]">
         <Link
-          href="/docs"
+          href={lp("/docs")}
           className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-black dark:hover:text-white transition-colors duration-300 tracking-wider"
         >
           {t("install.fullGuide")}
@@ -227,6 +229,7 @@ function Install() {
 
 function BlogPreview({ posts }: { posts: BlogPost[] }) {
   const { t, i18n } = useTranslation("landing");
+  const lp = useLocalePath();
   const dateLocale = i18n.language === "en" ? "en-US" : "zh-TW";
 
   return (
@@ -271,7 +274,7 @@ function BlogPreview({ posts }: { posts: BlogPost[] }) {
           {posts.map((post) => (
             <Link
               key={post.id}
-              href={`/blog/${post.slug}`}
+              href={lp(`/blog/${post.slug}`)}
               className="group block border border-black/[0.06] dark:border-white/[0.06] hover:border-black/[0.12] dark:hover:border-white/[0.12] transition-colors duration-300"
             >
               <div className="flex flex-col md:flex-row">
@@ -310,7 +313,7 @@ function BlogPreview({ posts }: { posts: BlogPost[] }) {
 
       <div className="mt-10">
         <Link
-          href="/blog"
+          href={lp("/blog")}
           className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-black dark:hover:text-white transition-colors duration-300 tracking-wider"
         >
           {t("blog.goToBlog")}
@@ -322,6 +325,7 @@ function BlogPreview({ posts }: { posts: BlogPost[] }) {
 
 function Footer() {
   const { t } = useTranslation("landing");
+  const lp = useLocalePath();
 
   return (
     <footer className="max-w-4xl mx-auto px-6 py-20 border-t border-black/[0.06] dark:border-white/[0.06]">
@@ -347,13 +351,13 @@ function Footer() {
               {t("footer.getStarted")}
             </Link>
             <Link
-              href="/docs"
+              href={lp("/docs")}
               className="block text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300 text-xs"
             >
               {t("footer.installGuide")}
             </Link>
             <Link
-              href="/privacy"
+              href={lp("/privacy")}
               className="block text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300 text-xs"
             >
               {t("footer.privacyPolicy")}
@@ -375,7 +379,7 @@ function Footer() {
               {t("footer.githubComingSoon")}
             </span>
             <Link
-              href="/blog"
+              href={lp("/blog")}
               className="block text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-300 text-xs"
             >
               {t("footer.blog")}
