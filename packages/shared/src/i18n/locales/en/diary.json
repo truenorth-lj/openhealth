@@ -7,5 +7,14 @@
   "addFood": "Add Food",
   "totalCalories": "Total Calories",
   "noEntries": "No entries for today",
-  "deleteEntry": "Delete Entry"
+  "deleteEntry": "Delete Entry",
+  "clickToAddFood": "Tap to add food",
+  "clickToAddExercise": "Tap to add exercise",
+  "microNutrients": "Detailed Nutrients",
+  "setupTrackedNutrients": "Set up tracked nutrients",
+  "clickToSetupNutrients": "Tap to set up nutrients to track (e.g., sodium, trans fat)",
+  "selectTrackedNutrients": "Select Tracked Nutrients",
+  "saveCount": "Save ({{count}})",
+  "exerciseLabel": "Exercise",
+  "calorieIntake": "Calorie Intake"
 }

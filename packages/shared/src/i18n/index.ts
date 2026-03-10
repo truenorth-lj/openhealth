@@ -12,6 +12,9 @@ import zhTWProgress from "./locales/zh-TW/progress.json";
 import zhTWSettings from "./locales/zh-TW/settings.json";
 import zhTWNutrients from "./locales/zh-TW/nutrients.json";
 import zhTWAi from "./locales/zh-TW/ai.json";
+import zhTWFasting from "./locales/zh-TW/fasting.json";
+import zhTWWorkout from "./locales/zh-TW/workout.json";
+import zhTWPosture from "./locales/zh-TW/posture.json";
 
 import enCommon from "./locales/en/common.json";
 import enDiary from "./locales/en/diary.json";
@@ -24,6 +27,9 @@ import enProgress from "./locales/en/progress.json";
 import enSettings from "./locales/en/settings.json";
 import enNutrients from "./locales/en/nutrients.json";
 import enAi from "./locales/en/ai.json";
+import enFasting from "./locales/en/fasting.json";
+import enWorkout from "./locales/en/workout.json";
+import enPosture from "./locales/en/posture.json";
 
 export const supportedLngs = ["zh-TW", "en"] as const;
 export type SupportedLanguage = (typeof supportedLngs)[number];
@@ -43,6 +49,9 @@ export const namespaces = [
   "settings",
   "nutrients",
   "ai",
+  "fasting",
+  "workout",
+  "posture",
 ] as const;
 
 export type Namespace = (typeof namespaces)[number];
@@ -60,6 +69,9 @@ export const resources = {
     settings: zhTWSettings,
     nutrients: zhTWNutrients,
     ai: zhTWAi,
+    fasting: zhTWFasting,
+    workout: zhTWWorkout,
+    posture: zhTWPosture,
   },
   en: {
     common: enCommon,
@@ -73,5 +85,8 @@ export const resources = {
     settings: enSettings,
     nutrients: enNutrients,
     ai: enAi,
+    fasting: enFasting,
+    workout: enWorkout,
+    posture: enPosture,
   },
 } as const;

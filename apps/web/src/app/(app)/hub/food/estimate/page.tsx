@@ -16,16 +16,12 @@ import { toast } from "sonner";
 import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
 import { UpgradeDialog } from "@/components/upgrade-dialog";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
-const EXAMPLES = [
-  "一碗白飯",
-  "滷雞腿便當",
-  "一碗涼麵，大概 400g",
-  "珍珠奶茶 大杯 700ml",
-  "水煎包 3 個",
-];
+// Examples are loaded from translations
 
 function EstimateContent() {
+  const { t } = useTranslation(["food", "common"]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const date =
@@ -104,7 +100,7 @@ function EstimateContent() {
         setStage("edit");
       } else {
         posthog.capture("ai_food_estimated", { success: false });
-        setError(result.error || "估算失敗");
+        setError(result.error || t("food:estimationFailed"));
         setStage("input");
       }
     } catch (err) {
@@ -113,7 +109,7 @@ function EstimateContent() {
         setShowUpgrade(true);
         setStage("input");
       } else {
-        setError("估算過程發生錯誤，請重試");
+        setError(t("food:estimationError"));
         setStage("input");
       }
     } finally {
@@ -225,15 +221,15 @@ function EstimateContent() {
           });
           await utils.diary.getDay.invalidate();
           posthog.capture("food_logged", { source: "estimate", meal_type: meal, calories: parseFloat(calories) });
-          toast.success("已新增到日記");
+          toast.success(t("common:toast.addedToDiary"));
           router.push(`/hub/diary?date=${date}`);
           router.refresh();
         } else {
-          toast.error("建立食物失敗，請重試");
+          toast.error(t("common:toast.createFoodFailed"));
         }
       } catch (err) {
         console.error("createCustomFood/logFood failed:", err);
-        toast.error("新增失敗，請重試");
+        toast.error(t("common:toast.addFailed"));
       }
     });
   };
@@ -246,7 +242,7 @@ function EstimateContent() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </Link>
-        <h1 className="font-semibold">AI 估算營養</h1>
+        <h1 className="font-semibold">{t("food:aiEstimateTitle")}</h1>
       </div>
 
       {error && (
@@ -262,10 +258,10 @@ function EstimateContent() {
             <CardContent className="pt-6 space-y-4">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MessageSquare className="h-4 w-4" />
-                <span>描述你吃了什麼，AI 會估算營養成分</span>
+                <span>{t("food:describeFood")}</span>
               </div>
               <Textarea
-                placeholder="例如：一碗涼麵，大概 400g"
+                placeholder={t("food:descriptionPlaceholder")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
@@ -278,17 +274,17 @@ function EstimateContent() {
                 disabled={!description.trim() || isEstimating}
               >
                 <Sparkles className="h-4 w-4 mr-1" />
-                AI 估算
+                {t("food:aiEstimateButton")}
               </Button>
             </CardContent>
           </Card>
 
           <div>
             <p className="text-xs text-muted-foreground mb-2 px-1">
-              試試這些範例
+              {t("food:tryExamples")}
             </p>
             <div className="flex flex-wrap gap-2">
-              {EXAMPLES.map((example) => (
+              {(t("food:examples", { returnObjects: true }) as string[]).map((example) => (
                 <button
                   key={example}
                   onClick={() => setDescription(example)}
@@ -309,7 +305,7 @@ function EstimateContent() {
             <CardContent className="py-8">
               <div className="flex flex-col items-center gap-3">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">AI 估算中...</p>
+                <p className="text-sm text-muted-foreground">{t("food:aiEstimating")}</p>
                 <p className="text-xs text-muted-foreground bg-muted rounded-lg px-3 py-2 max-w-xs text-center">
                   &ldquo;{description}&rdquo;
                 </p>
@@ -327,36 +323,36 @@ function EstimateContent() {
               &ldquo;{description}&rdquo;
             </p>
             <Button variant="outline" size="sm" onClick={handleReset}>
-              重新描述
+              {t("food:reDescribe")}
             </Button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">基本資訊</CardTitle>
+                <CardTitle className="text-base">{t("common:labels.basicInfo")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-sm font-medium">食物名稱 *</label>
+                  <label className="text-sm font-medium">{t("food:foodName")} *</label>
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="例：雞排"
+                    placeholder={t("food:foodNamePlaceholder")}
                     required
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium">品牌</label>
+                  <label className="text-sm font-medium">{t("food:brand")}</label>
                   <Input
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
-                    placeholder="選填"
+                    placeholder={t("common:labels.optional")}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">份量大小 *</label>
+                    <label className="text-sm font-medium">{t("food:servingSizeLabel")} *</label>
                     <Input
                       type="number"
                       value={servingSize}
@@ -365,7 +361,7 @@ function EstimateContent() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">單位 *</label>
+                    <label className="text-sm font-medium">{t("food:unitLabel")} *</label>
                     <select
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={servingUnit}
@@ -375,7 +371,7 @@ function EstimateContent() {
                       <option value="ml">ml</option>
                       <option value="oz">oz</option>
                       <option value="cup">cup</option>
-                      <option value="piece">個</option>
+                      <option value="piece">{t("common:units.pieces")}</option>
                     </select>
                   </div>
                 </div>
@@ -384,11 +380,11 @@ function EstimateContent() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">營養資訊 (每份)</CardTitle>
+                <CardTitle className="text-base">{t("common:labels.nutritionInfoPerServing")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-sm font-medium">熱量 (kcal) *</label>
+                  <label className="text-sm font-medium">{t("food:caloriesKcalRequired")} *</label>
                   <Input
                     type="number"
                     value={calories}
@@ -399,9 +395,7 @@ function EstimateContent() {
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-blue-500">
-                      蛋白質 (g)
-                    </label>
+                    <label className="text-xs font-medium text-blue-500">{t("common:macro.protein")} (g)</label>
                     <Input
                       type="number"
                       step="0.1"
@@ -411,9 +405,7 @@ function EstimateContent() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-amber-500">
-                      碳水 (g)
-                    </label>
+                    <label className="text-xs font-medium text-amber-500">{t("common:macro.carbs")} (g)</label>
                     <Input
                       type="number"
                       step="0.1"
@@ -423,9 +415,7 @@ function EstimateContent() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-rose-500">
-                      脂肪 (g)
-                    </label>
+                    <label className="text-xs font-medium text-rose-500">{t("common:macro.fat")} (g)</label>
                     <Input
                       type="number"
                       step="0.1"
@@ -438,13 +428,11 @@ function EstimateContent() {
 
                 <div className="border-t pt-3 mt-3">
                   <p className="text-xs text-muted-foreground mb-2">
-                    其他營養素
+                    {t("food:otherNutrients")}
                   </p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">
-                        飽和脂肪 (g)
-                      </label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.saturatedFat")} (g)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -454,9 +442,7 @@ function EstimateContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">
-                        反式脂肪 (g)
-                      </label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.transFat")} (g)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -466,7 +452,7 @@ function EstimateContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">糖 (g)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.sugar")} (g)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -476,9 +462,7 @@ function EstimateContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">
-                        膳食纖維 (g)
-                      </label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.dietaryFiber")} (g)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -488,7 +472,7 @@ function EstimateContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">鈉 (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.sodium")} (mg)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -498,9 +482,7 @@ function EstimateContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">
-                        膽固醇 (mg)
-                      </label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.cholesterol")} (mg)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -513,30 +495,30 @@ function EstimateContent() {
                 </div>
 
                 <div className="border-t pt-3 mt-3">
-                  <p className="text-xs text-muted-foreground mb-2">微量營養素</p>
+                  <p className="text-xs text-muted-foreground mb-2">{t("common:labels.microNutrients")}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">鈣 (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.calcium")} (mg)</label>
                       <Input type="number" step="0.1" value={calcium} onChange={(e) => setCalcium(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">鐵 (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.iron")} (mg)</label>
                       <Input type="number" step="0.1" value={iron} onChange={(e) => setIron(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">鉀 (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.potassium")} (mg)</label>
                       <Input type="number" step="0.1" value={potassium} onChange={(e) => setPotassium(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">維生素 A (mcg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.vitaminA")} (mcg)</label>
                       <Input type="number" step="0.1" value={vitaminA} onChange={(e) => setVitaminA(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">維生素 C (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.vitaminC")} (mg)</label>
                       <Input type="number" step="0.1" value={vitaminC} onChange={(e) => setVitaminC(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">維生素 D (mcg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.vitaminD")} (mcg)</label>
                       <Input type="number" step="0.1" value={vitaminD} onChange={(e) => setVitaminD(e.target.value)} placeholder="-" />
                     </div>
                   </div>
@@ -544,7 +526,7 @@ function EstimateContent() {
 
                 {notes && (
                   <div className="border-t pt-3 mt-3">
-                    <p className="text-xs text-muted-foreground mb-1">備註</p>
+                    <p className="text-xs text-muted-foreground mb-1">{t("common:labels.notes")}</p>
                     <p className="text-sm text-muted-foreground bg-muted rounded-lg px-3 py-2">{notes}</p>
                   </div>
                 )}
@@ -552,7 +534,7 @@ function EstimateContent() {
             </Card>
 
             <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? "建立中..." : "確認並新增到日記"}
+              {isPending ? t("common:buttons.creating") : t("food:confirmAndAdd")}
             </Button>
           </form>
         </div>

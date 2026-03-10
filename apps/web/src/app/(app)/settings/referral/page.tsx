@@ -10,8 +10,10 @@ import { ArrowLeft, Copy, Check, Pencil, Users, Gift, ChevronRight, Share2 } fro
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
 export default function ReferralPage() {
+  const { t } = useTranslation(["settings", "common"]);
   const router = useRouter();
   const { data: session, isPending: sessionLoading } = useSession();
   const isLoggedIn = !!session?.user;
@@ -39,7 +41,7 @@ export default function ReferralPage() {
 
   const handleCopy = async () => {
     if (!codeData?.code) return;
-    const shareText = `推薦你一起來用 Open Health——飲食、運動、睡眠、體重全都追蹤！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉\n\nhttps://openhealth.blog/?ref=${codeData.code}`;
+    const shareText = `${t("referralPage.shareText")}\n\nhttps://openhealth.blog/?ref=${codeData.code}`;
     await navigator.clipboard.writeText(shareText);
     posthog.capture("referral_code_shared");
     setCopied(true);
@@ -50,7 +52,7 @@ export default function ReferralPage() {
     ? `https://openhealth.blog/?ref=${codeData.code}`
     : "";
 
-  const shareFullText = `推薦你一起來用 Open Health——飲食、運動、睡眠、體重全都追蹤！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉\n\n${shareUrl}`;
+  const shareFullText = `${t("referralPage.shareText")}\n\n${shareUrl}`;
 
   const handleShareLink = async () => {
     if (!shareUrl) return;
@@ -58,7 +60,7 @@ export default function ReferralPage() {
       try {
         await navigator.share({
           title: "Open Health — All-in-One Health OS",
-          text: `推薦你一起來用 Open Health——飲食、運動、睡眠、體重全都追蹤！現在用我的推薦連結註冊，可以免費試用 Pro 14 天 🎉`,
+          text: t("referralPage.shareText"),
           url: shareUrl,
         });
         posthog.capture("referral_link_shared", { method: "native" });
@@ -85,10 +87,10 @@ export default function ReferralPage() {
         refetchCode();
         router.refresh();
       } else {
-        setCustomError(result.error || "自訂失敗");
+        setCustomError(result.error || t("settings:referralPage.customFailed"));
       }
     } catch {
-      setCustomError("自訂失敗，請稍後再試");
+      setCustomError(t("settings:referralPage.customFailedRetry"));
     } finally {
       setCustomLoading(false);
     }
@@ -108,10 +110,10 @@ export default function ReferralPage() {
         refetchStats();
         router.refresh();
       } else {
-        setApplyError(result.error || "套用失敗");
+        setApplyError(result.error || t("settings:referralPage.applyFailed"));
       }
     } catch {
-      setApplyError("套用失敗，請稍後再試");
+      setApplyError(t("settings:referralPage.applyFailedRetry"));
     } finally {
       setApplyLoading(false);
     }
@@ -127,18 +129,18 @@ export default function ReferralPage() {
         >
           <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-light tracking-wide">推薦碼</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("settings:referral")}</h1>
       </div>
 
       {/* Auth guard */}
       {!sessionLoading && !isLoggedIn && (
         <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 text-center text-sm text-neutral-400">
-          請先登入以查看推薦碼。
+          {t("referralPage.pleaseLogin")}
         </div>
       )}
 
       {sessionLoading && (
-        <div className="text-center text-sm text-neutral-400 py-8">載入中...</div>
+        <div className="text-center text-sm text-neutral-400 py-8">{t("common:buttons.loading")}</div>
       )}
 
       {isLoggedIn && (
@@ -146,11 +148,11 @@ export default function ReferralPage() {
       {/* My referral code */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          我的推薦碼
+          {t("referralPage.myCode")}
         </p>
         <div className="flex items-center gap-2">
           <div className="flex-1 rounded-lg border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 text-center font-mono text-lg tracking-[0.2em]">
-            {codeError ? "無法載入" : codeData?.code ?? "載入中..."}
+            {codeError ? t("referralPage.cannotLoad") : codeData?.code ?? t("common:buttons.loading")}
           </div>
           <Button
             variant="outline"
@@ -189,14 +191,14 @@ export default function ReferralPage() {
             ) : (
               <Share2 className="h-4 w-4 mr-2" strokeWidth={1.5} />
             )}
-            {linkCopied ? "已複製分享連結" : "分享邀請連結"}
+            {linkCopied ? t("referralPage.linkCopied") : t("referralPage.shareLink")}
           </Button>
         )}
 
         {editing && (
           <div className="space-y-2">
             <Input
-              placeholder="輸入自訂推薦碼（4-12 字元）"
+              placeholder={t("settings:referralPage.customCodePlaceholder")}
               value={customCode}
               onChange={(e) => setCustomCode(e.target.value.toUpperCase())}
               maxLength={12}
@@ -210,7 +212,7 @@ export default function ReferralPage() {
                 onClick={handleCustomize}
                 disabled={customLoading || !customCode.trim()}
               >
-                {customLoading ? "儲存中..." : "儲存"}
+                {customLoading ? t("common:buttons.saving") : t("common:buttons.save")}
               </Button>
               <Button
                 size="sm"
@@ -220,7 +222,7 @@ export default function ReferralPage() {
                   setCustomError("");
                 }}
               >
-                取消
+                {t("common:buttons.cancel")}
               </Button>
             </div>
           </div>
@@ -231,11 +233,11 @@ export default function ReferralPage() {
       {stats && !stats.wasReferred && !applySuccess && (
         <div className="space-y-3">
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-            輸入推薦碼
+            {t("referralPage.enterReferralCode")}
           </p>
           <div className="flex gap-2">
             <Input
-              placeholder="輸入朋友的推薦碼"
+              placeholder={t("referralPage.enterFriendCode")}
               value={referralInput}
               onChange={(e) => setReferralInput(e.target.value.toUpperCase())}
               maxLength={12}
@@ -244,7 +246,7 @@ export default function ReferralPage() {
               onClick={handleApply}
               disabled={applyLoading || !referralInput.trim()}
             >
-              {applyLoading ? "送出中..." : "送出"}
+              {applyLoading ? t("referralPage.submitting") : t("referralPage.submit")}
             </Button>
           </div>
           {applyError && (
@@ -255,13 +257,13 @@ export default function ReferralPage() {
 
       {applySuccess && (
         <div className="rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950 p-3 text-sm text-green-700 dark:text-green-300">
-          推薦碼套用成功！你獲得 14 天 Pro 試用，推薦人獲得 30 天免費。
+          {t("referralPage.referralSuccess")}
         </div>
       )}
 
       {stats?.wasReferred && !applySuccess && (
         <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-3 text-sm text-neutral-400">
-          你已透過推薦碼加入。
+          {t("referralPage.alreadyReferred")}
         </div>
       )}
 
@@ -271,12 +273,12 @@ export default function ReferralPage() {
           {stats.totalFreeDaysEarned > 0 && (
             <p className="text-sm text-green-700 dark:text-green-300 flex items-center gap-1.5">
               <Gift className="h-3.5 w-3.5" strokeWidth={1.5} />
-              已累計獲得 {stats.totalFreeDaysEarned} 天免費天數
+              {t("referralPage.totalFreeDays", { count: stats.totalFreeDaysEarned })}
             </p>
           )}
           {stats.trialExpiresAt && new Date(stats.trialExpiresAt) > new Date() && (
             <p className="text-xs text-green-600 dark:text-green-400">
-              試用到期：{new Date(stats.trialExpiresAt).toLocaleDateString("zh-TW")}
+              {t("referralPage.trialExpires", { date: new Date(stats.trialExpiresAt).toLocaleDateString("zh-TW") })}
             </p>
           )}
         </div>
@@ -288,9 +290,9 @@ export default function ReferralPage() {
         className="flex items-center justify-between rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
       >
         <div className="space-y-0.5">
-          <p className="text-sm font-medium">分潤獎勵</p>
+          <p className="text-sm font-medium">{t("settings:referralPage.revenueShare")}</p>
           <p className="text-xs text-neutral-400">
-            查看分潤明細、提領餘額
+            {t("referralPage.revenueShareDesc")}
           </p>
         </div>
         <ChevronRight className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
@@ -300,11 +302,11 @@ export default function ReferralPage() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-            推薦列表
+            {t("referralPage.referralList")}
           </p>
           <div className="flex items-center gap-1 text-xs text-neutral-400">
             <Users className="h-3 w-3" strokeWidth={1.5} />
-            <span>{stats?.referralCount ?? 0} 人</span>
+            <span>{t("referralPage.personCount", { count: stats?.referralCount ?? 0 })}</span>
           </div>
         </div>
 
@@ -322,9 +324,9 @@ export default function ReferralPage() {
                     item.status === "trial" ? "text-amber-500" :
                     "text-neutral-400"
                   }`}>
-                    {item.status === "paid" ? "已付費" :
-                     item.status === "trial" ? "試用中" :
-                     "已註冊"}
+                    {item.status === "paid" ? t("referralPage.paid") :
+                     item.status === "trial" ? t("referralPage.trial") :
+                     t("referralPage.registered")}
                   </span>
                 </div>
                 <span className="text-xs text-neutral-400">
@@ -335,7 +337,7 @@ export default function ReferralPage() {
           </div>
         ) : (
           <p className="text-sm text-neutral-400 dark:text-neutral-600">
-            尚無推薦記錄，分享你的推薦碼給朋友吧！
+            {t("referralPage.noReferrals")}
           </p>
         )}
       </div>

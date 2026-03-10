@@ -17,6 +17,7 @@ import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DateNavigator } from "@/components/diary/date-navigator";
 import { NotificationPermissionGuard } from "@/components/notification-permission-guard";
+import { useTranslation } from "react-i18next";
 
 const MS_PER_MINUTE = 60 * 1000;
 const CIRCLE_CIRCUMFERENCE = 540;
@@ -24,26 +25,26 @@ const MIN_MAX_MINUTES = 5;
 const MAX_MAX_MINUTES = 480;
 
 /** Parse tRPC/Zod error into a user-friendly message */
-function friendlyError(err: { message: string }): string {
+function friendlyError(err: { message: string }, t: (key: string, opts?: Record<string, unknown>) => string): string {
   try {
     const parsed = JSON.parse(err.message);
     if (Array.isArray(parsed) && parsed[0]?.message) {
       const zodErr = parsed[0];
       const field = zodErr.path?.join(".") ?? "";
       if (field === "maxMinutes") {
-        if (zodErr.code === "too_small") return `上限時間最少為 ${zodErr.minimum} 分鐘`;
-        if (zodErr.code === "too_big") return `上限時間最多為 ${zodErr.maximum} 分鐘`;
+        if (zodErr.code === "too_small") return t("posture:errorMinTooSmall", { min: zodErr.minimum });
+        if (zodErr.code === "too_big") return t("posture:errorMaxTooBig", { max: zodErr.maximum });
       }
-      if (field === "name") return "請輸入姿勢名稱";
-      if (field === "emoji") return "請輸入圖示";
-      if (field === "suggestedBreak") return "請輸入超時建議動作";
-      if (field === "snoozeMinutes") return "延後時間設定不正確";
+      if (field === "name") return t("posture:errorPostureName");
+      if (field === "emoji") return t("posture:errorEmoji");
+      if (field === "suggestedBreak") return t("posture:errorSuggestedBreak");
+      if (field === "snoozeMinutes") return t("posture:errorSnoozeMinutes");
       return zodErr.message;
     }
   } catch {
     // not JSON, use as-is
   }
-  return err.message || "發生錯誤，請稍後再試或聯絡團隊協助";
+  return err.message || t("common:toast.errorRetry");
 }
 
 function formatDuration(ms: number): { minutes: string; seconds: string } {
@@ -74,6 +75,7 @@ export default function PosturePage() {
   const [now, setNow] = useState(() => Date.now());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const { t } = useTranslation(["posture", "common"]);
   const [editingPosture, setEditingPosture] = useState<{
     id?: string;
     name: string;
@@ -102,7 +104,7 @@ export default function PosturePage() {
       setSnoozedUntil(null);
       setHasNotified(false);
     },
-    onError: (err) => toast.error(friendlyError(err)),
+    onError: (err) => toast.error(friendlyError(err, t)),
   });
 
   const stopSession = trpc.posture.stopSession.useMutation({
@@ -111,9 +113,9 @@ export default function PosturePage() {
       utils.posture.getHistory.invalidate();
       setSnoozedUntil(null);
       setHasNotified(false);
-      toast.success("已停止追蹤");
+      toast.success(t("posture:stopped"));
     },
-    onError: (err) => toast.error(friendlyError(err)),
+    onError: (err) => toast.error(friendlyError(err, t)),
   });
 
   const upsertDefinition = trpc.posture.upsertDefinition.useMutation({
@@ -121,25 +123,25 @@ export default function PosturePage() {
       utils.posture.getDefinitions.invalidate();
       setEditDialogOpen(false);
       setEditingPosture(null);
-      toast.success("已儲存");
+      toast.success(t("posture:saved"));
     },
-    onError: (err) => toast.error(friendlyError(err)),
+    onError: (err) => toast.error(friendlyError(err, t)),
   });
 
   const deleteDefinition = trpc.posture.deleteDefinition.useMutation({
     onSuccess: () => {
       utils.posture.getDefinitions.invalidate();
-      toast.success("已刪除");
+      toast.success(t("posture:deleted"));
     },
-    onError: (err) => toast.error(friendlyError(err)),
+    onError: (err) => toast.error(friendlyError(err, t)),
   });
 
   const upsertConfig = trpc.posture.upsertConfig.useMutation({
     onSuccess: () => {
       utils.posture.getConfig.invalidate();
-      toast.success("設定已儲存");
+      toast.success(t("posture:settingsSaved"));
     },
-    onError: (err) => toast.error(friendlyError(err)),
+    onError: (err) => toast.error(friendlyError(err, t)),
   });
 
   const markReminded = trpc.posture.markReminded.useMutation();
@@ -181,7 +183,7 @@ export default function PosturePage() {
   const handleSnooze = useCallback(() => {
     const snoozeMs = (config?.snoozeMinutes ?? 10) * MS_PER_MINUTE;
     setSnoozedUntil(Date.now() + snoozeMs);
-    toast(`已延後 ${config?.snoozeMinutes ?? 10} 分鐘提醒`);
+    toast(t("posture:snoozeMinutes", { minutes: config?.snoozeMinutes ?? 10 }));
   }, [config?.snoozeMinutes]);
 
   const handleSwitchPosture = (postureId: string) => {
@@ -203,7 +205,7 @@ export default function PosturePage() {
         name: "",
         emoji: "🧘",
         maxMinutes: 30,
-        suggestedBreak: "變換姿勢、活動一下",
+        suggestedBreak: t("posture:suggestedBreakPlaceholder"),
         sortOrder: definitions?.length ?? 0,
       });
     }
@@ -213,23 +215,23 @@ export default function PosturePage() {
   const handleSavePosture = () => {
     if (!editingPosture) return;
     if (!editingPosture.name.trim()) {
-      toast.error("請輸入姿勢名稱");
+      toast.error(t("posture:errorPostureName"));
       return;
     }
     if (!editingPosture.emoji.trim()) {
-      toast.error("請輸入圖示");
+      toast.error(t("posture:errorEmoji"));
       return;
     }
     if (editingPosture.maxMinutes < MIN_MAX_MINUTES) {
-      toast.error(`上限時間最少為 ${MIN_MAX_MINUTES} 分鐘`);
+      toast.error(t("posture:errorMinTooSmall", { min: MIN_MAX_MINUTES }));
       return;
     }
     if (editingPosture.maxMinutes > MAX_MAX_MINUTES) {
-      toast.error(`上限時間最多為 ${MAX_MAX_MINUTES} 分鐘`);
+      toast.error(t("posture:errorMaxTooBig", { max: MAX_MAX_MINUTES }));
       return;
     }
     if (!editingPosture.suggestedBreak.trim()) {
-      toast.error("請輸入超時建議動作");
+      toast.error(t("posture:errorSuggestedBreak"));
       return;
     }
     upsertDefinition.mutate(editingPosture);
@@ -242,7 +244,7 @@ export default function PosturePage() {
   return (
     <div className="px-4 py-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-light tracking-wide">姿勢提醒</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("posture:title")}</h1>
         <button
           onClick={() => setSettingsOpen(true)}
           className="text-neutral-400 hover:text-foreground transition-colors"
@@ -257,7 +259,7 @@ export default function PosturePage() {
           <p className="text-sm font-light text-neutral-400">
             {activeSession.postureEmoji} {activeSession.postureName}
             <span className="mx-2">·</span>
-            上限 {activeSession.maxMinutes} 分鐘
+            {t("posture:limitMinutes", { minutes: activeSession.maxMinutes })}
           </p>
         </div>
       )}
@@ -304,15 +306,15 @@ export default function PosturePage() {
                 </span>
                 <p className="text-xs font-light text-neutral-400 mt-1">
                   {isOvertime
-                    ? "已超時！請換姿勢"
-                    : `剩餘 ${remaining.minutes}:${remaining.seconds}`}
+                    ? t("posture:overtimeAlert")
+                    : t("posture:remainingTime", { time: `${remaining.minutes}:${remaining.seconds}` })}
                 </p>
               </>
             ) : (
               <>
                 <span className="text-3xl mb-2">🧘</span>
                 <span className="text-sm font-light text-neutral-400">
-                  選擇姿勢開始追蹤
+                  {t("posture:selectToStart")}
                 </span>
               </>
             )}
@@ -330,7 +332,7 @@ export default function PosturePage() {
             onClick={handleSnooze}
             className="text-xs font-light text-neutral-500 hover:text-foreground transition-colors underline underline-offset-2"
           >
-            延後 {config?.snoozeMinutes ?? 10} 分鐘
+            {t("posture:snoozeMinutes", { minutes: config?.snoozeMinutes ?? 10 })}
           </button>
         </div>
       )}
@@ -341,7 +343,7 @@ export default function PosturePage() {
       {/* Posture quick-switch buttons */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          切換姿勢
+          {t("posture:switchPosture")}
         </p>
         <div className="grid grid-cols-3 gap-2">
           {definitions?.map((def) => {
@@ -360,7 +362,7 @@ export default function PosturePage() {
                 <span className="text-lg">{def.emoji}</span>
                 <span className="text-[11px]">{def.name}</span>
                 <span className="text-[9px] text-neutral-400">
-                  {def.maxMinutes} 分鐘
+                  {t("posture:durationMinutes", { minutes: def.maxMinutes })}
                 </span>
               </button>
             );
@@ -370,7 +372,7 @@ export default function PosturePage() {
             className="flex flex-col items-center justify-center gap-1 py-3 rounded-lg border border-dashed border-black/[0.06] dark:border-white/[0.06] text-neutral-400 hover:border-foreground/20 transition-all"
           >
             <Plus className="h-4 w-4" strokeWidth={1.5} />
-            <span className="text-[11px]">新增</span>
+            <span className="text-[11px]">{t("posture:addNew")}</span>
           </button>
         </div>
       </div>
@@ -384,7 +386,7 @@ export default function PosturePage() {
             className="flex items-center gap-2 px-6 py-2 rounded-full border border-neutral-300 dark:border-neutral-700 text-neutral-500 text-sm font-light transition-all hover:border-foreground/30 disabled:opacity-50"
           >
             <Square className="h-3.5 w-3.5" strokeWidth={1.5} />
-            {stopSession.isPending ? "停止中..." : "停止追蹤"}
+            {stopSession.isPending ? t("posture:stopping") : t("posture:stopTracking")}
           </button>
         </div>
       )}
@@ -411,11 +413,11 @@ export default function PosturePage() {
                       {log.postureName}
                       {log.durationMinutes != null && (
                         <span className="text-neutral-400 ml-2">
-                          {log.durationMinutes} 分鐘
+                          {t("posture:durationMinutes", { minutes: log.durationMinutes })}
                         </span>
                       )}
                       {!log.endedAt && (
-                        <span className="text-green-500 ml-2 text-xs">進行中</span>
+                        <span className="text-green-500 ml-2 text-xs">{t("posture:inProgress")}</span>
                       )}
                     </p>
                     <p className="text-xs text-neutral-400 tabular-nums">
@@ -432,7 +434,7 @@ export default function PosturePage() {
           </div>
         ) : (
           <p className="text-sm font-light text-neutral-300 dark:text-neutral-700">
-            還沒有姿勢紀錄
+            {t("posture:noRecords")}
           </p>
         )}
       </div>
@@ -440,7 +442,7 @@ export default function PosturePage() {
       {/* Settings Dialog */}
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
         <DialogHeader>
-          <DialogTitle>姿勢提醒設定</DialogTitle>
+          <DialogTitle>{t("posture:settingsDialogTitle")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-5">
           {/* Reminder toggle */}
@@ -451,7 +453,7 @@ export default function PosturePage() {
               ) : (
                 <BellOff className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
               )}
-              <span className="text-sm font-light">超時提醒</span>
+              <span className="text-sm font-light">{t("posture:overtimeReminder")}</span>
             </div>
             <button
               onClick={() =>
@@ -479,7 +481,7 @@ export default function PosturePage() {
           {/* Snooze duration */}
           <div className="space-y-2">
             <label className="text-sm font-light text-neutral-500">
-              延後提醒時間（分鐘）
+              {t("posture:snoozeTimeLabel")}
             </label>
             <div className="flex gap-2">
               {[5, 10, 15, 20].map((mins) => (
@@ -506,7 +508,7 @@ export default function PosturePage() {
           {/* Manage postures */}
           <div className="space-y-2">
             <label className="text-sm font-light text-neutral-500">
-              管理姿勢類型
+              {t("posture:managePostureTypes")}
             </label>
             <div className="space-y-0">
               {definitions?.map((def) => (
@@ -518,7 +520,7 @@ export default function PosturePage() {
                     <span>{def.emoji}</span>
                     <span className="text-sm font-light">{def.name}</span>
                     <span className="text-xs text-neutral-400">
-                      {def.maxMinutes}分鐘
+                      {t("posture:durationMinutes", { minutes: def.maxMinutes })}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -546,7 +548,7 @@ export default function PosturePage() {
               }}
               className="w-full mt-2 py-2 text-sm font-light text-neutral-500 border border-dashed border-black/[0.06] dark:border-white/[0.06] rounded-lg hover:border-foreground/20 transition-all"
             >
-              + 新增姿勢
+              {t("posture:addPostureButton")}
             </button>
           </div>
         </div>
@@ -556,14 +558,14 @@ export default function PosturePage() {
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogHeader>
           <DialogTitle>
-            {editingPosture?.id ? "編輯姿勢" : "新增姿勢"}
+            {editingPosture?.id ? t("posture:editPosture") : t("posture:addPosture")}
           </DialogTitle>
         </DialogHeader>
         {editingPosture && (
           <div className="mt-4 space-y-4">
             <div className="grid grid-cols-[60px_1fr] gap-3">
               <div className="space-y-1">
-                <label className="text-xs text-neutral-400">圖示</label>
+                <label className="text-xs text-neutral-400">{t("posture:emojiLabel")}</label>
                 <input
                   type="text"
                   value={editingPosture.emoji}
@@ -575,14 +577,14 @@ export default function PosturePage() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs text-neutral-400">名稱</label>
+                <label className="text-xs text-neutral-400">{t("posture:nameLabel")}</label>
                 <input
                   type="text"
                   value={editingPosture.name}
                   onChange={(e) =>
                     setEditingPosture({ ...editingPosture, name: e.target.value })
                   }
-                  placeholder="例：打電動"
+                  placeholder={t("posture:namePlaceholder")}
                   className="w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-green-500"
                   maxLength={20}
                 />
@@ -591,7 +593,7 @@ export default function PosturePage() {
 
             <div className="space-y-1">
               <label className="text-xs text-neutral-400">
-                上限時間（分鐘）
+                {t("posture:maxMinutes")}
               </label>
               <input
                 type="number"
@@ -610,7 +612,7 @@ export default function PosturePage() {
 
             <div className="space-y-1">
               <label className="text-xs text-neutral-400">
-                超時建議動作
+                {t("posture:suggestedBreak")}
               </label>
               <input
                 type="text"
@@ -621,7 +623,7 @@ export default function PosturePage() {
                     suggestedBreak: e.target.value,
                   })
                 }
-                placeholder="例：站起來走動 2 分鐘"
+                placeholder={t("posture:suggestedBreakPlaceholder")}
                 className="w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-green-500"
                 maxLength={100}
               />
@@ -636,7 +638,7 @@ export default function PosturePage() {
               }
               className="w-full rounded-lg bg-green-500 py-2 text-sm font-medium text-white transition-colors hover:bg-green-600 disabled:opacity-50"
             >
-              {upsertDefinition.isPending ? "儲存中..." : "儲存"}
+              {upsertDefinition.isPending ? t("posture:saving") : t("common:buttons.save")}
             </button>
           </div>
         )}

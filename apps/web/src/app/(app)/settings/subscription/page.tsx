@@ -1,7 +1,11 @@
+"use client";
+
 import { ArrowLeft, Crown } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 export default function SubscriptionPage() {
+  const { t } = useTranslation("settings");
   return (
     <div className="px-4 py-6 space-y-6">
       {/* Header */}
@@ -12,14 +16,14 @@ export default function SubscriptionPage() {
         >
           <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-light tracking-wide">訂閱方案</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("subscription")}</h1>
       </div>
 
       <div className="flex flex-col items-center justify-center py-16 space-y-4">
         <Crown className="h-12 w-12 text-amber-500/50" />
-        <p className="text-lg font-light text-neutral-400">敬請期待</p>
+        <p className="text-lg font-light text-neutral-400">{t("subscriptionPage.comingSoon")}</p>
         <p className="text-sm text-neutral-400/70 text-center max-w-xs">
-          付款功能正在開發中，完成後將在此頁面開放訂閱
+          {t("subscriptionPage.paymentDeveloping")}
         </p>
       </div>
     </div>

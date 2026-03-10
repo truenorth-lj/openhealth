@@ -10,23 +10,19 @@ import {
   EXERCISE_CATEGORIES,
   EXERCISE_CATEGORY_LABELS,
 } from "@open-health/shared/constants";
+import { useTranslation } from "react-i18next";
 
-const PERIODS = [
-  { value: "1m", label: "1個月" },
-  { value: "3m", label: "3個月" },
-  { value: "6m", label: "6個月" },
-  { value: "1y", label: "1年" },
-  { value: "all", label: "全部" },
-] as const;
+const PERIOD_VALUES = ["1m", "3m", "6m", "1y", "all"] as const;
 
-const PR_TYPE_LABELS: Record<string, string> = {
-  weight: "最大重量",
-  "1rm": "預估 1RM",
-  volume: "最大訓練量",
-  reps: "最多次數",
+const PR_TYPE_KEYS: Record<string, string> = {
+  weight: "workout:statsPage.maxWeight",
+  "1rm": "workout:statsPage.estimated1rm",
+  volume: "workout:statsPage.maxVolume",
+  reps: "workout:statsPage.maxReps",
 };
 
 export default function WorkoutStatsPage() {
+  const { t } = useTranslation(["workout", "common"]);
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } =
     useAuthGuard();
 
@@ -100,7 +96,7 @@ export default function WorkoutStatsPage() {
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-light tracking-wide">訓練統計</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("workout:statsPage.title")}</h1>
       </div>
 
       {/* Exercise selector */}
@@ -114,7 +110,7 @@ export default function WorkoutStatsPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="搜尋動作查看統計..."
+            placeholder={t("workout:statsPage.searchPlaceholder")}
             className="w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent pl-9 pr-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
@@ -159,7 +155,7 @@ export default function WorkoutStatsPage() {
               ))
             ) : (
               <p className="text-sm text-neutral-400 text-center py-3">
-                找不到動作
+                {t("workout:statsPage.noMatch")}
               </p>
             )}
           </div>
@@ -183,23 +179,23 @@ export default function WorkoutStatsPage() {
               onClick={() => setSelectedExerciseId(null)}
               className="text-xs text-neutral-400 hover:text-foreground"
             >
-              清除
+              {t("workout:statsPage.clear")}
             </button>
           </div>
 
           {/* Period selector */}
           <div className="flex gap-1.5">
-            {PERIODS.map((p) => (
+            {PERIOD_VALUES.map((v) => (
               <button
-                key={p.value}
-                onClick={() => setPeriod(p.value)}
+                key={v}
+                onClick={() => setPeriod(v)}
                 className={`flex-1 py-1.5 rounded-md text-xs font-light transition-all ${
-                  period === p.value
+                  period === v
                     ? "bg-primary text-white"
                     : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500"
                 }`}
               >
-                {p.label}
+                {t(`workout:statsPage.ranges.${v}`)}
               </button>
             ))}
           </div>
@@ -210,7 +206,7 @@ export default function WorkoutStatsPage() {
               {/* Weight trend */}
               <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-3">
                 <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-3">
-                  最大重量趨勢
+                  {t("workout:statsPage.maxWeightTrend")}
                 </p>
                 <div className="space-y-1">
                   {stats.map((s, i) => {
@@ -244,7 +240,7 @@ export default function WorkoutStatsPage() {
               {/* Volume trend */}
               <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-3">
                 <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-3">
-                  訓練量趨勢
+                  {t("workout:statsPage.volumeTrend")}
                 </p>
                 <div className="space-y-1">
                   {stats.map((s, i) => {
@@ -278,7 +274,7 @@ export default function WorkoutStatsPage() {
               {/* 1RM trend */}
               <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-3">
                 <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-3">
-                  預估 1RM 趨勢
+                  {t("workout:statsPage.estimated1rmTrend")}
                 </p>
                 <div className="space-y-1">
                   {stats.map((s, i) => {
@@ -311,7 +307,7 @@ export default function WorkoutStatsPage() {
             </div>
           ) : (
             <p className="text-sm font-light text-neutral-300 dark:text-neutral-700 text-center py-6">
-              此動作尚無訓練數據
+              {t("workout:statsPage.noData")}
             </p>
           )}
 
@@ -319,7 +315,7 @@ export default function WorkoutStatsPage() {
           {prs && prs.length > 0 && (
             <div className="space-y-2">
               <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400">
-                個人紀錄
+                {t("workout:statsPage.personalRecords")}
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {prs.map((pr) => (
@@ -337,7 +333,7 @@ export default function WorkoutStatsPage() {
                         : Number(pr.value)}
                     </p>
                     <p className="text-[10px] text-neutral-400">
-                      {PR_TYPE_LABELS[pr.type] ?? pr.type}
+                      {PR_TYPE_KEYS[pr.type] ? t(PR_TYPE_KEYS[pr.type]) : pr.type}
                       {pr.type !== "reps" && " kg"}
                     </p>
                     <p className="text-[10px] text-neutral-400 mt-0.5">
@@ -355,7 +351,7 @@ export default function WorkoutStatsPage() {
       {!selectedExerciseId && allPrs && allPrs.length > 0 && (
         <div className="space-y-3">
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400">
-            所有個人紀錄
+            {t("workout:statsPage.allPersonalRecords")}
           </p>
           <div className="space-y-0">
             {allPrs
@@ -392,7 +388,7 @@ export default function WorkoutStatsPage() {
       {!selectedExerciseId &&
         (!allPrs || allPrs.length === 0) && (
           <p className="text-sm font-light text-neutral-300 dark:text-neutral-700 text-center py-10">
-            選擇一個動作查看統計，或完成訓練後查看個人紀錄
+            {t("workout:statsPage.selectExerciseHint")}
           </p>
         )}
 

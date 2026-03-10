@@ -23,8 +23,10 @@ import {
   EXERCISE_CATEGORIES,
   EXERCISE_CATEGORY_LABELS,
 } from "@open-health/shared/constants";
+import { useTranslation } from "react-i18next";
 
 export default function WorkoutTemplatesPage() {
+  const { t } = useTranslation(["workout", "common"]);
   const router = useRouter();
   const utils = trpc.useUtils();
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } =
@@ -98,14 +100,14 @@ export default function WorkoutTemplatesPage() {
           defaultReps: ex.defaultReps,
         })),
       });
-      toast.success("已建立模板");
+      toast.success(t("templatePage.templateCreated"));
       setShowCreate(false);
       setTemplateName("");
       setSelectedExercises([]);
       utils.workout.getTemplates.invalidate();
       router.refresh();
     } catch {
-      toast.error("建立失敗");
+      toast.error(t("templatePage.createFailed"));
     } finally {
       setSaving(false);
     }
@@ -114,12 +116,12 @@ export default function WorkoutTemplatesPage() {
   const handleDelete = async (templateId: string) => {
     try {
       await deleteWorkoutTemplate({ templateId });
-      toast.success("已刪除模板");
+      toast.success(t("templateDeleted"));
       setDeleteConfirm(null);
       utils.workout.getTemplates.invalidate();
       router.refresh();
     } catch {
-      toast.error("刪除失敗");
+      toast.error(t("deleteFailed"));
     }
   };
 
@@ -140,7 +142,7 @@ export default function WorkoutTemplatesPage() {
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-light tracking-wide">訓練模板</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("templatePage.title")}</h1>
       </div>
 
       {/* Create button */}
@@ -149,26 +151,26 @@ export default function WorkoutTemplatesPage() {
         className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-black/10 dark:border-white/10 rounded-lg text-sm font-light text-neutral-400 hover:text-foreground hover:border-foreground/20 transition-all"
       >
         <Plus className="h-4 w-4" strokeWidth={1.5} />
-        建立新模板
+        {t("templatePage.createNew")}
       </button>
 
       {/* Template list */}
       {templates && templates.length > 0 ? (
         <div className="space-y-2">
-          {templates.map((t) => (
+          {templates.map((tmpl) => (
             <div
-              key={t.id}
+              key={tmpl.id}
               className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-3"
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-light">{t.name}</p>
+                  <p className="text-sm font-light">{tmpl.name}</p>
                   <p className="text-xs text-neutral-400 mt-0.5 truncate">
-                    {t.exerciseNames.join("、") || "無動作"}
+                    {tmpl.exerciseNames.join("、") || t("noActions")}
                   </p>
                 </div>
                 <button
-                  onClick={() => setDeleteConfirm(t.id)}
+                  onClick={() => setDeleteConfirm(tmpl.id)}
                   className="p-1.5 text-neutral-300 dark:text-neutral-700 hover:text-destructive transition-colors"
                 >
                   <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -179,25 +181,25 @@ export default function WorkoutTemplatesPage() {
         </div>
       ) : (
         <p className="text-sm font-light text-neutral-300 dark:text-neutral-700 text-center py-10">
-          還沒有訓練模板
+          {t("noTemplates")}
         </p>
       )}
 
       {/* Create template dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogHeader>
-          <DialogTitle>建立訓練模板</DialogTitle>
+          <DialogTitle>{t("templatePage.createTemplate")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4 max-h-[70vh] overflow-y-auto">
           <div>
             <label className="text-sm font-light text-neutral-500">
-              模板名稱
+              {t("templatePage.templateName")}
             </label>
             <input
               type="text"
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
-              placeholder="例：推日、腿日"
+              placeholder={t("templatePage.templateNamePlaceholder")}
               maxLength={200}
               className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-primary"
             />
@@ -206,7 +208,7 @@ export default function WorkoutTemplatesPage() {
           {/* Selected exercises */}
           <div className="space-y-2">
             <label className="text-sm font-light text-neutral-500">
-              動作 ({selectedExercises.length})
+              {t("templatePage.exercises", { count: selectedExercises.length })}
             </label>
             {selectedExercises.map((ex, i) => (
               <div
@@ -234,7 +236,7 @@ export default function WorkoutTemplatesPage() {
                     min={1}
                     max={20}
                   />
-                  <span className="text-[10px] text-neutral-400">組</span>
+                  <span className="text-[10px] text-neutral-400">{t("detailPage.set")}</span>
                   <button
                     onClick={() => handleRemoveExercise(i)}
                     className="text-neutral-300 hover:text-destructive"
@@ -253,7 +255,7 @@ export default function WorkoutTemplatesPage() {
               }}
               className="w-full py-2 border border-dashed border-black/10 dark:border-white/10 rounded-lg text-xs text-neutral-400 hover:text-foreground transition-all"
             >
-              + 新增動作
+              {t("templatePage.addExercise")}
             </button>
           </div>
 
@@ -264,7 +266,7 @@ export default function WorkoutTemplatesPage() {
             }
             className="w-full py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-50"
           >
-            {saving ? "建立中..." : "建立模板"}
+            {saving ? t("templatePage.creating") : t("templatePage.create")}
           </button>
         </div>
       </Dialog>
@@ -275,7 +277,7 @@ export default function WorkoutTemplatesPage() {
         onOpenChange={setShowExercisePicker}
       >
         <DialogHeader>
-          <DialogTitle>選擇動作</DialogTitle>
+          <DialogTitle>{t("templatePage.selectExercise")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4 max-h-[60vh] overflow-y-auto">
           <div className="relative">
@@ -287,7 +289,7 @@ export default function WorkoutTemplatesPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="搜尋動作..."
+              placeholder={t("templatePage.searchExercise")}
               className="w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent pl-9 pr-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
@@ -302,7 +304,7 @@ export default function WorkoutTemplatesPage() {
                     : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500"
                 }`}
               >
-                全部
+                {t("templatePage.all")}
               </button>
               {EXERCISE_CATEGORIES.map((cat) => (
                 <button
@@ -340,7 +342,7 @@ export default function WorkoutTemplatesPage() {
               ))
             ) : (
               <p className="text-sm font-light text-neutral-400 text-center py-4">
-                {searchQuery ? "找不到相符的動作" : "沒有動作"}
+                {searchQuery ? t("templatePage.noMatch") : t("templatePage.noExercises")}
               </p>
             )}
           </div>
@@ -353,16 +355,16 @@ export default function WorkoutTemplatesPage() {
         onOpenChange={(open) => !open && setDeleteConfirm(null)}
       >
         <DialogHeader>
-          <DialogTitle>確認刪除模板？</DialogTitle>
+          <DialogTitle>{t("confirmDeleteTemplate")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
-          <p className="text-sm text-neutral-500">刪除後無法復原。</p>
+          <p className="text-sm text-neutral-500">{t("deleteIrreversible")}</p>
           <div className="flex gap-2">
             <button
               onClick={() => setDeleteConfirm(null)}
               className="flex-1 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm font-light"
             >
-              取消
+              {t("common:buttons.cancel")}
             </button>
             <button
               onClick={() =>
@@ -370,7 +372,7 @@ export default function WorkoutTemplatesPage() {
               }
               className="flex-1 py-2 rounded-lg bg-destructive text-white text-sm font-medium"
             >
-              刪除
+              {t("common:buttons.delete")}
             </button>
           </div>
         </div>

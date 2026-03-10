@@ -18,6 +18,7 @@ import {
   ArrowLeft,
   Crown,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Suspense } from "react";
 import { UpgradeDialog } from "@/components/upgrade-dialog";
 import posthog from "posthog-js";
@@ -25,6 +26,7 @@ import posthog from "posthog-js";
 const MAX_USER_MESSAGES_PER_CONVERSATION = 5;
 
 function ChatDetail() {
+  const { t } = useTranslation("ai");
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -120,7 +122,7 @@ function ChatDetail() {
     return (
       <div className="flex h-[calc(100vh-8rem)] flex-col items-center justify-center gap-4 px-4">
         <Bot className="h-10 w-10 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
-        <p className="text-sm font-light text-neutral-400">請先登入以使用 AI 營養顧問</p>
+        <p className="text-sm font-light text-neutral-400">{t("loginRequired")}</p>
       </div>
     );
   }
@@ -161,12 +163,12 @@ function ChatDetail() {
             className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
-            返回
+            {t("back")}
           </button>
           <div className="flex items-center gap-2">
             {dailyRemaining !== null && (
               <span className="text-xs font-light text-neutral-400">
-                今日剩餘 {dailyRemaining} 次
+                {t("dailyRemaining", { count: dailyRemaining })}
               </span>
             )}
             <button
@@ -174,7 +176,7 @@ function ChatDetail() {
               className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-foreground"
             >
               <Plus className="h-4 w-4" strokeWidth={1.5} />
-              新對話
+              {t("newChat")}
             </button>
             <button
               onClick={handleDelete}
@@ -200,7 +202,7 @@ function ChatDetail() {
               </div>
               <div className="flex items-center gap-2 rounded-2xl border border-black/[0.06] dark:border-white/[0.06] px-4 py-2 text-sm font-light text-neutral-400">
                 <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
-                正在分析...
+                {t("analyzing2")}
               </div>
             </div>
           )}
@@ -212,8 +214,8 @@ function ChatDetail() {
               </div>
               <div className="max-w-[85%] rounded-2xl border border-destructive/20 px-4 py-2 text-sm font-light text-destructive">
                 {error.message?.includes("429")
-                  ? `已達每日訊息上限（${dailyUsage?.limit ?? 100} 則），明天再來吧！`
-                  : "發生錯誤，請重試"}
+                  ? t("dailyLimitError", { limit: dailyUsage?.limit ?? 100 })
+                  : t("errorRetry")}
               </div>
             </div>
           )}
@@ -227,8 +229,8 @@ function ChatDetail() {
             <div className="flex flex-col items-center gap-2">
               <p className="text-sm font-light text-neutral-400">
                 {isDailyLimitReached
-                  ? `已達每日訊息上限（${dailyUsage?.limit ?? 10} 則）`
-                  : `已達到對話上限（${MAX_USER_MESSAGES_PER_CONVERSATION} 則）`}
+                  ? t("dailyLimitReached", { limit: dailyUsage?.limit ?? 10 })
+                  : t("conversationLimitReached", { limit: MAX_USER_MESSAGES_PER_CONVERSATION })}
               </p>
               {isDailyLimitReached ? (
                 <button
@@ -236,7 +238,7 @@ function ChatDetail() {
                   className="flex items-center gap-1.5 text-sm font-light text-amber-600 hover:text-amber-500 transition-colors"
                 >
                   <Crown className="h-4 w-4" />
-                  升級 Pro 取得更多額度
+                  {t("upgradePro")}
                 </button>
               ) : (
                 <button
@@ -244,7 +246,7 @@ function ChatDetail() {
                   className="flex items-center gap-2 px-4 py-2 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-lg transition-all duration-300 hover:border-foreground/20"
                 >
                   <RotateCcw className="h-4 w-4" strokeWidth={1.5} />
-                  開始新對話
+                  {t("startNewChat")}
                 </button>
               )}
             </div>
@@ -253,7 +255,7 @@ function ChatDetail() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="輸入你的飲食問題..."
+                placeholder={t("inputPlaceholder")}
                 className="flex-1 rounded-full border border-black/[0.06] dark:border-white/[0.06] bg-transparent px-4 py-2.5 text-sm font-light outline-none transition-all duration-300 focus:border-foreground/20 placeholder:text-neutral-400"
                 disabled={isLoading}
               />

@@ -5,6 +5,7 @@ import { Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc-client";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 const PAGE_SIZE = 20;
 
@@ -15,6 +16,7 @@ const infiniteOpts = {
 };
 
 export default function FoodBrowsePage() {
+  const { t } = useTranslation("food");
   const [query, setQuery] = useState("");
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -51,16 +53,16 @@ export default function FoodBrowsePage() {
     return () => observer.disconnect();
   }, [handleObserver]);
 
-  const sectionLabel = query.length >= 1 ? "搜尋結果" : "熱門食物";
+  const sectionLabel = query.length >= 1 ? t("searchResults") : t("popularFoods");
 
   return (
     <div className="px-4 py-6 pb-4">
-      <h1 className="text-xl font-light tracking-wide mb-4">食物資料庫</h1>
+      <h1 className="text-xl font-light tracking-wide mb-4">{t("title")}</h1>
 
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" strokeWidth={1.5} />
         <Input
-          placeholder="搜尋食物..."
+          placeholder={t("searchPlaceholder")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="pl-10 border-black/[0.06] dark:border-white/[0.06] font-light"
@@ -111,11 +113,11 @@ export default function FoodBrowsePage() {
         </div>
       ) : query.length >= 1 ? (
         <div className="text-center py-8">
-          <p className="text-sm font-light text-neutral-400">找不到「{query}」</p>
+          <p className="text-sm font-light text-neutral-400">{t("notFoundQuery", { query })}</p>
         </div>
       ) : (
         <div className="text-center py-8">
-          <p className="text-sm font-light text-neutral-400">尚無食物資料</p>
+          <p className="text-sm font-light text-neutral-400">{t("noFoodData")}</p>
         </div>
       )}
     </div>

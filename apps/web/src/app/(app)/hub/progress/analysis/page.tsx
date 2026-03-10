@@ -18,14 +18,12 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DEFAULT_WATER_GOAL_ML } from "@open-health/shared/constants";
+import { useTranslation } from "react-i18next";
 
-const RANGES = [
-  { label: "7 天", days: 7 },
-  { label: "30 天", days: 30 },
-  { label: "90 天", days: 90 },
-] as const;
+const RANGE_DAYS = [7, 30, 90] as const;
 
 export default function AnalysisPage() {
+  const { t } = useTranslation("progress");
   const router = useRouter();
   const [selectedRange, setSelectedRange] = useState(30);
 
@@ -72,22 +70,22 @@ export default function AnalysisPage() {
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </button>
-        <h1 className="text-xl font-light tracking-wide">趨勢分析</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("trendAnalysis")}</h1>
       </div>
 
       {/* Range Selector */}
       <div className="flex gap-2">
-        {RANGES.map((r) => (
+        {RANGE_DAYS.map((days) => (
           <button
-            key={r.days}
-            onClick={() => setSelectedRange(r.days)}
+            key={days}
+            onClick={() => setSelectedRange(days)}
             className={`px-4 py-1.5 text-sm font-light rounded-md border transition-all duration-300 ${
-              selectedRange === r.days
+              selectedRange === days
                 ? "border-foreground/20 bg-foreground/5"
                 : "border-black/[0.06] dark:border-white/[0.06] hover:border-foreground/20"
             }`}
           >
-            {r.label}
+            {t("rangeDays", { days })}
           </button>
         ))}
       </div>
@@ -97,7 +95,7 @@ export default function AnalysisPage() {
       {!isLoading && (
         <>
           {/* Weight Chart */}
-          <ChartSection title="體重趨勢" subtitle="kg">
+          <ChartSection title={t("weightTrend")} subtitle="kg">
             {weightData.length > 1 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={weightData}>
@@ -119,19 +117,19 @@ export default function AnalysisPage() {
                     strokeWidth={1.5}
                     dot={false}
                     activeDot={{ r: 3 }}
-                    name="體重 (kg)"
+                    name={t("weightKgName")}
                   />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <EmptyState text="需要至少 2 筆體重記錄" />
+              <EmptyState text={t("needMinWeightRecords")} />
             )}
           </ChartSection>
 
           {/* Steps Chart */}
           <ChartSection
-            title="步數趨勢"
-            subtitle={stepsAvg ? `平均 ${stepsAvg.toLocaleString()} 步/天` : "步"}
+            title={t("stepsTrend")}
+            subtitle={stepsAvg ? t("avgStepsPerDay", { avg: stepsAvg.toLocaleString() }) : t("stepsName")}
           >
             {stepsData.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -152,19 +150,19 @@ export default function AnalysisPage() {
                     fill="var(--color-primary)"
                     opacity={0.7}
                     radius={[2, 2, 0, 0]}
-                    name="步數"
+                    name={t("stepsName")}
                   />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <EmptyState text="尚無步數記錄" />
+              <EmptyState text={t("noStepsRecord")} />
             )}
           </ChartSection>
 
           {/* Water Chart */}
           <ChartSection
-            title="飲水趨勢"
-            subtitle={waterAvg ? `平均 ${waterAvg.toLocaleString()} ml/天` : "ml"}
+            title={t("waterTrend")}
+            subtitle={waterAvg ? t("avgWaterPerDay", { avg: waterAvg.toLocaleString() }) : "ml"}
           >
             {waterData.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
@@ -185,7 +183,7 @@ export default function AnalysisPage() {
                     fill="#3b82f6"
                     opacity={0.7}
                     radius={[2, 2, 0, 0]}
-                    name="飲水 (ml)"
+                    name={t("waterMl")}
                   />
                   {/* Goal reference line */}
                   <Line
@@ -195,12 +193,12 @@ export default function AnalysisPage() {
                     strokeWidth={1}
                     strokeDasharray="4 4"
                     dot={false}
-                    name={`目標 ${waterGoalMl} ml`}
+                    name={t("goalLabel", { value: waterGoalMl })}
                   />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <EmptyState text="尚無飲水記錄" />
+              <EmptyState text={t("noWaterRecord")} />
             )}
           </ChartSection>
         </>

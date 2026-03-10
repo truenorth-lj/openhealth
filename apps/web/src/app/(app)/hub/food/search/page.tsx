@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
 const PAGE_SIZE = 20;
 
@@ -23,6 +24,7 @@ const infiniteOpts = {
 };
 
 function FoodSearchContent() {
+  const { t } = useTranslation(["food", "diary", "common"]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const date = searchParams.get("date") || new Date().toISOString().split("T")[0];
@@ -66,12 +68,7 @@ function FoodSearchContent() {
     { enabled: isAuthenticated && filter === "mine" && query.length < 1, staleTime: 5 * 60 * 1000, ...infiniteOpts }
   );
 
-  const mealLabels: Record<string, string> = {
-    breakfast: "早餐",
-    lunch: "午餐",
-    dinner: "晚餐",
-    snack: "點心",
-  };
+
 
   // Determine which query is active
   const activeQuery = query.length >= 1
@@ -121,12 +118,12 @@ function FoodSearchContent() {
         await utils.diary.getDay.invalidate();
         const food = displayFoods.find((f) => f.id === foodId);
         posthog.capture("food_logged", { source: "search", meal_type: meal, calories: food ? Math.round(Number(food.calories)) : undefined });
-        toast.success("已新增到日記");
+        toast.success(t("common:toast.addedToDiary"));
         router.push(`/hub/diary?date=${date}`);
         router.refresh();
       } catch (err) {
         console.error("logFood failed:", err);
-        toast.error("新增失敗，請重試");
+        toast.error(t("common:toast.addFailed"));
       }
     });
   };
@@ -150,12 +147,12 @@ function FoodSearchContent() {
   };
 
   const sectionLabel = query.length >= 1
-    ? "搜尋結果"
+    ? t("food:searchResults")
     : filter === "mine"
-      ? "我建立的食物"
+      ? t("food:myCreatedFoods")
       : hasUserFrequent
-        ? "常用食物"
-        : "最多人使用";
+        ? t("food:frequentFoods")
+        : t("food:mostUsed");
 
   return (
     <div className="px-4 pb-4">
@@ -165,13 +162,13 @@ function FoodSearchContent() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </Link>
-        <h1 className="font-semibold">新增到{mealLabels[meal]}</h1>
+        <h1 className="font-semibold">{t("food:addToMeal", { meal: t(`diary:${meal}`) })}</h1>
       </div>
 
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="搜尋食物..."
+          placeholder={t("food:searchPlaceholder")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="pl-10 pr-12"
@@ -190,19 +187,19 @@ function FoodSearchContent() {
       <div className="flex gap-2 mb-3">
         <Link href={`/hub/food/create?date=${date}&meal=${meal}`}>
           <Button variant="outline" size="sm">
-            自訂食物
+            {t("food:customFood")}
           </Button>
         </Link>
         <Link href={`/hub/food/scan-label?date=${date}&meal=${meal}`}>
           <Button variant="outline" size="sm">
             <Camera className="h-4 w-4 mr-1" />
-            拍照辨識
+            {t("food:scanLabel")}
           </Button>
         </Link>
         <Link href={`/hub/food/estimate?date=${date}&meal=${meal}`}>
           <Button variant="outline" size="sm">
             <MessageSquare className="h-4 w-4 mr-1" />
-            AI 估算
+            {t("food:aiEstimate")}
           </Button>
         </Link>
       </div>
@@ -219,7 +216,7 @@ function FoodSearchContent() {
                 : "bg-muted text-muted-foreground hover:text-foreground"
             )}
           >
-            全部
+            {t("food:all")}
           </button>
           <button
             onClick={() => setFilter("mine")}
@@ -230,7 +227,7 @@ function FoodSearchContent() {
                 : "bg-muted text-muted-foreground hover:text-foreground"
             )}
           >
-            我的食物
+            {t("food:myFoods")}
           </button>
         </div>
       )}
@@ -280,17 +277,17 @@ function FoodSearchContent() {
         </div>
       ) : query.length >= 1 ? (
         <div className="text-center py-8 text-muted-foreground">
-          <p className="text-sm">找不到「{query}」</p>
+          <p className="text-sm">{t("food:notFoundQuery", { query })}</p>
           <Link href={`/hub/food/create?date=${date}&meal=${meal}&name=${query}`}>
             <Button variant="link" size="sm" className="mt-2">
-              建立自訂食物
+              {t("food:createCustomFood")}
             </Button>
           </Link>
         </div>
       ) : (
         <div className="text-center py-8 text-muted-foreground">
-          <p className="text-sm">尚無常用食物</p>
-          <p className="text-xs mt-1">搜尋並新增食物後會顯示在這裡</p>
+          <p className="text-sm">{t("food:noFrequentFoods")}</p>
+          <p className="text-xs mt-1">{t("food:noFrequentFoodsHint")}</p>
         </div>
       )}
 

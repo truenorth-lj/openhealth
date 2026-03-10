@@ -16,6 +16,7 @@ import { DailySummary } from "@/components/diary/daily-summary";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { trpc } from "@/lib/trpc-client";
+import { useTranslation } from "react-i18next";
 import {
   DEFAULT_CALORIE_TARGET,
   DEFAULT_PROTEIN_G,
@@ -36,6 +37,7 @@ const WEIGHT_TREND_DAYS = 7;
 const DEFAULT_WATER_GOAL_ML = 2000;
 
 function TodayContent() {
+  const { t } = useTranslation(["diary", "common", "ai", "progress"]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const date = parseDateParam(searchParams.get("date"));
@@ -105,7 +107,7 @@ function TodayContent() {
         <div className="mx-4 py-4 border-b border-black/[0.06] dark:border-white/[0.06] transition-all duration-300 hover:pl-1">
           <div className="flex items-center justify-between mb-3">
             <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-              熱量攝取
+              {t("diary:calorieIntake")}
             </p>
             <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
           </div>
@@ -131,7 +133,7 @@ function TodayContent() {
             <div className="flex items-center gap-2">
               <Droplets className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
               <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-                水分
+                {t("common:hub.items.water")}
               </p>
             </div>
             <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
@@ -157,7 +159,7 @@ function TodayContent() {
             <div className="flex items-center gap-2">
               <Scale className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
               <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-                體重
+                {t("progress:weightLabel")}
               </p>
             </div>
             <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
@@ -169,7 +171,7 @@ function TodayContent() {
             <span className="text-sm font-light text-neutral-400">kg</span>
             {weightTrend !== null && (
               <span className={`text-xs font-light ${weightTrend < 0 ? "text-primary" : weightTrend > 0 ? "text-destructive" : "text-neutral-400"}`}>
-                {weightTrend > 0 ? "+" : ""}{weightTrend} kg ({WEIGHT_TREND_DAYS}天)
+                {weightTrend > 0 ? "+" : ""}{weightTrend} kg ({WEIGHT_TREND_DAYS}{t("common:time.days")})
               </span>
             )}
           </div>
@@ -183,7 +185,7 @@ function TodayContent() {
             <div className="flex items-center gap-2">
               <Footprints className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
               <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-                步數
+                {t("progress:stepsLabel")}
               </p>
             </div>
             <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
@@ -192,7 +194,7 @@ function TodayContent() {
             <span className="text-2xl font-light tabular-nums">
               {currentSteps !== null ? currentSteps.toLocaleString() : "--"}
             </span>
-            <span className="text-sm font-light text-neutral-400">步</span>
+            <span className="text-sm font-light text-neutral-400">{t("common:units.steps")}</span>
           </div>
         </div>
       </Link>
@@ -203,9 +205,9 @@ function TodayContent() {
           <div className="flex items-center gap-3">
             <Bot className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
             <div className="flex-1">
-              <p className="text-sm font-light">AI 營養顧問</p>
+              <p className="text-sm font-light">{t("ai:todayCard.title")}</p>
               <p className="text-xs font-light text-neutral-400 dark:text-neutral-600">
-                分析飲食、規劃餐點
+                {t("ai:todayCard.description")}
               </p>
             </div>
             <ChevronRight className="h-4 w-4 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />

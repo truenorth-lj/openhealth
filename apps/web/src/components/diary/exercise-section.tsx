@@ -3,6 +3,7 @@
 import { Dumbbell, Flame } from "lucide-react";
 import Link from "next/link";
 import { EXERCISE_CATEGORY_LABELS } from "@open-health/shared/constants";
+import { useTranslation } from "react-i18next";
 
 interface ExerciseLog {
   id: string;
@@ -18,12 +19,13 @@ interface ExerciseSectionProps {
 }
 
 export function ExerciseSection({ logs, totalCalories }: ExerciseSectionProps) {
+  const { t } = useTranslation(["diary", "common"]);
   return (
     <div className="mx-4 mt-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Dumbbell className="h-4 w-4 text-orange-500" strokeWidth={1.5} />
-          <h3 className="text-sm font-light">運動</h3>
+          <h3 className="text-sm font-light">{t("diary:exerciseLabel")}</h3>
           {totalCalories > 0 && (
             <span className="text-xs text-orange-500 tabular-nums flex items-center gap-0.5">
               <Flame className="h-3 w-3" strokeWidth={1.5} />
@@ -43,7 +45,7 @@ export function ExerciseSection({ logs, totalCalories }: ExerciseSectionProps) {
           href="/hub/exercise"
           className="block border-b border-dashed border-black/[0.06] dark:border-white/[0.06] py-3 text-center text-sm font-light text-neutral-400 transition-all duration-300 hover:text-orange-500"
         >
-          點擊新增運動
+          {t("diary:clickToAddExercise")}
         </Link>
       ) : (
         <div>
@@ -55,7 +57,7 @@ export function ExerciseSection({ logs, totalCalories }: ExerciseSectionProps) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-light truncate">{log.exerciseName}</p>
                 <p className="text-xs text-neutral-400 dark:text-neutral-600">
-                  {log.durationMin} 分鐘
+                  {log.durationMin} {t("common:time.minutes")}
                   {log.exerciseCategory && ` · ${EXERCISE_CATEGORY_LABELS[log.exerciseCategory] ?? log.exerciseCategory}`}
                 </p>
               </div>

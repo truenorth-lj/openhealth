@@ -23,6 +23,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 function parseDateParam(param: string | null): Date {
   if (param) {
@@ -32,13 +33,10 @@ function parseDateParam(param: string | null): Date {
   return new Date();
 }
 
-const RANGES = [
-  { label: "7 天", days: 7 },
-  { label: "30 天", days: 30 },
-  { label: "90 天", days: 90 },
-] as const;
+const RANGE_DAYS = [7, 30, 90] as const;
 
 function WeightContent() {
+  const { t } = useTranslation(["weight", "common"]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const date = parseDateParam(searchParams.get("date"));
@@ -93,7 +91,7 @@ function WeightContent() {
     return <Minus className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />;
   };
 
-  const dayLabel = isToday(date) ? "今日" : format(date, "M/d");
+  const dayLabel = isToday(date) ? t("common:time.todayShort") : format(date, "M/d");
 
   const weightData =
     analytics?.weight.map((w) => ({
@@ -121,7 +119,7 @@ function WeightContent() {
       <div className="px-4 space-y-6">
         <div className="flex items-center gap-2">
           <Scale className="h-5 w-5 text-neutral-400" strokeWidth={1.5} />
-          <h1 className="text-xl font-light tracking-wide">體重紀錄</h1>
+          <h1 className="text-xl font-light tracking-wide">{t("weight:title")}</h1>
         </div>
 
         {/* Input */}
@@ -130,7 +128,7 @@ function WeightContent() {
             <Input
               type="number"
               step="0.1"
-              placeholder="體重 (kg)"
+              placeholder={t("weight:weightPlaceholder")}
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
               className="flex-1 border-black/[0.06] dark:border-white/[0.06] font-light"
@@ -140,7 +138,7 @@ function WeightContent() {
               disabled={!weight || isPending}
               className="px-6 py-2 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-md transition-all duration-300 hover:border-foreground/20 disabled:opacity-30"
             >
-              {isPending ? "..." : currentWeight !== null ? "更新" : "記錄"}
+              {isPending ? "..." : currentWeight !== null ? t("common:buttons.update") : t("common:buttons.record")}
             </button>
           </div>
           {currentWeight !== null && (
@@ -148,7 +146,7 @@ function WeightContent() {
               <span>{dayLabel}：{currentWeight} kg</span>
               {getTrendIcon()}
               {targetWeight && (
-                <span className="ml-auto">目標：{targetWeight} kg</span>
+                <span className="ml-auto">{t("common:labels.target")}：{targetWeight} kg</span>
               )}
             </div>
           )}
@@ -157,17 +155,17 @@ function WeightContent() {
         {/* Summary Cards */}
         <div className="grid grid-cols-3 gap-3">
           <SummaryCard
-            label="目前體重"
+            label={t("weight:currentWeight")}
             value={currentWeight ? `${currentWeight}` : latestWeight ? `${latestWeight}` : "--"}
             unit="kg"
           />
           <SummaryCard
-            label="目標體重"
+            label={t("weight:goalWeight")}
             value={targetWeight ? `${targetWeight}` : "--"}
             unit="kg"
           />
           <SummaryCard
-            label="近 7 天變化"
+            label={t("weight:recentChange")}
             value={weekChange !== null ? `${weekChange > 0 ? "+" : ""}${weekChange}` : "--"}
             unit="kg"
           />
@@ -180,20 +178,20 @@ function WeightContent() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-              體重趨勢
+              {t("weight:weightTrend")}
             </p>
             <div className="flex gap-1.5">
-              {RANGES.map((r) => (
+              {RANGE_DAYS.map((days) => (
                 <button
-                  key={r.days}
-                  onClick={() => setSelectedRange(r.days)}
+                  key={days}
+                  onClick={() => setSelectedRange(days)}
                   className={`px-2.5 py-1 text-[10px] font-light rounded border transition-all duration-300 ${
-                    selectedRange === r.days
+                    selectedRange === days
                       ? "border-foreground/20 bg-foreground/5"
                       : "border-black/[0.06] dark:border-white/[0.06] hover:border-foreground/20"
                   }`}
                 >
-                  {r.label}
+                  {t("weight:rangeDay", { count: days })}
                 </button>
               ))}
             </div>
@@ -219,13 +217,13 @@ function WeightContent() {
                   strokeWidth={1.5}
                   dot={false}
                   activeDot={{ r: 3 }}
-                  name="體重 (kg)"
+                  name={t("weight:weightKg")}
                 />
               </LineChart>
             </ResponsiveContainer>
           ) : (
             <p className="text-sm font-light text-neutral-300 dark:text-neutral-700 text-center py-8">
-              需要至少 2 筆體重記錄才能顯示趨勢
+              {t("weight:needMinRecords")}
             </p>
           )}
         </div>
@@ -236,7 +234,7 @@ function WeightContent() {
 
 export default function WeightPage() {
   return (
-    <Suspense fallback={<div className="px-4 py-6"><p className="text-center text-neutral-400 font-light">載入中...</p></div>}>
+    <Suspense fallback={<div className="px-4 py-6"><p className="text-center text-neutral-400 font-light">...</p></div>}>
       <WeightContent />
     </Suspense>
   );

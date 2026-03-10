@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
 import { UpgradeDialog } from "@/components/upgrade-dialog";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
 function compressImage(dataUrl: string, maxWidth = 1600, quality = 0.8): Promise<string> {
   return new Promise((resolve) => {
@@ -43,6 +44,7 @@ function compressImage(dataUrl: string, maxWidth = 1600, quality = 0.8): Promise
 }
 
 function ScanLabelContent() {
+  const { t } = useTranslation(["food", "common"]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const date = searchParams.get("date") || new Date().toISOString().split("T")[0];
@@ -105,7 +107,7 @@ function ScanLabelContent() {
     // Create preview and compress
     const reader = new FileReader();
     reader.onerror = () => {
-      setError("讀取檔案失敗，請重試");
+      setError(t("food:fileReadError"));
       setStage("capture");
     };
     reader.onload = async (event) => {
@@ -147,7 +149,7 @@ function ScanLabelContent() {
           setStage("edit");
         } else {
           posthog.capture("ai_label_scanned", { success: false });
-          setError(result.error || "辨識失敗");
+          setError(result.error || t("food:recognitionFailed"));
           setStage("capture");
         }
       } catch (err) {
@@ -156,7 +158,7 @@ function ScanLabelContent() {
           setShowUpgrade(true);
           setStage("capture");
         } else {
-          setError("辨識過程發生錯誤，請重試");
+          setError(t("food:recognitionError"));
           setStage("capture");
         }
       }
@@ -219,15 +221,15 @@ function ScanLabelContent() {
           });
           await utils.diary.getDay.invalidate();
           posthog.capture("food_logged", { source: "label_scan", meal_type: meal, calories: parseFloat(calories) });
-          toast.success("已新增到日記");
+          toast.success(t("common:toast.addedToDiary"));
           router.push(`/hub/diary?date=${date}`);
           router.refresh();
         } else {
-          toast.error("建立食物失敗，請重試");
+          toast.error(t("common:toast.createFoodFailed"));
         }
       } catch (err) {
         console.error("createCustomFood/logFood failed:", err);
-        toast.error("新增失敗，請重試");
+        toast.error(t("common:toast.addFailed"));
       }
     });
   };
@@ -240,7 +242,7 @@ function ScanLabelContent() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </Link>
-        <h1 className="font-semibold">拍照辨識營養標籤</h1>
+        <h1 className="font-semibold">{t("food:scanLabelTitle")}</h1>
       </div>
 
       {error && (
@@ -273,21 +275,21 @@ function ScanLabelContent() {
             <CardContent className="flex flex-col items-center gap-4 py-8">
               <Camera className="h-12 w-12 text-muted-foreground" />
               <p className="text-sm text-muted-foreground text-center">
-                拍攝食品營養標籤照片
+                {t("food:takePhotoOfLabel")}
               </p>
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer"
               >
                 <Camera className="h-4 w-4" />
-                拍照
+                {t("food:takePhoto")}
               </button>
               <button
                 onClick={() => galleryInputRef.current?.click()}
                 className="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground cursor-pointer"
               >
                 <ImageIcon className="h-4 w-4" />
-                從相簿選擇
+                {t("food:chooseFromGallery")}
               </button>
             </CardContent>
           </Card>
@@ -301,7 +303,7 @@ function ScanLabelContent() {
             <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-muted">
               <Image
                 src={imagePreview}
-                alt="營養標籤照片"
+                alt={t("food:labelPhotoAlt")}
                 fill
                 className="object-contain"
               />
@@ -309,7 +311,7 @@ function ScanLabelContent() {
           )}
           <div className="flex flex-col items-center gap-2 py-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">辨識中...</p>
+            <p className="text-sm text-muted-foreground">{t("food:recognizing")}</p>
           </div>
         </div>
       )}
@@ -321,7 +323,7 @@ function ScanLabelContent() {
             <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-muted">
               <Image
                 src={imagePreview}
-                alt="營養標籤照片"
+                alt={t("food:labelPhotoAlt")}
                 fill
                 className="object-contain"
               />
@@ -331,36 +333,36 @@ function ScanLabelContent() {
           <div className="flex justify-end">
             <Button variant="outline" size="sm" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-1" />
-              重新拍照
+              {t("food:retakePhoto")}
             </Button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">基本資訊</CardTitle>
+                <CardTitle className="text-base">{t("common:labels.basicInfo")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-sm font-medium">食物名稱 *</label>
+                  <label className="text-sm font-medium">{t("food:foodName")} *</label>
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="例：雞排"
+                    placeholder={t("food:foodNamePlaceholder")}
                     required
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium">品牌</label>
+                  <label className="text-sm font-medium">{t("food:brand")}</label>
                   <Input
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
-                    placeholder="選填"
+                    placeholder={t("common:labels.optional")}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">份量大小 *</label>
+                    <label className="text-sm font-medium">{t("food:servingSizeLabel")} *</label>
                     <Input
                       type="number"
                       value={servingSize}
@@ -369,7 +371,7 @@ function ScanLabelContent() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-sm font-medium">單位 *</label>
+                    <label className="text-sm font-medium">{t("food:unitLabel")} *</label>
                     <select
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={servingUnit}
@@ -379,7 +381,7 @@ function ScanLabelContent() {
                       <option value="ml">ml</option>
                       <option value="oz">oz</option>
                       <option value="cup">cup</option>
-                      <option value="piece">個</option>
+                      <option value="piece">{t("common:units.pieces")}</option>
                     </select>
                   </div>
                 </div>
@@ -388,11 +390,11 @@ function ScanLabelContent() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">營養資訊 (每份)</CardTitle>
+                <CardTitle className="text-base">{t("common:labels.nutritionInfoPerServing")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-sm font-medium">熱量 (kcal) *</label>
+                  <label className="text-sm font-medium">{t("food:caloriesKcalRequired")} *</label>
                   <Input
                     type="number"
                     value={calories}
@@ -403,7 +405,7 @@ function ScanLabelContent() {
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-blue-500">蛋白質 (g)</label>
+                    <label className="text-xs font-medium text-blue-500">{t("common:macro.protein")} (g)</label>
                     <Input
                       type="number"
                       step="0.1"
@@ -413,7 +415,7 @@ function ScanLabelContent() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-amber-500">碳水 (g)</label>
+                    <label className="text-xs font-medium text-amber-500">{t("common:macro.carbs")} (g)</label>
                     <Input
                       type="number"
                       step="0.1"
@@ -423,7 +425,7 @@ function ScanLabelContent() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-rose-500">脂肪 (g)</label>
+                    <label className="text-xs font-medium text-rose-500">{t("common:macro.fat")} (g)</label>
                     <Input
                       type="number"
                       step="0.1"
@@ -435,10 +437,10 @@ function ScanLabelContent() {
                 </div>
 
                 <div className="border-t pt-3 mt-3">
-                  <p className="text-xs text-muted-foreground mb-2">其他營養素</p>
+                  <p className="text-xs text-muted-foreground mb-2">{t("common:labels.otherNutrients")}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">飽和脂肪 (g)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.saturatedFat")} (g)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -448,7 +450,7 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">反式脂肪 (g)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.transFat")} (g)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -458,7 +460,7 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">糖 (g)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.sugar")} (g)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -468,7 +470,7 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">膳食纖維 (g)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.dietaryFiber")} (g)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -478,7 +480,7 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">鈉 (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.sodium")} (mg)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -488,7 +490,7 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">膽固醇 (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.cholesterol")} (mg)</label>
                       <Input
                         type="number"
                         step="0.1"
@@ -501,30 +503,30 @@ function ScanLabelContent() {
                 </div>
 
                 <div className="border-t pt-3 mt-3">
-                  <p className="text-xs text-muted-foreground mb-2">微量營養素</p>
+                  <p className="text-xs text-muted-foreground mb-2">{t("common:labels.microNutrients")}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">鈣 (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.calcium")} (mg)</label>
                       <Input type="number" step="0.1" value={calcium} onChange={(e) => setCalcium(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">鐵 (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.iron")} (mg)</label>
                       <Input type="number" step="0.1" value={iron} onChange={(e) => setIron(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">鉀 (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.potassium")} (mg)</label>
                       <Input type="number" step="0.1" value={potassium} onChange={(e) => setPotassium(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">維生素 A (mcg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.vitaminA")} (mcg)</label>
                       <Input type="number" step="0.1" value={vitaminA} onChange={(e) => setVitaminA(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">維生素 C (mg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.vitaminC")} (mg)</label>
                       <Input type="number" step="0.1" value={vitaminC} onChange={(e) => setVitaminC(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">維生素 D (mcg)</label>
+                      <label className="text-xs font-medium">{t("common:nutrientLabels.vitaminD")} (mcg)</label>
                       <Input type="number" step="0.1" value={vitaminD} onChange={(e) => setVitaminD(e.target.value)} placeholder="-" />
                     </div>
                   </div>
@@ -532,7 +534,7 @@ function ScanLabelContent() {
 
                 {notes && (
                   <div className="border-t pt-3 mt-3">
-                    <p className="text-xs text-muted-foreground mb-1">備註</p>
+                    <p className="text-xs text-muted-foreground mb-1">{t("common:labels.notes")}</p>
                     <p className="text-sm text-muted-foreground bg-muted rounded-lg px-3 py-2">{notes}</p>
                   </div>
                 )}
@@ -540,7 +542,7 @@ function ScanLabelContent() {
             </Card>
 
             <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? "建立中..." : "確認並新增到日記"}
+              {isPending ? t("common:buttons.creating") : t("food:confirmAndAdd")}
             </Button>
           </form>
         </div>

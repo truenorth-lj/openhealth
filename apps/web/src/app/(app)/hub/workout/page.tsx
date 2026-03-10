@@ -22,6 +22,7 @@ import { formatDuration } from "@/hooks/use-workout-timer";
 import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { deleteWorkoutTemplate } from "@/server/actions/workout";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useTranslation } from "react-i18next";
 
 export default function WorkoutPage() {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function WorkoutPage() {
 
   const isLoading = isAuthenticated && (activeLoading || templatesLoading);
 
+  const { t } = useTranslation(["workout", "common"]);
   const [starting, setStarting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
@@ -54,7 +56,7 @@ export default function WorkoutPage() {
       await startWorkout({});
       router.push(`/hub/workout/active`);
     } catch {
-      toast.error("啟動訓練失敗");
+      toast.error(t("workout:startFailed"));
     } finally {
       setStarting(false);
     }
@@ -70,7 +72,7 @@ export default function WorkoutPage() {
       await startWorkout({ templateId, name });
       router.push(`/hub/workout/active`);
     } catch {
-      toast.error("啟動訓練失敗");
+      toast.error(t("workout:startFailed"));
     } finally {
       setStarting(false);
     }
@@ -79,11 +81,11 @@ export default function WorkoutPage() {
   const handleDeleteTemplate = async (templateId: string) => {
     try {
       await deleteWorkoutTemplate({ templateId });
-      toast.success("已刪除模板");
+      toast.success(t("workout:templateDeleted"));
       setDeleteConfirm(null);
       router.refresh();
     } catch {
-      toast.error("刪除失敗");
+      toast.error(t("workout:deleteFailed"));
     }
   };
 
@@ -101,7 +103,7 @@ export default function WorkoutPage() {
   return (
     <div className="px-4 py-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-light tracking-wide">重訓記錄</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("workout:title")}</h1>
         <Link
           href="/hub/workout/stats"
           className="text-neutral-400 hover:text-foreground transition-colors"
@@ -123,7 +125,7 @@ export default function WorkoutPage() {
               </div>
               <div>
                 <p className="text-sm font-medium">{activeWorkout.name}</p>
-                <p className="text-xs text-neutral-400">進行中</p>
+                <p className="text-xs text-neutral-400">{t("workout:inProgress")}</p>
               </div>
             </div>
             <ChevronRight
@@ -141,51 +143,51 @@ export default function WorkoutPage() {
         className="w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-primary text-white text-sm font-medium transition-colors hover:bg-primary/90 disabled:opacity-50"
       >
         <Plus className="h-4 w-4" strokeWidth={2} />
-        {starting ? "啟動中..." : "開始空白訓練"}
+        {starting ? t("workout:starting") : t("workout:startBlank")}
       </button>
 
       {/* Templates */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-            訓練模板
+            {t("workout:templates")}
           </p>
           <Link
             href="/hub/workout/templates"
             className="text-xs text-neutral-400 hover:text-foreground transition-colors"
           >
-            管理
+            {t("workout:manage")}
           </Link>
         </div>
 
         {templates && templates.length > 0 ? (
           <div className="space-y-2">
-            {templates.map((t) => (
+            {templates.map((tmpl) => (
               <div
-                key={t.id}
+                key={tmpl.id}
                 className="flex items-center justify-between rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-3 transition-all hover:border-foreground/20"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-light truncate">{t.name}</p>
+                  <p className="text-sm font-light truncate">{tmpl.name}</p>
                   <p className="text-xs text-neutral-400 truncate">
-                    {t.exerciseNames.join("、") || "無動作"}
+                    {tmpl.exerciseNames.join("、") || t("workout:noActions")}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 ml-2">
                   <button
                     onClick={() => {
-                      setDeleteConfirm(t.id);
+                      setDeleteConfirm(tmpl.id);
                     }}
                     className="p-1.5 text-neutral-300 dark:text-neutral-700 hover:text-destructive transition-colors"
                   >
                     <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
                   </button>
                   <button
-                    onClick={() => handleStartFromTemplate(t.id, t.name)}
+                    onClick={() => handleStartFromTemplate(tmpl.id, tmpl.name)}
                     disabled={starting}
                     className="px-3 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
                   >
-                    開始
+                    {t("common:buttons.start")}
                   </button>
                 </div>
               </div>
@@ -193,7 +195,7 @@ export default function WorkoutPage() {
           </div>
         ) : (
           <p className="text-sm font-light text-neutral-300 dark:text-neutral-700">
-            還沒有訓練模板
+            {t("workout:noTemplates")}
           </p>
         )}
       </div>
@@ -205,13 +207,13 @@ export default function WorkoutPage() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-            最近訓練
+            {t("workout:recentWorkouts")}
           </p>
           <Link
             href="/hub/workout/history"
             className="text-xs text-neutral-400 hover:text-foreground transition-colors"
           >
-            查看全部
+            {t("workout:viewAll")}
           </Link>
         </div>
 
@@ -245,7 +247,7 @@ export default function WorkoutPage() {
                     </span>
                     <span className="text-xs text-neutral-400 tabular-nums">
                       <Dumbbell className="h-3 w-3 inline mr-0.5" strokeWidth={1.5} />
-                      {w.exerciseCount} 動作
+                      {t("workout:exerciseCount", { count: w.exerciseCount })}
                     </span>
                   </div>
                 </div>
@@ -259,7 +261,7 @@ export default function WorkoutPage() {
           </div>
         ) : (
           <p className="text-sm font-light text-neutral-300 dark:text-neutral-700">
-            還沒有訓練紀錄
+            {t("workout:noWorkouts")}
           </p>
         )}
       </div>
@@ -270,22 +272,22 @@ export default function WorkoutPage() {
         onOpenChange={(open) => !open && setDeleteConfirm(null)}
       >
         <DialogHeader>
-          <DialogTitle>確認刪除模板？</DialogTitle>
+          <DialogTitle>{t("workout:confirmDeleteTemplate")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
-          <p className="text-sm text-neutral-500">刪除後無法復原。</p>
+          <p className="text-sm text-neutral-500">{t("workout:deleteIrreversible")}</p>
           <div className="flex gap-2">
             <button
               onClick={() => setDeleteConfirm(null)}
               className="flex-1 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm font-light"
             >
-              取消
+              {t("common:buttons.cancel")}
             </button>
             <button
               onClick={() => deleteConfirm && handleDeleteTemplate(deleteConfirm)}
               className="flex-1 py-2 rounded-lg bg-destructive text-white text-sm font-medium"
             >
-              刪除
+              {t("common:buttons.delete")}
             </button>
           </div>
         </div>

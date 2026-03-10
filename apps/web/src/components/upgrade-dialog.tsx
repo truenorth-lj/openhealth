@@ -7,6 +7,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Crown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface UpgradeDialogProps {
   open: boolean;
@@ -14,23 +15,25 @@ interface UpgradeDialogProps {
 }
 
 export function UpgradeDialog({ open, onOpenChange }: UpgradeDialogProps) {
+  const { t } = useTranslation("common");
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           <Crown className="h-5 w-5 text-amber-500" />
-          升級至 Pro
+          {t("upgrade.title")}
         </DialogTitle>
         <DialogDescription>
-          解鎖所有進階功能，讓健康管理更完整
+          {t("upgrade.description")}
         </DialogDescription>
       </DialogHeader>
 
       <div className="flex flex-col items-center justify-center py-8 space-y-3">
         <Crown className="h-10 w-10 text-amber-500/50" />
-        <p className="text-base font-light text-neutral-400">敬請期待</p>
+        <p className="text-base font-light text-neutral-400">{t("upgrade.comingSoon")}</p>
         <p className="text-sm text-neutral-400/70 text-center">
-          付款功能正在開發中，完成後將開放訂閱
+          {t("upgrade.paymentDeveloping")}
         </p>
       </div>
     </Dialog>

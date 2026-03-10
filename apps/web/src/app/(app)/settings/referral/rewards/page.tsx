@@ -7,21 +7,22 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, DollarSign, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { REFERRAL, REWARD_TYPES, REWARD_STATUSES } from "@open-health/shared/constants";
+import { useTranslation } from "react-i18next";
 
 function formatNtd(cents: number) {
   return `NT$${Math.floor(cents / 100).toLocaleString()}`;
 }
 
-function statusLabel(status: string) {
+function statusLabel(status: string, t: (key: string) => string) {
   switch (status) {
     case REWARD_STATUSES.PENDING:
-      return "待確認";
+      return t("rewardsPage.pendingStatus");
     case REWARD_STATUSES.CONFIRMED:
-      return "已確認";
+      return t("rewardsPage.confirmedStatus");
     case REWARD_STATUSES.PAID:
-      return "已提領";
+      return t("rewardsPage.withdrawnStatus");
     case REWARD_STATUSES.CLAWED_BACK:
-      return "已扣回";
+      return t("rewardsPage.clawedBackStatus");
     default:
       return status;
   }
@@ -43,6 +44,7 @@ function statusColor(status: string) {
 }
 
 export default function RewardsPage() {
+  const { t } = useTranslation("settings");
   const { data: session, isPending: sessionLoading } = useSession();
   const isLoggedIn = !!session?.user;
 
@@ -87,18 +89,18 @@ export default function RewardsPage() {
         >
           <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-light tracking-wide">分潤獎勵</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("rewardsPage.title")}</h1>
       </div>
 
       {sessionLoading && (
         <div className="text-center text-sm text-neutral-400 py-8">
-          載入中...
+          {t("common:buttons.loading")}
         </div>
       )}
 
       {!sessionLoading && !isLoggedIn && (
         <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 text-center text-sm text-neutral-400">
-          請先登入以查看分潤獎勵。
+          {t("rewardsPage.pleaseLogin")}
         </div>
       )}
 
@@ -109,7 +111,7 @@ export default function RewardsPage() {
             <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 space-y-1">
               <div className="flex items-center gap-1.5 text-xs text-neutral-400">
                 <DollarSign className="h-3 w-3" strokeWidth={1.5} />
-                <span>累計分潤</span>
+                <span>{t("rewardsPage.totalRevenue")}</span>
               </div>
               <p className="text-lg font-light">
                 {formatNtd(
@@ -120,7 +122,7 @@ export default function RewardsPage() {
             <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 space-y-1">
               <div className="flex items-center gap-1.5 text-xs text-neutral-400">
                 <CheckCircle className="h-3 w-3" strokeWidth={1.5} />
-                <span>可提領</span>
+                <span>{t("rewardsPage.withdrawable")}</span>
               </div>
               <p className="text-lg font-light">
                 {formatNtd(stats.withdrawableAmount)}
@@ -129,7 +131,7 @@ export default function RewardsPage() {
             <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 space-y-1">
               <div className="flex items-center gap-1.5 text-xs text-neutral-400">
                 <Clock className="h-3 w-3" strokeWidth={1.5} />
-                <span>待確認</span>
+                <span>{t("rewardsPage.pending")}</span>
               </div>
               <p className="text-lg font-light">
                 {formatNtd(stats.totalPending)}
@@ -138,10 +140,10 @@ export default function RewardsPage() {
             <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 space-y-1">
               <div className="flex items-center gap-1.5 text-xs text-neutral-400">
                 <DollarSign className="h-3 w-3" strokeWidth={1.5} />
-                <span>已付費推薦</span>
+                <span>{t("rewardsPage.payingReferees")}</span>
               </div>
               <p className="text-lg font-light">
-                {stats.payingRefereeCount} 人
+                {t("rewardsPage.personCount", { count: stats.payingRefereeCount })}
               </p>
             </div>
           </div>
@@ -149,11 +151,11 @@ export default function RewardsPage() {
           {/* Payout section */}
           <div className="space-y-3">
             <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-              提領
+              {t("rewardsPage.withdraw")}
             </p>
             <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 space-y-3">
               <p className="text-sm text-neutral-500">
-                分潤於付款後 90 天確認，累計達 NT$500 即可提領。目前僅支援折抵訂閱費用。
+                {t("rewardsPage.withdrawNote")}
               </p>
               <Button
                 onClick={handlePayout}
@@ -161,10 +163,10 @@ export default function RewardsPage() {
                 className="w-full"
               >
                 {payoutMutation.isPending
-                  ? "處理中..."
+                  ? t("rewardsPage.processing")
                   : canWithdraw
-                    ? `提領 ${formatNtd(stats.withdrawableAmount)}（折抵訂閱）`
-                    : "餘額不足 NT$500"}
+                    ? t("rewardsPage.withdrawAmount", { amount: formatNtd(stats.withdrawableAmount) })
+                    : t("rewardsPage.insufficientBalance")}
               </Button>
               {payoutError && (
                 <p className="text-xs text-destructive flex items-center gap-1">
@@ -175,7 +177,7 @@ export default function RewardsPage() {
               {payoutMutation.isSuccess && payoutMutation.data.success && (
                 <p className="text-xs text-green-600 flex items-center gap-1">
                   <CheckCircle className="h-3 w-3" />
-                  提領申請已送出，將折抵下期訂閱費用。
+                  {t("rewardsPage.withdrawSubmitted")}
                 </p>
               )}
             </div>
@@ -184,7 +186,7 @@ export default function RewardsPage() {
           {/* History */}
           <div className="space-y-3">
             <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-              獎勵明細
+              {t("rewardsPage.rewardDetails")}
             </p>
             {history && history.length > 0 ? (
               <div className="border-t border-black/[0.06] dark:border-white/[0.06]">
@@ -196,8 +198,8 @@ export default function RewardsPage() {
                     <div className="space-y-0.5">
                       <p className="text-sm font-light">
                         {reward.type === REWARD_TYPES.FREE_DAYS
-                          ? `免費 ${reward.freeDays} 天`
-                          : `分潤 ${formatNtd(reward.amountNtd ?? 0)}`}
+                          ? t("rewardsPage.freeDays", { count: reward.freeDays ?? 0 })
+                          : t("rewardsPage.revenueAmount", { amount: formatNtd(reward.amountNtd ?? 0) })}
                       </p>
                       {reward.subscriptionMonth && (
                         <p className="text-xs text-neutral-400">
@@ -207,7 +209,7 @@ export default function RewardsPage() {
                     </div>
                     <div className="text-right space-y-0.5">
                       <p className={`text-xs ${statusColor(reward.status)}`}>
-                        {statusLabel(reward.status)}
+                        {statusLabel(reward.status, t)}
                       </p>
                       <p className="text-xs text-neutral-400">
                         {new Date(reward.createdAt).toLocaleDateString("zh-TW")}
@@ -218,7 +220,7 @@ export default function RewardsPage() {
               </div>
             ) : (
               <p className="text-sm text-neutral-400 dark:text-neutral-600">
-                尚無獎勵記錄。推薦朋友加入並付費訂閱後即可獲得 25% 分潤。
+                {t("rewardsPage.noRewards")}
               </p>
             )}
           </div>

@@ -13,10 +13,12 @@ import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
 import { NUTRIENT_IDS, NUTRIENT_NAME_ZH, MACRO_NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
 const MACRO_IDS = new Set(MACRO_NUTRIENT_IDS);
 
 function CreateFoodContent() {
+  const { t } = useTranslation(["food", "common"]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const date = searchParams.get("date") || new Date().toISOString().split("T")[0];
@@ -73,15 +75,15 @@ function CreateFoodContent() {
           });
           await utils.diary.getDay.invalidate();
           posthog.capture("food_logged", { source: "create", meal_type: meal, calories: parseFloat(calories) });
-          toast.success("已新增到日記");
+          toast.success(t("common:toast.addedToDiary"));
           router.push(`/hub/diary?date=${date}`);
           router.refresh();
         } else {
-          toast.error("建立食物失敗，請重試");
+          toast.error(t("common:toast.createFoodFailed"));
         }
       } catch (err) {
         console.error("createCustomFood/logFood failed:", err);
-        toast.error("新增失敗，請重試");
+        toast.error(t("common:toast.addFailed"));
       }
     });
   };
@@ -94,35 +96,35 @@ function CreateFoodContent() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
         </Link>
-        <h1 className="font-semibold">自訂食物</h1>
+        <h1 className="font-semibold">{t("food:customFood")}</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">基本資訊</CardTitle>
+            <CardTitle className="text-base">{t("common:labels.basicInfo")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="space-y-1">
-              <label className="text-sm font-medium">食物名稱 *</label>
+              <label className="text-sm font-medium">{t("food:foodName")} *</label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="例：雞排"
+                placeholder={t("food:foodNamePlaceholder")}
                 required
               />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium">品牌</label>
+              <label className="text-sm font-medium">{t("food:brand")}</label>
               <Input
                 value={brand}
                 onChange={(e) => setBrand(e.target.value)}
-                placeholder="選填"
+                placeholder={t("common:labels.optional")}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-sm font-medium">份量大小 *</label>
+                <label className="text-sm font-medium">{t("food:servingSizeLabel")} *</label>
                 <Input
                   type="number"
                   value={servingSize}
@@ -131,7 +133,7 @@ function CreateFoodContent() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-medium">單位 *</label>
+                <label className="text-sm font-medium">{t("food:unitLabel")} *</label>
                 <select
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={servingUnit}
@@ -141,7 +143,7 @@ function CreateFoodContent() {
                   <option value="ml">ml</option>
                   <option value="oz">oz</option>
                   <option value="cup">cup</option>
-                  <option value="piece">個</option>
+                  <option value="piece">{t("common:units.pieces")}</option>
                 </select>
               </div>
             </div>
@@ -150,11 +152,11 @@ function CreateFoodContent() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">營養資訊 (每份)</CardTitle>
+            <CardTitle className="text-base">{t("common:labels.nutritionInfoPerServing")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="space-y-1">
-              <label className="text-sm font-medium">卡路里 (kcal) *</label>
+              <label className="text-sm font-medium">{t("food:caloriesKcal")} *</label>
               <Input
                 type="number"
                 value={calories}
@@ -165,7 +167,7 @@ function CreateFoodContent() {
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-blue-500">蛋白質 (g)</label>
+                <label className="text-xs font-medium text-blue-500">{t("common:macro.protein")} (g)</label>
                 <Input
                   type="number"
                   step="0.1"
@@ -175,7 +177,7 @@ function CreateFoodContent() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-medium text-amber-500">碳水 (g)</label>
+                <label className="text-xs font-medium text-amber-500">{t("common:macro.carbs")} (g)</label>
                 <Input
                   type="number"
                   step="0.1"
@@ -185,7 +187,7 @@ function CreateFoodContent() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-xs font-medium text-rose-500">脂肪 (g)</label>
+                <label className="text-xs font-medium text-rose-500">{t("common:macro.fat")} (g)</label>
                 <Input
                   type="number"
                   step="0.1"
@@ -202,7 +204,7 @@ function CreateFoodContent() {
         <Card>
           <CardHeader className="cursor-pointer" onClick={() => setMicroExpanded(!microExpanded)}>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">深度營養素</CardTitle>
+              <CardTitle className="text-base">{t("food:deepNutrients")}</CardTitle>
               <ChevronDown
                 className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${
                   microExpanded ? "rotate-180" : ""
@@ -211,7 +213,7 @@ function CreateFoodContent() {
               />
             </div>
             <p className="text-xs text-muted-foreground font-light">
-              纖維、鈉、反式脂肪、維生素等（選填）
+              {t("food:deepNutrientsHint")}
             </p>
           </CardHeader>
           {microExpanded && (
@@ -244,7 +246,7 @@ function CreateFoodContent() {
         </Card>
 
         <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? "建立中..." : "建立並新增到日記"}
+          {isPending ? t("common:buttons.creating") : t("food:createAndAdd")}
         </Button>
       </form>
     </div>

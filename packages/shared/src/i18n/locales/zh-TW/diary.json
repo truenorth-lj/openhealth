@@ -7,5 +7,14 @@
   "addFood": "新增食物",
   "totalCalories": "總熱量",
   "noEntries": "今天還沒有記錄",
-  "deleteEntry": "刪除記錄"
+  "deleteEntry": "刪除記錄",
+  "clickToAddFood": "點擊新增食物",
+  "clickToAddExercise": "點擊新增運動",
+  "microNutrients": "深度營養素",
+  "setupTrackedNutrients": "設定追蹤營養素",
+  "clickToSetupNutrients": "點擊設定想追蹤的營養素（如鈉、反式脂肪等）",
+  "selectTrackedNutrients": "選擇追蹤營養素",
+  "saveCount": "儲存 ({{count}})",
+  "exerciseLabel": "運動",
+  "calorieIntake": "熱量攝取"
 }

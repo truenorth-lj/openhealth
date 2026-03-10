@@ -3,6 +3,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 function isChunkLoadError(error: Error): boolean {
   return (
@@ -53,6 +54,7 @@ export default function AppError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useTranslation("common");
   useEffect(() => {
     // Auto-reload on chunk loading errors (typically caused by new deployments)
     if (isChunkLoadError(error)) {
@@ -87,9 +89,9 @@ export default function AppError({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] px-4">
-      <h2 className="text-lg font-semibold mb-2">發生錯誤</h2>
-      <p className="text-sm text-muted-foreground mb-4">很抱歉，頁面發生了問題</p>
-      <Button onClick={() => reset()}>重試</Button>
+      <h2 className="text-lg font-semibold mb-2">{t("error.title")}</h2>
+      <p className="text-sm text-muted-foreground mb-4">{t("error.description")}</p>
+      <Button onClick={() => reset()}>{t("buttons.retry")}</Button>
     </div>
   );
 }

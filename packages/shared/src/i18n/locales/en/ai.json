@@ -5,5 +5,45 @@
   "takePhoto": "Take Photo",
   "uploadImage": "Upload Image",
   "nutritionInfo": "Nutrition Info",
-  "askQuestion": "Ask me any health question..."
+  "askQuestion": "Ask me any health question...",
+  "loginRequired": "Please sign in to use AI Nutrition Advisor",
+  "cannotCreateChat": "Cannot create conversation, please retry",
+  "dailyRemaining": "{{count}} remaining today",
+  "aiNutritionAdvisor": "AI Nutrition Advisor",
+  "aiAdvisorDesc": "I can analyze your food diary and provide nutrition advice",
+  "chatHistory": "Chat History",
+  "newChat": "New Chat",
+  "dailyLimitReached": "Daily message limit reached ({{limit}} messages)",
+  "conversationLimitReached": "Conversation limit reached ({{limit}} messages)",
+  "upgradePro": "Upgrade to Pro for more",
+  "inputPlaceholder": "Enter your nutrition question...",
+  "startNewChat": "Start New Chat",
+  "back": "Back",
+  "analyzing2": "Analyzing...",
+  "dailyLimitError": "Daily message limit reached ({{limit}} messages), come back tomorrow!",
+  "errorRetry": "An error occurred, please retry",
+  "quickPrompts": {
+    "analyzeDiet": "Analyze my diet today",
+    "fatTooHigh": "Is my fat intake too high?",
+    "planTomorrow": "Help me plan tomorrow's meals"
+  },
+  "actionConfirm": {
+    "weightLog": "Weight Log",
+    "loggingWeight": "Logging weight...",
+    "waterLog": "Water Log",
+    "loggingWater": "Logging water...",
+    "waterSummary": "+{{amount}}ml (today total {{total}}/{{target}}ml)",
+    "logFailed": "Failed to log, please retry",
+    "unknownError": "Unknown error"
+  },
+  "foodCreation": {
+    "estimating": "Estimating nutrition for \"{{food}}\"...",
+    "estimationFailed": "Estimation failed, please retry",
+    "addedToMeal": "Added to {{meal}}",
+    "addToDiary": "Add to Diary"
+  },
+  "todayCard": {
+    "title": "AI Nutrition Advisor",
+    "description": "Analyze diet, plan meals"
+  }
 }

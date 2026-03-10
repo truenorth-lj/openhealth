@@ -38,8 +38,10 @@ import {
   EXERCISE_CATEGORY_LABELS,
   REST_TIMER_OPTIONS,
 } from "@open-health/shared/constants";
+import { useTranslation } from "react-i18next";
 
 export default function ActiveWorkoutPage() {
+  const { t } = useTranslation(["workout", "common"]);
   const router = useRouter();
   const utils = trpc.useUtils();
   const { isAuthenticated, showLoginDialog, setShowLoginDialog, user } =
@@ -81,7 +83,7 @@ export default function ActiveWorkoutPage() {
     onSuccess: (data) => {
       utils.exercise.getPresets.invalidate();
       utils.exercise.searchExercises.invalidate();
-      toast.success(data.isPublic ? "已設為公開" : "已設為私人");
+      toast.success(data.isPublic ? t("workout:activePage.setPublicSuccess") : t("workout:activePage.setPrivateSuccess"));
     },
     onError: (err) => toast.error(err.message),
   });
@@ -89,7 +91,7 @@ export default function ActiveWorkoutPage() {
   const createCustomExercise = trpc.exercise.createCustomExercise.useMutation({
     onSuccess: (data) => {
       utils.exercise.getPresets.invalidate();
-      toast.success("已建立自訂動作");
+      toast.success(t("workout:activePage.customExerciseCreated"));
       setShowCreateCustom(false);
       setCustomName("");
       setCustomCategory("strength");
@@ -127,7 +129,7 @@ export default function ActiveWorkoutPage() {
       setSearchQuery("");
       utils.workout.getActive.invalidate();
     } catch {
-      toast.error("新增動作失敗");
+      toast.error(t("workout:activePage.addExerciseFailed"));
     }
   };
 
@@ -136,7 +138,7 @@ export default function ActiveWorkoutPage() {
       await removeExerciseFromWorkout({ workoutExerciseId });
       utils.workout.getActive.invalidate();
     } catch {
-      toast.error("刪除動作失敗");
+      toast.error(t("workout:activePage.removeExerciseFailed"));
     }
   };
 
@@ -150,7 +152,7 @@ export default function ActiveWorkoutPage() {
       await logSet({ workoutExerciseId, setNumber, weightKg, reps });
       utils.workout.getActive.invalidate();
     } catch {
-      toast.error("記錄失敗");
+      toast.error(t("workout:activePage.logSetFailed"));
     }
   };
 
@@ -159,7 +161,7 @@ export default function ActiveWorkoutPage() {
       await removeSet({ setId });
       utils.workout.getActive.invalidate();
     } catch {
-      toast.error("刪除失敗");
+      toast.error(t("workout:activePage.deleteSetFailed"));
     }
   };
 
@@ -168,7 +170,7 @@ export default function ActiveWorkoutPage() {
       await logSet({ workoutExerciseId, setNumber: nextSetNumber });
       utils.workout.getActive.invalidate();
     } catch {
-      toast.error("新增組數失敗");
+      toast.error(t("workout:activePage.addSetFailed"));
     }
   };
 
@@ -178,11 +180,11 @@ export default function ActiveWorkoutPage() {
     try {
       await finishWorkout({ workoutId: workout.id });
       timerStore.stopWorkout();
-      toast.success("訓練完成！");
+      toast.success(t("workout:activePage.workoutCompleted"));
       router.push("/hub/workout");
       router.refresh();
     } catch {
-      toast.error("完成訓練失敗");
+      toast.error(t("workout:activePage.completeFailed"));
     } finally {
       setSaving(false);
     }
@@ -193,11 +195,11 @@ export default function ActiveWorkoutPage() {
     try {
       await discardWorkout({ workoutId: workout.id });
       timerStore.stopWorkout();
-      toast.success("已取消訓練");
+      toast.success(t("workout:activePage.workoutCancelled"));
       router.push("/hub/workout");
       router.refresh();
     } catch {
-      toast.error("取消失敗");
+      toast.error(t("workout:activePage.cancelFailed"));
     }
   };
 
@@ -208,11 +210,11 @@ export default function ActiveWorkoutPage() {
         workoutId: workout.id,
         name: templateName.trim(),
       });
-      toast.success("已儲存為模板");
+      toast.success(t("workout:activePage.savedAsTemplate"));
       setShowSaveTemplate(false);
       setTemplateName("");
     } catch {
-      toast.error("儲存失敗");
+      toast.error(t("workout:activePage.saveTemplateFailed"));
     }
   };
 
@@ -231,12 +233,12 @@ export default function ActiveWorkoutPage() {
   if (!workout) {
     return (
       <div className="px-4 py-20 text-center">
-        <p className="text-sm text-neutral-400">沒有進行中的訓練</p>
+        <p className="text-sm text-neutral-400">{t("workout:activePage.noActiveWorkout")}</p>
         <button
           onClick={() => router.push("/hub/workout")}
           className="mt-4 text-sm text-primary hover:underline"
         >
-          返回重訓記錄
+          {t("workout:activePage.backToWorkout")}
         </button>
       </div>
     );
@@ -259,7 +261,7 @@ export default function ActiveWorkoutPage() {
           <button
             onClick={() => setShowSaveTemplate(true)}
             className="p-2 text-neutral-400 hover:text-foreground transition-colors"
-            title="儲存為模板"
+            title={t("workout:activePage.saveAsTemplate")}
           >
             <Save className="h-4 w-4" strokeWidth={1.5} />
           </button>
@@ -267,7 +269,7 @@ export default function ActiveWorkoutPage() {
             onClick={() => setShowFinishConfirm(true)}
             className="px-4 py-1.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
           >
-            完成
+            {t("workout:activePage.finish")}
           </button>
         </div>
       </div>
@@ -279,14 +281,14 @@ export default function ActiveWorkoutPage() {
             <div className="flex items-center gap-2">
               <Timer className="h-4 w-4 text-blue-500" strokeWidth={2} />
               <span className="text-sm font-medium text-blue-500">
-                休息中
+                {t("workout:activePage.resting")}
               </span>
             </div>
             <button
               onClick={() => timerStore.cancelRestTimer()}
               className="text-xs text-neutral-400 hover:text-foreground"
             >
-              跳過
+              {t("workout:activePage.skip")}
             </button>
           </div>
           <div className="mt-2 text-center">
@@ -315,7 +317,7 @@ export default function ActiveWorkoutPage() {
               onClick={() => handleStartRest(sec)}
               className="flex-1 py-1.5 rounded-md border border-black/[0.06] dark:border-white/[0.06] text-xs font-light text-neutral-400 hover:text-foreground hover:border-foreground/20 transition-all"
             >
-              {sec >= 60 ? `${sec / 60}分` : `${sec}秒`}
+              {sec >= 60 ? `${sec / 60}${t("workout:activePage.minLabel")}` : `${sec}${t("workout:activePage.secLabel")}`}
             </button>
           ))}
         </div>
@@ -351,7 +353,7 @@ export default function ActiveWorkoutPage() {
         className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-black/10 dark:border-white/10 rounded-lg text-sm font-light text-neutral-400 hover:text-foreground hover:border-foreground/20 transition-all"
       >
         <Plus className="h-4 w-4" strokeWidth={1.5} />
-        新增動作
+        {t("workout:activePage.addExercise")}
       </button>
 
       {/* Discard button */}
@@ -359,7 +361,7 @@ export default function ActiveWorkoutPage() {
         onClick={() => setShowDiscardConfirm(true)}
         className="w-full py-2 text-xs text-neutral-300 dark:text-neutral-700 hover:text-destructive transition-colors"
       >
-        取消訓練
+        {t("workout:activePage.cancelWorkout")}
       </button>
 
       {/* Add exercise dialog */}
@@ -368,7 +370,7 @@ export default function ActiveWorkoutPage() {
         onOpenChange={setShowAddExercise}
       >
         <DialogHeader>
-          <DialogTitle>新增動作</DialogTitle>
+          <DialogTitle>{t("workout:activePage.addExercise")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4 max-h-[60vh] overflow-y-auto">
           <div className="relative">
@@ -380,7 +382,7 @@ export default function ActiveWorkoutPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="搜尋動作..."
+              placeholder={t("workout:activePage.searchExercise")}
               className="w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent pl-9 pr-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
@@ -395,7 +397,7 @@ export default function ActiveWorkoutPage() {
                     : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500 hover:text-foreground"
                 }`}
               >
-                全部
+                {t("workout:activePage.all")}
               </button>
               {EXERCISE_CATEGORIES.map((cat) => (
                 <button
@@ -431,10 +433,10 @@ export default function ActiveWorkoutPage() {
                       </span>
                     )}
                     {ex.isCustom && (
-                      <span className="ml-1.5 text-[10px] text-orange-400">自訂</span>
+                      <span className="ml-1.5 text-[10px] text-orange-400">{t("workout:activePage.custom")}</span>
                     )}
                     {ex.isPublic && (
-                      <span className="ml-1.5 text-[10px] text-blue-400">公開</span>
+                      <span className="ml-1.5 text-[10px] text-blue-400">{t("workout:activePage.public")}</span>
                     )}
                   </button>
                   {ex.isCustom && ex.createdBy === user?.id && (
@@ -443,7 +445,7 @@ export default function ActiveWorkoutPage() {
                         e.stopPropagation();
                         togglePublic.mutate({ exerciseId: ex.id });
                       }}
-                      title={ex.isPublic ? "設為私人" : "設為公開"}
+                      title={ex.isPublic ? t("workout:activePage.setPrivate") : t("workout:activePage.setPublic")}
                       className={`ml-2 p-1.5 rounded transition-colors ${
                         ex.isPublic
                           ? "text-blue-400 hover:text-blue-500"
@@ -457,7 +459,7 @@ export default function ActiveWorkoutPage() {
               ))
             ) : (
               <p className="text-sm font-light text-neutral-400 text-center py-4">
-                {searchQuery ? "找不到相符的動作" : "沒有動作"}
+                {searchQuery ? t("workout:activePage.noMatch") : t("workout:activePage.noExercises")}
               </p>
             )}
           </div>
@@ -468,16 +470,16 @@ export default function ActiveWorkoutPage() {
               onClick={() => setShowCreateCustom(true)}
               className="w-full py-2.5 text-sm font-light text-primary hover:text-primary/80 transition-colors border-t border-black/[0.06] dark:border-white/[0.06]"
             >
-              + 建立自訂動作
+              {t("workout:activePage.createCustomExercise")}
             </button>
           ) : (
             <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-3 space-y-3">
-              <p className="text-xs font-medium text-neutral-500">建立自訂動作</p>
+              <p className="text-xs font-medium text-neutral-500">{t("workout:activePage.createCustomTitle")}</p>
               <input
                 type="text"
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
-                placeholder="動作名稱"
+                placeholder={t("workout:activePage.exerciseName")}
                 maxLength={200}
                 className="w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-primary"
               />
@@ -505,7 +507,7 @@ export default function ActiveWorkoutPage() {
                   }}
                   className="flex-1 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm font-light"
                 >
-                  取消
+                  {t("common:buttons.cancel")}
                 </button>
                 <button
                   onClick={() => {
@@ -518,7 +520,7 @@ export default function ActiveWorkoutPage() {
                   disabled={!customName.trim() || createCustomExercise.isPending}
                   className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-50"
                 >
-                  {createCustomExercise.isPending ? "建立中..." : "建立並新增"}
+                  {createCustomExercise.isPending ? t("workout:activePage.creating") : t("workout:activePage.createAndAdd")}
                 </button>
               </div>
             </div>
@@ -532,25 +534,25 @@ export default function ActiveWorkoutPage() {
         onOpenChange={setShowFinishConfirm}
       >
         <DialogHeader>
-          <DialogTitle>完成訓練？</DialogTitle>
+          <DialogTitle>{t("workout:activePage.finishTitle")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
           <p className="text-sm text-neutral-500">
-            訓練時間：{formatDuration(timerStore.elapsedSeconds)}
+            {t("workout:activePage.workoutDuration", { duration: formatDuration(timerStore.elapsedSeconds) })}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setShowFinishConfirm(false)}
               className="flex-1 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm font-light"
             >
-              繼續訓練
+              {t("workout:activePage.continueWorkout")}
             </button>
             <button
               onClick={handleFinish}
               disabled={saving}
               className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-50"
             >
-              {saving ? "儲存中..." : "完成"}
+              {saving ? t("common:buttons.saving") : t("workout:activePage.finish")}
             </button>
           </div>
         </div>
@@ -562,24 +564,24 @@ export default function ActiveWorkoutPage() {
         onOpenChange={setShowDiscardConfirm}
       >
         <DialogHeader>
-          <DialogTitle>取消訓練？</DialogTitle>
+          <DialogTitle>{t("workout:activePage.cancelTitle")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
           <p className="text-sm text-neutral-500">
-            所有記錄將被刪除，此操作無法復原。
+            {t("workout:activePage.cancelWarning")}
           </p>
           <div className="flex gap-2">
             <button
               onClick={() => setShowDiscardConfirm(false)}
               className="flex-1 py-2 rounded-lg border border-black/10 dark:border-white/10 text-sm font-light"
             >
-              返回
+              {t("workout:activePage.back")}
             </button>
             <button
               onClick={handleDiscard}
               className="flex-1 py-2 rounded-lg bg-destructive text-white text-sm font-medium"
             >
-              取消訓練
+              {t("workout:activePage.cancelWorkout")}
             </button>
           </div>
         </div>
@@ -591,18 +593,18 @@ export default function ActiveWorkoutPage() {
         onOpenChange={setShowSaveTemplate}
       >
         <DialogHeader>
-          <DialogTitle>儲存為模板</DialogTitle>
+          <DialogTitle>{t("workout:activePage.saveAsTemplate")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
           <div>
             <label className="text-sm font-light text-neutral-500">
-              模板名稱
+              {t("workout:activePage.templateName")}
             </label>
             <input
               type="text"
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
-              placeholder="例：推日、腿日"
+              placeholder={t("workout:activePage.templateNamePlaceholder")}
               maxLength={200}
               className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-primary"
             />
@@ -612,7 +614,7 @@ export default function ActiveWorkoutPage() {
             disabled={!templateName.trim()}
             className="w-full py-2 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-50"
           >
-            儲存
+            {t("common:buttons.save")}
           </button>
         </div>
       </Dialog>
@@ -660,6 +662,7 @@ function ExerciseCard({
   onAddSet: (weId: string, nextSetNumber: number) => void;
   onRemoveExercise: (weId: string) => void;
 }) {
+  const { t } = useTranslation(["workout", "common"]);
   // Previous performance hints
   const { data: prevHistory } = trpc.workout.getExerciseHistory.useQuery(
     { exerciseId: exercise.exerciseId, limit: 1 },
@@ -689,7 +692,7 @@ function ExerciseCard({
         <div className="flex items-center gap-2">
           <span className="text-xs text-neutral-400">
             {exercise.sets.filter((s) => s.completedAt).length}/
-            {exercise.sets.length} 組
+            {t("workout:setCount", { count: exercise.sets.length })}
           </span>
           {isExpanded ? (
             <ChevronUp className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
@@ -707,7 +710,7 @@ function ExerciseCard({
           {/* Previous performance hint */}
           {lastPerformance && lastPerformance.sets.length > 0 && (
             <div className="text-[10px] text-neutral-400 bg-neutral-50 dark:bg-neutral-900 rounded px-2 py-1">
-              上次：
+              {t("workout:activePage.lastTime")}
               {lastPerformance.sets
                 .filter((s) => !s.isWarmup)
                 .map(
@@ -720,9 +723,9 @@ function ExerciseCard({
 
           {/* Column headers */}
           <div className="grid grid-cols-[40px_1fr_1fr_32px_32px] gap-1 text-[10px] text-neutral-400 px-1">
-            <span>組</span>
-            <span>重量 (kg)</span>
-            <span>次數</span>
+            <span>{t("workout:activePage.sets")}</span>
+            <span>{t("workout:activePage.weightKg")}</span>
+            <span>{t("workout:activePage.reps")}</span>
             <span />
             <span />
           </div>
@@ -748,7 +751,7 @@ function ExerciseCard({
             }
             className="w-full py-1.5 text-xs text-neutral-400 hover:text-foreground transition-colors"
           >
-            + 新增一組
+            {t("workout:activePage.addSet")}
           </button>
 
           {/* Remove exercise */}
@@ -756,7 +759,7 @@ function ExerciseCard({
             onClick={() => onRemoveExercise(exercise.weId)}
             className="w-full py-1 text-[10px] text-neutral-300 dark:text-neutral-700 hover:text-destructive transition-colors"
           >
-            移除此動作
+            {t("workout:activePage.removeExercise")}
           </button>
         </div>
       )}

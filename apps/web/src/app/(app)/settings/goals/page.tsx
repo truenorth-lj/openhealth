@@ -10,8 +10,10 @@ import { trpc } from "@/lib/trpc-client";
 import { updateGoals } from "@/server/actions/goals";
 import posthog from "posthog-js";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useTranslation } from "react-i18next";
 
 export default function GoalsPage() {
+  const { t } = useTranslation(["settings", "common"]);
   const { data: goals, isLoading: goalsLoading } = trpc.user.getGoals.useQuery();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -19,7 +21,7 @@ export default function GoalsPage() {
   const { data: waterGoal } = trpc.water.getGoal.useQuery();
   const setWaterGoal = trpc.water.setGoal.useMutation({
     onSuccess: () => {
-      toast.success("水分目標已儲存");
+      toast.success(t("settings:goalsPage.goalsSaved"));
     },
   });
 
@@ -67,10 +69,10 @@ export default function GoalsPage() {
           }
         }
         posthog.capture("goals_updated", { calorie_target: calorieTarget ? Number(calorieTarget) : null });
-        toast.success("目標已儲存");
+        toast.success(t("settings:goalsPage.goalsSaved"));
         router.refresh();
       } catch {
-        toast.error("儲存失敗，請稍後再試");
+        toast.error(t("settings:goalsPage.goalsSaveFailed"));
       }
     });
   };
@@ -86,17 +88,17 @@ export default function GoalsPage() {
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-light tracking-wide">目標設定</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("settings:goals")}</h1>
       </div>
 
       {/* Calorie target */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          每日卡路里目標
+          {t("settings:goalsPage.calorieGoal")}
         </p>
         <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-light text-neutral-500">目標卡路里 (kcal)</label>
+            <label className="text-xs font-light text-neutral-500">{t("settings:goalsPage.targetCalories")}</label>
             <Input
               type="number"
               placeholder="2000"
@@ -111,12 +113,12 @@ export default function GoalsPage() {
       {/* Macro targets */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          巨量營養素目標 (g)
+          {t("settings:goalsPage.macroGoals")}
         </p>
         <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-4 space-y-4">
           <div className="grid grid-cols-4 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-light text-blue-500">蛋白質</label>
+              <label className="text-xs font-light text-blue-500">{t("common:macro.protein")}</label>
               <Input
                 type="number"
                 placeholder="150"
@@ -126,7 +128,7 @@ export default function GoalsPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-light text-amber-500">碳水</label>
+              <label className="text-xs font-light text-amber-500">{t("common:macro.carbs")}</label>
               <Input
                 type="number"
                 placeholder="250"
@@ -136,7 +138,7 @@ export default function GoalsPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-light text-rose-500">脂肪</label>
+              <label className="text-xs font-light text-rose-500">{t("common:macro.fat")}</label>
               <Input
                 type="number"
                 placeholder="67"
@@ -146,7 +148,7 @@ export default function GoalsPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-light text-emerald-500">纖維</label>
+              <label className="text-xs font-light text-emerald-500">{t("common:macro.fiber")}</label>
               <Input
                 type="number"
                 placeholder="28"
@@ -158,13 +160,10 @@ export default function GoalsPage() {
           </div>
           {calorieTarget && proteinG && carbsG && fatG && (
             <p className="text-xs font-light text-neutral-400">
-              巨量營養素合計:{" "}
-              {Math.round(
-                Number(proteinG) * 4 +
-                  Number(carbsG) * 4 +
-                  Number(fatG) * 9
-              )}{" "}
-              kcal (目標: {calorieTarget} kcal)
+              {t("settings:goalsPage.macroTotalCalc", {
+                total: Math.round(Number(proteinG) * 4 + Number(carbsG) * 4 + Number(fatG) * 9),
+                target: calorieTarget,
+              })}
             </p>
           )}
         </div>
@@ -173,11 +172,11 @@ export default function GoalsPage() {
       {/* Water target */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          每日飲水目標
+          {t("settings:goalsPage.waterGoal")}
         </p>
         <div className="border-t border-black/[0.06] dark:border-white/[0.06] pt-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-light text-sky-500">飲水量 (ml)</label>
+            <label className="text-xs font-light text-sky-500">{t("settings:goalsPage.waterAmount")}</label>
             <Input
               type="number"
               placeholder="2000"
@@ -188,7 +187,7 @@ export default function GoalsPage() {
               step={100}
               className="border-black/[0.06] dark:border-white/[0.06] font-light"
             />
-            <p className="text-xs font-light text-neutral-400">建議範圍：500 - 10000 ml</p>
+            <p className="text-xs font-light text-neutral-400">{t("settings:goalsPage.waterHint")}</p>
           </div>
         </div>
       </div>
@@ -201,10 +200,10 @@ export default function GoalsPage() {
         {isPending ? (
           <span className="flex items-center justify-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
-            儲存中...
+            {t("common:buttons.saving")}
           </span>
         ) : (
-          "儲存目標"
+          t("settings:goalsPage.saveGoals")
         )}
       </button>
     </div>

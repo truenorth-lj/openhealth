@@ -41,91 +41,99 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useTranslation } from "react-i18next";
 
 interface HubItem {
   href: string;
-  label: string;
+  labelKey: string;
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   implemented: boolean;
-  badge?: string;
+  badgeKey?: string;
   platform?: "web" | "mobile";
   external?: boolean;
 }
 
-const sections: { title: string; items: HubItem[] }[] = [
+interface HubSection {
+  titleKey: string;
+  items: HubItem[];
+}
+
+const sections: HubSection[] = [
   {
-    title: "追蹤",
+    titleKey: "hub.sections.tracking",
     items: [
-      { href: "/hub/diary", label: "飲食記錄", icon: UtensilsCrossed, implemented: true },
-      { href: "/hub/exercise", label: "運動記錄", icon: Activity, implemented: true },
-      { href: "/hub/workout", label: "重訓記錄", icon: Dumbbell, implemented: true, badge: "新" },
-      { href: "/hub/water", label: "水分追蹤", icon: Droplets, implemented: true },
-      { href: "/hub/fasting", label: "間歇斷食", icon: Timer, implemented: true },
-      { href: "", label: "睡眠追蹤", icon: Moon, implemented: true, badge: "新", platform: "mobile" },
-      { href: "/hub/weight", label: "體重紀錄", icon: Scale, implemented: true },
-      { href: "/hub/steps", label: "步數紀錄", icon: Footprints, implemented: true },
-      { href: "/hub/posture", label: "姿勢提醒", icon: Armchair, implemented: true, badge: "新" },
+      { href: "/hub/diary", labelKey: "hub.items.diary", icon: UtensilsCrossed, implemented: true },
+      { href: "/hub/exercise", labelKey: "hub.items.exercise", icon: Activity, implemented: true },
+      { href: "/hub/workout", labelKey: "hub.items.workout", icon: Dumbbell, implemented: true, badgeKey: "hub.badges.new" },
+      { href: "/hub/water", labelKey: "hub.items.water", icon: Droplets, implemented: true },
+      { href: "/hub/fasting", labelKey: "hub.items.fasting", icon: Timer, implemented: true },
+      { href: "", labelKey: "hub.items.sleep", icon: Moon, implemented: true, badgeKey: "hub.badges.new", platform: "mobile" },
+      { href: "/hub/weight", labelKey: "hub.items.weight", icon: Scale, implemented: true },
+      { href: "/hub/steps", labelKey: "hub.items.steps", icon: Footprints, implemented: true },
+      { href: "/hub/posture", labelKey: "hub.items.posture", icon: Armchair, implemented: true, badgeKey: "hub.badges.new" },
     ],
   },
   {
-    title: "工具",
+    titleKey: "hub.sections.tools",
     items: [
-      { href: "/hub/chat", label: "AI 顧問", icon: Bot, implemented: true, badge: "新" },
-      { href: "/hub/progress", label: "進度分析", icon: TrendingUp, implemented: true },
-      { href: "/settings/goals", label: "目標設定", icon: Target, implemented: true },
-      { href: "/hub/food/scan-label", label: "拍照辨識", icon: Camera, implemented: true },
-      { href: "/hub/food", label: "食物資料庫", icon: Apple, implemented: true },
+      { href: "/hub/chat", labelKey: "hub.items.aiAdvisor", icon: Bot, implemented: true, badgeKey: "hub.badges.new" },
+      { href: "/hub/progress", labelKey: "hub.items.progress", icon: TrendingUp, implemented: true },
+      { href: "/settings/goals", labelKey: "hub.items.goals", icon: Target, implemented: true },
+      { href: "/hub/food/scan-label", labelKey: "hub.items.scanLabel", icon: Camera, implemented: true },
+      { href: "/hub/food", labelKey: "hub.items.foodDatabase", icon: Apple, implemented: true },
     ],
   },
   {
-    title: "生活",
+    titleKey: "hub.sections.life",
     items: [
-      { href: "/achievements", label: "成就", icon: Trophy, implemented: false, badge: "即將" },
+      { href: "/achievements", labelKey: "hub.items.achievements", icon: Trophy, implemented: false, badgeKey: "hub.badges.coming" },
     ],
   },
   {
-    title: "帳號",
+    titleKey: "hub.sections.account",
     items: [
-      { href: "/settings/referral", label: "推薦碼", icon: Gift, implemented: true },
-      { href: "/settings/subscription", label: "訂閱方案", icon: CreditCard, implemented: true },
-      { href: "/settings/profile", label: "個人資料", icon: User, implemented: true },
-      { href: "/settings/notifications", label: "通知設定", icon: Bell, implemented: true },
-      { href: "/settings/coaching", label: "我的教練", icon: GraduationCap, implemented: true },
-      { href: "/settings", label: "設定", icon: Settings2, implemented: true },
+      { href: "/settings/referral", labelKey: "hub.items.referral", icon: Gift, implemented: true },
+      { href: "/settings/subscription", labelKey: "hub.items.subscription", icon: CreditCard, implemented: true },
+      { href: "/settings/profile", labelKey: "hub.items.profile", icon: User, implemented: true },
+      { href: "/settings/notifications", labelKey: "hub.items.notifications", icon: Bell, implemented: true },
+      { href: "/settings/coaching", labelKey: "hub.items.coaching", icon: GraduationCap, implemented: true },
+      { href: "/settings", labelKey: "hub.items.settings", icon: Settings2, implemented: true },
     ],
   },
   {
-    title: "資料管理",
+    titleKey: "hub.sections.dataManagement",
     items: [
-      { href: "/settings/export", label: "匯出資料", icon: Download, implemented: true },
+      { href: "/settings/export", labelKey: "hub.items.export", icon: Download, implemented: true },
     ],
   },
   {
-    title: "社群",
+    titleKey: "hub.sections.community",
     items: [
-      { href: "https://line.me/ti/g2/yoiSxP0jx7pJDEFjQtFLu87dwRsKIGnFIIkV3g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", label: "Line 社群", icon: LineIcon, implemented: true, external: true },
-      { href: "https://line.me/ti/g2/yoiSxP0jx7pJDEFjQtFLu87dwRsKIGnFIIkV3g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", label: "問題回報", icon: MessageCircle, implemented: true, external: true },
+      { href: "https://line.me/ti/g2/yoiSxP0jx7pJDEFjQtFLu87dwRsKIGnFIIkV3g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", labelKey: "hub.items.lineCommunity", icon: LineIcon, implemented: true, external: true },
+      { href: "https://line.me/ti/g2/yoiSxP0jx7pJDEFjQtFLu87dwRsKIGnFIIkV3g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", labelKey: "hub.items.reportIssue", icon: MessageCircle, implemented: true, external: true },
     ],
   },
 ];
 
 export default function HubPage() {
+  const { t } = useTranslation("common");
+
   return (
     <div className="px-4 py-6 space-y-8">
-      <h1 className="text-xl font-light tracking-wide">功能總覽</h1>
+      <h1 className="text-xl font-light tracking-wide">{t("hub.title")}</h1>
 
       <TooltipProvider>
         {sections.map((section) => (
-          <div key={section.title} className="space-y-4">
+          <div key={section.titleKey} className="space-y-4">
             <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-              {section.title}
+              {t(section.titleKey)}
             </p>
             <div className={cn(
               "grid gap-3",
               section.items.length <= 3 ? "grid-cols-3" : section.items.length <= 4 ? "grid-cols-4" : "grid-cols-3"
             )}>
               {section.items.map((item) => (
-                <HubIcon key={`${item.href}-${item.label}`} item={item} />
+                <HubIcon key={`${item.href}-${item.labelKey}`} item={item} />
               ))}
             </div>
           </div>
@@ -136,13 +144,14 @@ export default function HubPage() {
 }
 
 function HubIcon({ item }: { item: HubItem }) {
+  const { t } = useTranslation("common");
   const isDisabled = !item.implemented || item.platform === "mobile";
-  const tooltipText = item.platform === "mobile" ? "僅限 App" : "敬請期待";
+  const tooltipText = item.platform === "mobile" ? t("hub.tooltips.mobileOnly") : t("hub.tooltips.comingSoon");
 
-  const badgeText = item.platform === "mobile" ? "App" : item.badge;
+  const badgeText = item.platform === "mobile" ? t("hub.badges.app") : item.badgeKey ? t(item.badgeKey) : undefined;
   const badgeStyle = item.platform === "mobile"
     ? "bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400"
-    : item.badge === "新"
+    : item.badgeKey === "hub.badges.new"
       ? "bg-primary text-primary-foreground"
       : "bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400";
 
@@ -160,7 +169,7 @@ function HubIcon({ item }: { item: HubItem }) {
         )}
       </div>
       <span className="text-[11px] font-light text-neutral-500 dark:text-neutral-400 text-center leading-tight">
-        {item.label}
+        {t(item.labelKey)}
       </span>
     </div>
   );

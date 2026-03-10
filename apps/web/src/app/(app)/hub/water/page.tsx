@@ -10,6 +10,7 @@ import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DateNavigator } from "@/components/diary/date-navigator";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
 const DEFAULT_QUICK_AMOUNTS = [150, 250, 350, 500];
 
@@ -49,6 +50,7 @@ function WaterContent() {
 
   const utils = trpc.useUtils();
 
+  const { t } = useTranslation(["water", "common"]);
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [goalInput, setGoalInput] = useState("");
   const [containerDialogOpen, setContainerDialogOpen] = useState(false);
@@ -207,8 +209,8 @@ function WaterContent() {
 
         <p className="mt-4 text-sm font-light text-neutral-400">
           {percentage >= 100
-            ? "已達到今日目標！"
-            : `還需 ${goalMl - totalMl} ml`}
+            ? t("water:goalReached")
+            : t("water:needMore", { amount: goalMl - totalMl })}
         </p>
       </div>
 
@@ -219,12 +221,12 @@ function WaterContent() {
       <div className="px-4 space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-            快速新增
+            {t("water:quickAdd")}
           </p>
           <button
             onClick={handleOpenContainerDialog}
             className="text-neutral-400 hover:text-foreground transition-colors"
-            title="管理容器"
+            title={t("water:manageContainers")}
           >
             <Settings2 className="h-3.5 w-3.5" strokeWidth={1.5} />
           </button>
@@ -256,7 +258,7 @@ function WaterContent() {
             className="flex items-center gap-1 px-3 py-1.5 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-foreground disabled:opacity-30"
           >
             <Undo2 className="h-3 w-3" strokeWidth={1.5} />
-            復原上一筆
+            {t("water:undoLast")}
           </button>
         </div>
       </div>
@@ -267,7 +269,7 @@ function WaterContent() {
       {/* Log History */}
       <div className="px-4 space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          當日紀錄
+          {t("water:todayLog")}
         </p>
         {logs && logs.length > 0 ? (
           <div className="space-y-0">
@@ -285,7 +287,7 @@ function WaterContent() {
           </div>
         ) : (
           <p className="text-sm font-light text-neutral-300 dark:text-neutral-700">
-            這天還沒有喝水紀錄
+            {t("water:noTodayLog")}
           </p>
         )}
       </div>
@@ -293,11 +295,11 @@ function WaterContent() {
       {/* Goal Setting Dialog */}
       <Dialog open={goalDialogOpen} onOpenChange={setGoalDialogOpen}>
         <DialogHeader>
-          <DialogTitle>設定每日目標</DialogTitle>
+          <DialogTitle>{t("water:setDailyGoal")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
           <div>
-            <label className="text-sm font-light text-neutral-500">每日飲水目標 (ml)</label>
+            <label className="text-sm font-light text-neutral-500">{t("water:dailyWaterGoal")}</label>
             <input
               type="number"
               value={goalInput}
@@ -308,10 +310,10 @@ function WaterContent() {
               className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             {goalInput && !isValidGoal(goalInput) && (
-              <p className="mt-1 text-xs text-red-500">請輸入 500 - 10000 之間的數值</p>
+              <p className="mt-1 text-xs text-red-500">{t("water:goalValidation")}</p>
             )}
             {(!goalInput || isValidGoal(goalInput)) && (
-              <p className="mt-1 text-xs text-neutral-400">建議範圍：500 - 10000 ml</p>
+              <p className="mt-1 text-xs text-neutral-400">{t("water:goalHint")}</p>
             )}
           </div>
           <button
@@ -319,7 +321,7 @@ function WaterContent() {
             disabled={setGoal.isPending || !isValidGoal(goalInput)}
             className="w-full rounded-lg bg-blue-500 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
           >
-            {setGoal.isPending ? "儲存中..." : "儲存"}
+            {setGoal.isPending ? t("common:buttons.saving") : t("common:buttons.save")}
           </button>
         </div>
       </Dialog>
@@ -327,7 +329,7 @@ function WaterContent() {
       {/* Container Management Dialog */}
       <Dialog open={containerDialogOpen} onOpenChange={(open) => { setContainerDialogOpen(open); if (!open) setEditingContainer(null); }}>
         <DialogHeader>
-          <DialogTitle>管理自訂容器</DialogTitle>
+          <DialogTitle>{t("water:manageCustomContainers")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
           {/* Existing containers list */}
@@ -367,32 +369,32 @@ function WaterContent() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-sm font-medium">
-                  {editingContainer.id ? "編輯容器" : "新增容器"}
+                  {editingContainer.id ? t("water:editContainer") : t("water:addContainer")}
                 </p>
                 <button onClick={() => setEditingContainer(null)} className="text-neutral-400 hover:text-foreground">
                   <X className="h-4 w-4" strokeWidth={1.5} />
                 </button>
               </div>
               <div>
-                <label className="text-sm font-light text-neutral-500">名稱</label>
+                <label className="text-sm font-light text-neutral-500">{t("water:containerName")}</label>
                 <input
                   type="text"
                   value={editingContainer.name}
                   onChange={(e) => setEditingContainer({ ...editingContainer, name: e.target.value })}
-                  placeholder="例：馬克杯"
+                  placeholder={t("water:containerNamePlaceholder")}
                   maxLength={20}
                   className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="text-sm font-light text-neutral-500">容量 (ml)</label>
+                <label className="text-sm font-light text-neutral-500">{t("water:containerVolume")}</label>
                 <input
                   type="number"
                   value={editingContainer.amountMl}
                   onChange={(e) => setEditingContainer({ ...editingContainer, amountMl: e.target.value })}
                   min={1}
                   max={5000}
-                  placeholder="例：300"
+                  placeholder={t("water:containerVolumePlaceholder")}
                   className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
@@ -401,7 +403,7 @@ function WaterContent() {
                 disabled={upsertContainer.isPending || !editingContainer.name.trim() || !editingContainer.amountMl}
                 className="w-full rounded-lg bg-blue-500 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
               >
-                {upsertContainer.isPending ? "儲存中..." : "儲存"}
+                {upsertContainer.isPending ? t("common:buttons.saving") : t("common:buttons.save")}
               </button>
             </div>
           ) : (
@@ -412,14 +414,14 @@ function WaterContent() {
                 className="w-full flex items-center justify-center gap-2 py-2.5 border border-dashed border-black/10 dark:border-white/10 rounded-lg text-sm font-light text-neutral-400 hover:text-foreground hover:border-foreground/20 transition-all"
               >
                 <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
-                新增容器
+                {t("water:addContainer")}
               </button>
             )
           )}
 
           {!editingContainer && (
             <p className="text-xs text-neutral-400 text-center">
-              最多可建立 4 個自訂容器，建立後會取代預設按鈕
+              {t("water:maxContainerHint")}
             </p>
           )}
         </div>

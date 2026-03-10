@@ -5,6 +5,7 @@ import { ChevronDown, Settings2 } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { NUTRIENT_NAME_ZH } from "@open-health/shared/constants";
 import { NutrientPickerDialog } from "./nutrient-picker-dialog";
+import { useTranslation } from "react-i18next";
 
 interface MicroNutrientSectionProps {
   date: string;
@@ -15,6 +16,7 @@ export function MicroNutrientSection({
   date,
   trackedNutrientIds,
 }: MicroNutrientSectionProps) {
+  const { t } = useTranslation("diary");
   const [expanded, setExpanded] = useState(trackedNutrientIds.length > 0);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -48,7 +50,7 @@ export function MicroNutrientSection({
           onClick={() => hasTracked ? setExpanded(!expanded) : setPickerOpen(true)}
           className="flex items-center gap-1.5 text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600 hover:text-neutral-600 dark:hover:text-neutral-400 transition-colors"
         >
-          深度營養素
+          {t("microNutrients")}
           {hasTracked && (
             <ChevronDown
               className={`h-3 w-3 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
@@ -59,7 +61,7 @@ export function MicroNutrientSection({
         <button
           onClick={() => setPickerOpen(true)}
           className="ml-auto p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-          title="設定追蹤營養素"
+          title={t("setupTrackedNutrients")}
         >
           <Settings2 className="h-3.5 w-3.5 text-neutral-400" strokeWidth={1.5} />
         </button>
@@ -70,7 +72,7 @@ export function MicroNutrientSection({
           onClick={() => setPickerOpen(true)}
           className="mt-2 text-xs font-light text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors"
         >
-          點擊設定想追蹤的營養素（如鈉、反式脂肪等）
+          {t("clickToSetupNutrients")}
         </button>
       )}
 

@@ -10,8 +10,10 @@ import { trpc } from "@/lib/trpc-client";
 import { updateProfile } from "@/server/actions/profile";
 import posthog from "posthog-js";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useTranslation } from "react-i18next";
 
 export default function ProfilePage() {
+  const { t } = useTranslation(["settings", "common"]);
   const { data: session, isPending: sessionPending } = useSession();
   const { data: profile, isLoading: profileLoading } = trpc.user.getProfile.useQuery();
   const router = useRouter();
@@ -77,17 +79,17 @@ export default function ProfilePage() {
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-light tracking-wide">個人資料</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("profile")}</h1>
       </div>
 
       {/* Basic info */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          基本資料
+          {t("profilePage.basicInfo")}
         </p>
         <div className="space-y-4 border-t border-black/[0.06] dark:border-white/[0.06] pt-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-light text-neutral-500">名稱</label>
+            <label className="text-xs font-light text-neutral-500">{t("profilePage.name")}</label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -95,7 +97,7 @@ export default function ProfilePage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-light text-neutral-500">電子郵件</label>
+            <label className="text-xs font-light text-neutral-500">{t("profilePage.email")}</label>
             <Input
               defaultValue={session?.user?.email || ""}
               disabled
@@ -108,25 +110,25 @@ export default function ProfilePage() {
       {/* Body info */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          身體資料
+          {t("profilePage.bodyInfo")}
         </p>
         <div className="space-y-4 border-t border-black/[0.06] dark:border-white/[0.06] pt-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-light text-neutral-500">性別</label>
+              <label className="text-xs font-light text-neutral-500">{t("profilePage.sex")}</label>
               <select
                 className="flex h-10 w-full rounded-md border border-black/[0.06] dark:border-white/[0.06] bg-background px-3 py-2 text-sm font-light"
                 value={sex}
                 onChange={(e) => setSex(e.target.value)}
               >
-                <option value="">選擇</option>
-                <option value="male">男</option>
-                <option value="female">女</option>
-                <option value="other">其他</option>
+                <option value="">{t("profilePage.selectSex")}</option>
+                <option value="male">{t("profilePage.male")}</option>
+                <option value="female">{t("profilePage.female")}</option>
+                <option value="other">{t("profilePage.other")}</option>
               </select>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-light text-neutral-500">身高 (cm)</label>
+              <label className="text-xs font-light text-neutral-500">{t("profilePage.height")}</label>
               <Input
                 type="number"
                 placeholder="170"
@@ -138,7 +140,7 @@ export default function ProfilePage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-light text-neutral-500">出生日期</label>
+              <label className="text-xs font-light text-neutral-500">{t("profilePage.dateOfBirth")}</label>
               <Input
                 type="date"
                 value={dateOfBirth}
@@ -147,17 +149,17 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-light text-neutral-500">活動量</label>
+              <label className="text-xs font-light text-neutral-500">{t("profilePage.activityLevel")}</label>
               <select
                 className="flex h-10 w-full rounded-md border border-black/[0.06] dark:border-white/[0.06] bg-background px-3 py-2 text-sm font-light"
                 value={activityLevel}
                 onChange={(e) => setActivityLevel(e.target.value)}
               >
-                <option value="sedentary">久坐</option>
-                <option value="lightly_active">輕度活動</option>
-                <option value="moderately_active">中度活動</option>
-                <option value="very_active">高度活動</option>
-                <option value="extremely_active">極高活動</option>
+                <option value="sedentary">{t("profilePage.sedentary")}</option>
+                <option value="lightly_active">{t("profilePage.lightlyActive")}</option>
+                <option value="moderately_active">{t("profilePage.moderatelyActive")}</option>
+                <option value="very_active">{t("profilePage.veryActive")}</option>
+                <option value="extremely_active">{t("profilePage.extremelyActive")}</option>
               </select>
             </div>
           </div>
@@ -172,12 +174,12 @@ export default function ProfilePage() {
         {isPending ? (
           <span className="flex items-center justify-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
-            儲存中...
+            {t("profilePage.saving")}
           </span>
         ) : saved ? (
-          "已儲存"
+          t("profilePage.saved")
         ) : (
-          "儲存"
+          t("common:buttons.save")
         )}
       </button>
 
@@ -186,7 +188,7 @@ export default function ProfilePage() {
         className="flex w-full items-center justify-center gap-2 py-2.5 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-destructive"
       >
         <LogOut className="h-4 w-4" strokeWidth={1.5} />
-        登出
+        {t("profilePage.signOut")}
       </button>
     </div>
   );

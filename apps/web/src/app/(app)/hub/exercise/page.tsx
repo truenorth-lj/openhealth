@@ -16,6 +16,7 @@ import {
   EXERCISE_INTENSITY_LABELS,
 } from "@open-health/shared/constants";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
 function formatTime(date: Date | string) {
   const d = typeof date === "string" ? new Date(date) : date;
@@ -23,6 +24,7 @@ function formatTime(date: Date | string) {
 }
 
 export default function ExercisePage() {
+  const { t } = useTranslation("exercise");
   const today = todayString();
   const utils = trpc.useUtils();
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } = useAuthGuard();
@@ -72,7 +74,7 @@ export default function ExercisePage() {
       });
       resetLogForm();
       setLogDialogOpen(false);
-      toast.success("已記錄運動");
+      toast.success(t("logged"));
     },
     onError: (err) => {
       toast.error(err.message);
@@ -100,7 +102,7 @@ export default function ExercisePage() {
       setCustomName("");
       setCustomCategory("other");
       setCustomMet("");
-      toast.success("已建立自訂運動");
+      toast.success(t("customCreated"));
     },
     onError: (err) => {
       toast.error(err.message);
@@ -148,7 +150,7 @@ export default function ExercisePage() {
 
   return (
     <div className="px-4 py-6 space-y-6">
-      <h1 className="text-xl font-light tracking-wide">運動記錄</h1>
+      <h1 className="text-xl font-light tracking-wide">{t("title")}</h1>
 
       {/* Circular progress */}
       <div className="flex flex-col items-center py-6">
@@ -179,7 +181,7 @@ export default function ExercisePage() {
             <Flame className="h-5 w-5 text-orange-500 mb-1" strokeWidth={1.5} />
             <span className="text-3xl font-extralight tabular-nums">{Math.round(totalCalories)}</span>
             <span className="text-xs font-light text-neutral-400 dark:text-neutral-600">
-              kcal 已消耗
+              {t("kcalBurned")}
             </span>
           </div>
         </div>
@@ -197,7 +199,7 @@ export default function ExercisePage() {
         className="w-full flex items-center justify-center gap-2 py-3 border border-dashed border-black/10 dark:border-white/10 rounded-lg text-sm font-light text-neutral-400 hover:text-foreground hover:border-foreground/20 transition-all"
       >
         <Plus className="h-4 w-4" strokeWidth={1.5} />
-        新增運動
+        {t("addExercise")}
       </button>
 
       {/* Divider */}
@@ -206,7 +208,7 @@ export default function ExercisePage() {
       {/* Log History */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          今日紀錄
+          {t("todayLog")}
         </p>
         {dayData?.logs && dayData.logs.length > 0 ? (
           <div className="space-y-0">
@@ -226,11 +228,11 @@ export default function ExercisePage() {
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-xs text-neutral-400 tabular-nums">
-                      {log.durationMin} 分鐘
+                      {log.durationMin} {t("minutes")}
                     </span>
                     {log.intensity && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-900 text-neutral-500">
-                        {EXERCISE_INTENSITY_LABELS[log.intensity]}強度
+                        {EXERCISE_INTENSITY_LABELS[log.intensity]}{t("intensitySuffix")}
                       </span>
                     )}
                     <span className="text-xs text-neutral-400 tabular-nums">
@@ -255,7 +257,7 @@ export default function ExercisePage() {
           </div>
         ) : (
           <p className="text-sm font-light text-neutral-300 dark:text-neutral-700">
-            今天還沒有運動紀錄
+            {t("noTodayLog")}
           </p>
         )}
       </div>
@@ -263,7 +265,7 @@ export default function ExercisePage() {
       {/* Log Exercise Dialog */}
       <Dialog open={logDialogOpen} onOpenChange={(open) => { setLogDialogOpen(open); if (!open) resetLogForm(); }}>
         <DialogHeader>
-          <DialogTitle>{selectedExercise ? "記錄運動" : "選擇運動"}</DialogTitle>
+          <DialogTitle>{selectedExercise ? t("logExercise") : t("selectExercise")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4 max-h-[70vh] overflow-y-auto">
           {!selectedExercise ? (
@@ -275,7 +277,7 @@ export default function ExercisePage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="搜尋運動..."
+                  placeholder={t("searchExercise")}
                   className="w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent pl-9 pr-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
                 {searchQuery && (
@@ -299,7 +301,7 @@ export default function ExercisePage() {
                         : "bg-neutral-100 dark:bg-neutral-900 text-neutral-500 hover:text-foreground"
                     }`}
                   >
-                    全部
+                    {t("allCategories")}
                   </button>
                   {EXERCISE_CATEGORIES.map((cat) => (
                     <button
@@ -335,13 +337,13 @@ export default function ExercisePage() {
                         )}
                       </div>
                       {ex.isCustom && (
-                        <span className="text-[10px] text-orange-400">自訂</span>
+                        <span className="text-[10px] text-orange-400">{t("custom")}</span>
                       )}
                     </button>
                   ))
                 ) : (
                   <p className="text-sm font-light text-neutral-400 text-center py-4">
-                    {searchQuery ? "找不到相符的運動" : "沒有運動項目"}
+                    {searchQuery ? t("noMatchExercise") : t("noExerciseItems")}
                   </p>
                 )}
               </div>
@@ -352,7 +354,7 @@ export default function ExercisePage() {
                 className="w-full flex items-center justify-center gap-2 py-2.5 border border-dashed border-black/10 dark:border-white/10 rounded-lg text-sm font-light text-neutral-400 hover:text-foreground hover:border-foreground/20 transition-all"
               >
                 <Plus className="h-3.5 w-3.5" strokeWidth={1.5} />
-                建立自訂運動
+                {t("createCustomExercise")}
               </button>
             </>
           ) : (
@@ -377,21 +379,21 @@ export default function ExercisePage() {
 
               {/* Duration */}
               <div>
-                <label className="text-sm font-light text-neutral-500">時間 (分鐘)</label>
+                <label className="text-sm font-light text-neutral-500">{t("durationMinutes")}</label>
                 <input
                   type="number"
                   value={durationMin}
                   onChange={(e) => setDurationMin(e.target.value)}
                   min={1}
                   max={1440}
-                  placeholder="例：30"
+                  placeholder={t("durationPlaceholder")}
                   className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
 
               {/* Intensity */}
               <div>
-                <label className="text-sm font-light text-neutral-500">強度 (選填)</label>
+                <label className="text-sm font-light text-neutral-500">{t("intensityOptional")}</label>
                 <div className="mt-1 flex gap-2">
                   {(["low", "moderate", "high"] as const).map((level) => (
                     <button
@@ -411,27 +413,27 @@ export default function ExercisePage() {
 
               {/* Calories override */}
               <div>
-                <label className="text-sm font-light text-neutral-500">消耗熱量 (選填，系統會自動計算)</label>
+                <label className="text-sm font-light text-neutral-500">{t("caloriesOptional")}</label>
                 <input
                   type="number"
                   value={caloriesOverride}
                   onChange={(e) => setCaloriesOverride(e.target.value)}
                   min={0}
                   max={99999}
-                  placeholder="自動計算"
+                  placeholder={t("autoCalculate")}
                   className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
 
               {/* Note */}
               <div>
-                <label className="text-sm font-light text-neutral-500">備註 (選填)</label>
+                <label className="text-sm font-light text-neutral-500">{t("noteOptional")}</label>
                 <input
                   type="text"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   maxLength={500}
-                  placeholder="例：5K 跑步"
+                  placeholder={t("notePlaceholder")}
                   className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
@@ -442,7 +444,7 @@ export default function ExercisePage() {
                 disabled={logExercise.isPending || !durationMin}
                 className="w-full rounded-lg bg-orange-500 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
               >
-                {logExercise.isPending ? "記錄中..." : "記錄運動"}
+                {logExercise.isPending ? t("logging") : t("logExercise")}
               </button>
             </>
           )}
@@ -452,22 +454,22 @@ export default function ExercisePage() {
       {/* Custom Exercise Dialog */}
       <Dialog open={customDialogOpen} onOpenChange={setCustomDialogOpen}>
         <DialogHeader>
-          <DialogTitle>建立自訂運動</DialogTitle>
+          <DialogTitle>{t("createCustomExercise")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
           <div>
-            <label className="text-sm font-light text-neutral-500">名稱</label>
+            <label className="text-sm font-light text-neutral-500">{t("name")}</label>
             <input
               type="text"
               value={customName}
               onChange={(e) => setCustomName(e.target.value)}
               maxLength={200}
-              placeholder="例：登山"
+              placeholder={t("namePlaceholder")}
               className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-orange-500"
             />
           </div>
           <div>
-            <label className="text-sm font-light text-neutral-500">分類</label>
+            <label className="text-sm font-light text-neutral-500">{t("category")}</label>
             <div className="mt-1 flex gap-1.5 flex-wrap">
               {EXERCISE_CATEGORIES.map((cat) => (
                 <button
@@ -485,7 +487,7 @@ export default function ExercisePage() {
             </div>
           </div>
           <div>
-            <label className="text-sm font-light text-neutral-500">MET 值 (選填)</label>
+            <label className="text-sm font-light text-neutral-500">{t("metValue")}</label>
             <input
               type="number"
               value={customMet}
@@ -493,17 +495,17 @@ export default function ExercisePage() {
               min={0}
               max={30}
               step={0.1}
-              placeholder="用於自動計算熱量"
+              placeholder={t("metPlaceholder")}
               className="mt-1 w-full rounded-lg border border-black/10 dark:border-white/10 bg-transparent px-3 py-2 text-sm font-light focus:outline-none focus:ring-1 focus:ring-orange-500"
             />
-            <p className="mt-1 text-xs text-neutral-400">MET 值越高代表運動強度越大（走路約 3、跑步約 8）</p>
+            <p className="mt-1 text-xs text-neutral-400">{t("metHint")}</p>
           </div>
           <button
             onClick={handleCreateCustom}
             disabled={createCustomExercise.isPending || !customName.trim()}
             className="w-full rounded-lg bg-orange-500 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
           >
-            {createCustomExercise.isPending ? "建立中..." : "建立"}
+            {createCustomExercise.isPending ? t("creating") : t("create")}
           </button>
         </div>
       </Dialog>

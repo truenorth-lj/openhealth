@@ -3,7 +3,8 @@
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { format, addDays, subDays, isToday, parseISO } from "date-fns";
-import { zhTW } from "date-fns/locale";
+import { zhTW, enUS } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
 
 interface DateNavigatorProps {
   date: Date;
@@ -11,15 +12,18 @@ interface DateNavigatorProps {
 }
 
 export function DateNavigator({ date, onDateChange }: DateNavigatorProps) {
+  const { t, i18n } = useTranslation("common");
   const inputRef = useRef<HTMLInputElement>(null);
+  const dateFnsLocale = i18n.language === "zh-TW" ? zhTW : enUS;
 
   const goBack = () => onDateChange(subDays(date, 1));
   const goForward = () => onDateChange(addDays(date, 1));
   const goToday = () => onDateChange(new Date());
 
+  const dateFormat = i18n.language === "zh-TW" ? "M月d日 EEEE" : "MMM d, EEEE";
   const label = isToday(date)
-    ? "今天"
-    : format(date, "M月d日 EEEE", { locale: zhTW });
+    ? t("time.today")
+    : format(date, dateFormat, { locale: dateFnsLocale });
 
   const today = isToday(date);
 
@@ -66,7 +70,7 @@ export function DateNavigator({ date, onDateChange }: DateNavigatorProps) {
             onClick={goToday}
             className="text-xs font-light text-neutral-400 transition-all duration-300 hover:text-foreground mt-0.5"
           >
-            回到今天
+            {t("time.backToToday")}
           </button>
         )}
       </div>

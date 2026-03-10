@@ -17,21 +17,23 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const EXPORT_CATEGORIES = [
-  { key: "diary", label: "飲食記錄", icon: UtensilsCrossed },
-  { key: "exercise", label: "運動記錄", icon: Dumbbell },
-  { key: "workout", label: "重訓記錄", icon: Weight },
-  { key: "weight", label: "體重紀錄", icon: Scale },
-  { key: "body_measurements", label: "身體測量", icon: Ruler },
-  { key: "steps", label: "步數紀錄", icon: Footprints },
-  { key: "water", label: "水分紀錄", icon: Droplets },
-  { key: "fasting", label: "斷食紀錄", icon: Timer },
-  { key: "posture", label: "姿勢紀錄", icon: Armchair },
+  { key: "diary", labelKey: "common:hub.items.diary", icon: UtensilsCrossed },
+  { key: "exercise", labelKey: "common:hub.items.exercise", icon: Dumbbell },
+  { key: "workout", labelKey: "common:hub.items.workout", icon: Weight },
+  { key: "weight", labelKey: "common:hub.items.weight", icon: Scale },
+  { key: "body_measurements", labelKey: "settings:profilePage.bodyInfo", icon: Ruler },
+  { key: "steps", labelKey: "common:hub.items.steps", icon: Footprints },
+  { key: "water", labelKey: "common:hub.items.water", icon: Droplets },
+  { key: "fasting", labelKey: "common:hub.items.fasting", icon: Timer },
+  { key: "posture", labelKey: "common:hub.items.posture", icon: Armchair },
 ] as const;
 
 export default function ExportPage() {
   const router = useRouter();
+  const { t } = useTranslation(["settings", "common"]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [downloading, setDownloading] = useState<string | null>(null);
 
@@ -62,7 +64,8 @@ export default function ExportPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `OpenHealth_${EXPORT_CATEGORIES.find((c) => c.key === category)?.label ?? category}_${new Date().toISOString().slice(0, 10)}.csv`;
+      const catItem = EXPORT_CATEGORIES.find((c) => c.key === category);
+      a.download = `OpenHealth_${catItem ? t(catItem.labelKey) : category}_${new Date().toISOString().slice(0, 10)}.csv`;
       document.body.appendChild(a);
       a.click();
       setTimeout(() => {
@@ -84,7 +87,8 @@ export default function ExportPage() {
       for (let i = 0; i < keys.length; i++) {
         const success = await downloadCsv(keys[i]);
         if (!success) {
-          failed.push(EXPORT_CATEGORIES.find((c) => c.key === keys[i])?.label ?? keys[i]);
+          const failedCat = EXPORT_CATEGORIES.find((c) => c.key === keys[i]);
+          failed.push(failedCat ? t(failedCat.labelKey) : keys[i]);
         }
         // Delay between downloads so browser processes each one
         if (i < keys.length - 1) {
@@ -92,7 +96,7 @@ export default function ExportPage() {
         }
       }
       if (failed.length > 0) {
-        setError(`以下項目匯出失敗：${failed.join("、")}`);
+        setError(t("settings:exportPage.exportFailed", { items: failed.join(", ") }));
       }
     } finally {
       setDownloading(null);
@@ -108,11 +112,11 @@ export default function ExportPage() {
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-xl font-light tracking-wide">匯出資料</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("settings:export")}</h1>
       </div>
 
       <p className="text-sm text-neutral-500 dark:text-neutral-400">
-        選擇要匯出的項目，資料將以 CSV 格式下載。
+        {t("settings:exportPage.description")}
       </p>
 
       <div className="flex items-center justify-between">
@@ -120,15 +124,15 @@ export default function ExportPage() {
           onClick={selectAll}
           className="text-sm text-primary hover:underline"
         >
-          {selected.size === EXPORT_CATEGORIES.length ? "取消全選" : "全選"}
+          {selected.size === EXPORT_CATEGORIES.length ? t("settings:exportPage.deselectAll") : t("settings:exportPage.selectAll")}
         </button>
         <span className="text-xs text-neutral-400">
-          已選 {selected.size} 項
+          {t("settings:exportPage.selectedCount", { count: selected.size })}
         </span>
       </div>
 
       <div className="space-y-2">
-        {EXPORT_CATEGORIES.map(({ key, label, icon: Icon }) => (
+        {EXPORT_CATEGORIES.map(({ key, labelKey, icon: Icon }) => (
           <button
             key={key}
             onClick={() => toggle(key)}
@@ -161,7 +165,7 @@ export default function ExportPage() {
                   : "text-neutral-600 dark:text-neutral-300"
               }`}
             >
-              {label}
+              {t(labelKey)}
             </span>
             <div className="ml-auto">
               <div
@@ -202,12 +206,12 @@ export default function ExportPage() {
         {downloading ? (
           <>
             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            匯出中...
+            {t("settings:exportPage.exporting")}
           </>
         ) : (
           <>
             <Download className="h-4 w-4 mr-2" />
-            匯出選取項目（{selected.size}）
+            {t("settings:exportPage.exportSelected", { count: selected.size })}
           </>
         )}
       </Button>

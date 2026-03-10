@@ -14,14 +14,10 @@ import {
 } from "lucide-react";
 import { UpgradeDialog } from "@/components/upgrade-dialog";
 import posthog from "posthog-js";
-
-const quickPrompts = [
-  "分析我今天的飲食",
-  "我的脂肪攝取是否過高？",
-  "幫我規劃明天的飲食",
-];
+import { useTranslation } from "react-i18next";
 
 export default function ChatPage() {
+  const { t } = useTranslation("ai");
   const { data: session, isPending } = useSession();
   const router = useRouter();
   const [input, setInput] = useState("");
@@ -51,7 +47,7 @@ export default function ChatPage() {
     return (
       <div className="flex h-[calc(100vh-8rem)] flex-col items-center justify-center gap-4 px-4">
         <Bot className="h-10 w-10 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
-        <p className="text-sm font-light text-neutral-400">請先登入以使用 AI 營養顧問</p>
+        <p className="text-sm font-light text-neutral-400">{t("loginRequired")}</p>
       </div>
     );
   }
@@ -73,7 +69,7 @@ export default function ChatPage() {
       });
     } catch {
       setIsSending(false);
-      setSendError("無法建立對話，請重試");
+      setSendError(t("cannotCreateChat"));
       return;
     }
     posthog.capture("chat_session_created");
@@ -101,7 +97,7 @@ export default function ChatPage() {
         <div className="mx-auto flex max-w-lg items-center justify-end">
           {dailyRemaining !== null && (
             <span className="text-xs font-light text-neutral-400">
-              今日剩餘 {dailyRemaining} 次
+              {t("dailyRemaining", { count: dailyRemaining })}
             </span>
           )}
         </div>
@@ -114,20 +110,20 @@ export default function ChatPage() {
           <div className="flex flex-col items-center gap-6 py-8">
             <div className="flex flex-col items-center gap-2">
               <Bot className="h-8 w-8 text-neutral-300 dark:text-neutral-700" strokeWidth={1.5} />
-              <h2 className="text-base font-light">AI 營養顧問</h2>
+              <h2 className="text-base font-light">{t("aiNutritionAdvisor")}</h2>
               <p className="text-center text-sm font-light text-neutral-400">
-                我可以分析你的飲食紀錄，提供營養建議
+                {t("aiAdvisorDesc")}
               </p>
             </div>
             <div className="flex flex-col gap-2 w-full max-w-sm">
-              {quickPrompts.map((prompt) => (
+              {(["analyzeDiet", "fatTooHigh", "planTomorrow"] as const).map((key) => (
                 <button
-                  key={prompt}
-                  onClick={() => handleSend(prompt)}
+                  key={key}
+                  onClick={() => handleSend(t(`quickPrompts.${key}`))}
                   disabled={isSending}
                   className="border border-black/[0.06] dark:border-white/[0.06] px-4 py-3 text-left text-sm font-light transition-all duration-300 hover:border-foreground/20 hover:pl-5 rounded-lg disabled:opacity-50"
                 >
-                  {prompt}
+                  {t(`quickPrompts.${key}`)}
                 </button>
               ))}
             </div>
@@ -136,7 +132,7 @@ export default function ChatPage() {
           {/* History list */}
           {sessionsData && sessionsData.length > 0 && (
             <div className="mt-4">
-              <h3 className="mb-2 text-sm font-light text-neutral-400">歷史對話</h3>
+              <h3 className="mb-2 text-sm font-light text-neutral-400">{t("chatHistory")}</h3>
               <div className="border-t border-black/[0.06] dark:border-white/[0.06]">
                 {sessionsData.map((s) => (
                   <div
@@ -151,7 +147,7 @@ export default function ChatPage() {
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-light">
-                        {s.title || "新對話"}
+                        {s.title || t("newChat")}
                       </p>
                       <p className="text-xs text-neutral-400 dark:text-neutral-600">
                         {new Date(s.updatedAt).toLocaleDateString("zh-TW", {
@@ -187,14 +183,14 @@ export default function ChatPage() {
           {isDailyLimitReached ? (
             <div className="flex flex-col items-center gap-2">
               <p className="text-sm font-light text-neutral-400">
-                已達每日訊息上限（{dailyUsage?.limit ?? 10} 則）
+                {t("dailyLimitReached", { limit: dailyUsage?.limit ?? 10 })}
               </p>
               <button
                 onClick={() => setShowUpgrade(true)}
                 className="flex items-center gap-1.5 text-sm font-light text-amber-600 hover:text-amber-500 transition-colors"
               >
                 <Crown className="h-4 w-4" />
-                升級 Pro 取得更多額度
+                {t("upgradePro")}
               </button>
             </div>
           ) : (
@@ -202,7 +198,7 @@ export default function ChatPage() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="輸入你的飲食問題..."
+                placeholder={t("inputPlaceholder")}
                 className="flex-1 rounded-full border border-black/[0.06] dark:border-white/[0.06] bg-transparent px-4 py-2.5 text-sm font-light outline-none transition-all duration-300 focus:border-foreground/20 placeholder:text-neutral-400"
                 disabled={isSending}
               />

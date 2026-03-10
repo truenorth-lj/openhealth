@@ -7,15 +7,9 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
 type MealType = "breakfast" | "lunch" | "dinner" | "snack";
-
-const mealLabels: Record<MealType, string> = {
-  breakfast: "早餐",
-  lunch: "午餐",
-  dinner: "晚餐",
-  snack: "點心",
-};
 
 const mealIcons: Record<MealType, string> = {
   breakfast: "\u{1F305}",
@@ -47,6 +41,7 @@ interface MealSectionProps {
 }
 
 export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenticated }: MealSectionProps) {
+  const { t } = useTranslation("diary");
   const mealCalories = entries.reduce(
     (sum, e) => sum + Number(e.calories || 0),
     0
@@ -66,7 +61,7 @@ export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenti
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="text-sm">{mealIcons[mealType]}</span>
-          <h3 className="text-sm font-light">{mealLabels[mealType]}</h3>
+          <h3 className="text-sm font-light">{t(mealType)}</h3>
           <span className="text-xs text-neutral-400 dark:text-neutral-600 tabular-nums">
             {Math.round(mealCalories)} kcal
           </span>
@@ -84,7 +79,7 @@ export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenti
           onClick={handleAddClick}
           className="block border-b border-dashed border-black/[0.06] dark:border-white/[0.06] py-3 text-center text-sm font-light text-neutral-400 transition-all duration-300 hover:text-primary"
         >
-          點擊新增食物
+          {t("clickToAddFood")}
         </Link>
       ) : (
         <div>

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Bell, ExternalLink } from "lucide-react";
 import { usePushSubscription } from "@/hooks/use-push-subscription";
+import { useTranslation } from "react-i18next";
 
 function isIOSDevice(): boolean {
   if (typeof navigator === "undefined") return false;
@@ -26,6 +27,7 @@ function isStandalone(): boolean {
  * - "granted": renders nothing
  */
 export function NotificationPermissionGuard() {
+  const { t } = useTranslation("posture");
   const [permission, setPermission] = useState<NotificationPermission | null>(
     null
   );
@@ -69,18 +71,18 @@ export function NotificationPermissionGuard() {
         <div className="flex items-center gap-2">
           <Bell className="h-4 w-4 text-amber-500" strokeWidth={1.5} />
           <p className="text-sm font-medium text-amber-700 dark:text-amber-400">
-            需要通知權限
+            {t("notification.needPermission")}
           </p>
         </div>
         <p className="text-sm text-amber-600 dark:text-amber-400/80">
-          點擊下方按鈕允許通知，才能使用提醒功能。
+          {t("notification.enableHint")}
         </p>
         <button
           onClick={handleRequestPermission}
           disabled={requesting}
           className="w-full rounded-lg bg-amber-500 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-600 disabled:opacity-50"
         >
-          {requesting ? "請求中..." : "允許通知"}
+          {requesting ? t("notification.requesting") : t("notification.allowNotification")}
         </button>
       </div>
     );
@@ -92,50 +94,50 @@ export function NotificationPermissionGuard() {
       <div className="flex items-center gap-2">
         <Bell className="h-4 w-4 text-red-500" strokeWidth={1.5} />
         <p className="text-sm font-medium text-red-700 dark:text-red-400">
-          通知權限已關閉
+          {t("notification.permissionDenied")}
         </p>
       </div>
 
       {isIOS && isPWA ? (
         <div className="space-y-2">
           <p className="text-sm text-red-600 dark:text-red-400/80">
-            請前往 iOS 設定開啟通知：
+            {t("notification.iosStandalone")}
           </p>
           <ol className="text-sm text-red-600 dark:text-red-400/80 list-decimal list-inside space-y-1">
             <li>
-              打開 <span className="font-medium">設定</span> App
+              {t("notification.iosStep1Open")} <span className="font-medium">{t("notification.iosStep1Settings")}</span> {t("notification.iosStep1App")}
             </li>
             <li>
-              滑到下方找到{" "}
-              <span className="font-medium">Open Health PWA</span>
+              {t("notification.iosStep2Find")}{" "}
+              <span className="font-medium">{t("notification.iosStep2AppName")}</span>
             </li>
             <li>
-              點選 <span className="font-medium">通知</span>
+              {t("notification.iosStep3Tap")} <span className="font-medium">{t("notification.iosStep3Notification")}</span>
             </li>
             <li>
-              開啟 <span className="font-medium">允許通知</span>
+              {t("notification.iosStep4Enable")} <span className="font-medium">{t("notification.iosStep4Allow")}</span>
             </li>
           </ol>
         </div>
       ) : isIOS ? (
         <div className="space-y-2">
           <p className="text-sm text-red-600 dark:text-red-400/80">
-            請前往 iOS 設定開啟 Safari 通知：
+            {t("notification.iosSafari")}
           </p>
           <ol className="text-sm text-red-600 dark:text-red-400/80 list-decimal list-inside space-y-1">
             <li>
-              打開 <span className="font-medium">設定</span> →{" "}
-              <span className="font-medium">Safari</span>
+              {t("notification.iosSafariStep1Open")} <span className="font-medium">{t("notification.iosSafariStep1Settings")}</span> →{" "}
+              <span className="font-medium">{t("notification.iosSafariStep1Safari")}</span>
             </li>
             <li>
-              找到 <span className="font-medium">通知</span> 並開啟
+              {t("notification.iosSafariStep2Find")} <span className="font-medium">{t("notification.iosSafariStep2Notification")}</span> {t("notification.iosSafariStep2Enable")}
             </li>
-            <li>回到此頁面重新整理</li>
+            <li>{t("notification.iosSafariStep3Refresh")}</li>
           </ol>
         </div>
       ) : (
         <p className="text-sm text-red-600 dark:text-red-400/80">
-          通知權限已被封鎖。請點擊網址列左側的鎖頭圖示，將通知權限改為「允許」。
+          {t("notification.browserBlocked")}
         </p>
       )}
 
@@ -144,7 +146,7 @@ export function NotificationPermissionGuard() {
         className="inline-flex items-center gap-1 text-sm font-medium text-red-700 dark:text-red-300 underline underline-offset-2"
       >
         <ExternalLink className="h-3.5 w-3.5" strokeWidth={1.5} />
-        已開啟，重新檢查
+        {t("notification.recheck")}
       </button>
     </div>
   );

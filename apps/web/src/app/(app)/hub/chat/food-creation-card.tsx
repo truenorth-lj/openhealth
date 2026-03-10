@@ -4,13 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Pencil, Loader2, UtensilsCrossed, AlertCircle } from "lucide-react";
 import { logFood } from "@/server/actions/diary";
-
-const MEAL_LABELS: Record<string, string> = {
-  breakfast: "早餐",
-  lunch: "午餐",
-  dinner: "晚餐",
-  snack: "點心",
-};
+import { useTranslation } from "react-i18next";
 
 interface CreateFoodOutput {
   foodId: string;
@@ -45,6 +39,7 @@ interface FoodCreationCardProps {
 }
 
 export function FoodCreationCard({ part }: FoodCreationCardProps) {
+  const { t } = useTranslation(["ai", "diary", "common"]);
   const router = useRouter();
   const [confirmed, setConfirmed] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -55,7 +50,7 @@ export function FoodCreationCard({ part }: FoodCreationCardProps) {
       <div className="my-2 w-full max-w-[85%] rounded-xl border border-black/[0.06] dark:border-white/[0.06] p-4">
         <div className="flex items-center gap-2 text-sm text-neutral-400">
           <Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.5} />
-          正在估算「{part.input?.description ?? "食物"}」的營養...
+          {t("ai:foodCreation.estimating", { food: part.input?.description ?? "food" })}
         </div>
         <div className="mt-3 space-y-2">
           {[1, 2, 3].map((i) => (
@@ -74,8 +69,8 @@ export function FoodCreationCard({ part }: FoodCreationCardProps) {
   if (part.state === "output-error" || (part.output && "error" in part.output)) {
     const errorText =
       part.state === "output-error"
-        ? "估算失敗，請重試"
-        : (part.output as CreateFoodError)?.error ?? "未知錯誤";
+        ? t("ai:foodCreation.estimationFailed")
+        : (part.output as CreateFoodError)?.error ?? t("ai:actionConfirm.unknownError");
     return (
       <div className="my-2 w-full max-w-[85%] rounded-xl border border-destructive/20 p-4">
         <div className="flex items-center gap-2 text-sm text-destructive">
@@ -131,7 +126,7 @@ export function FoodCreationCard({ part }: FoodCreationCardProps) {
           <div>
             <span className="text-sm font-medium">{output.foodName}</span>
             <span className="ml-2 text-xs text-neutral-400">
-              已加入{MEAL_LABELS[output.mealType] ?? "日記"}
+              {t("ai:foodCreation.addedToMeal", { meal: t(`diary:${output.mealType}`) })}
             </span>
           </div>
         </div>
@@ -147,16 +142,16 @@ export function FoodCreationCard({ part }: FoodCreationCardProps) {
         <UtensilsCrossed className="h-4 w-4 text-green-600" strokeWidth={1.5} />
         <span className="text-sm font-medium">{output.foodName}</span>
         <span className="ml-auto rounded-full bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 text-xs text-neutral-500">
-          {MEAL_LABELS[output.mealType] ?? output.mealType}
+          {t(`diary:${output.mealType}`)}
         </span>
       </div>
 
       {/* Nutrition */}
       <div className="grid grid-cols-4 gap-3 px-4 py-3">
-        <NutrientCell label="熱量" value={output.calories} unit="kcal" color="text-green-600" />
-        <NutrientCell label="蛋白質" value={output.proteinG} unit="g" color="text-blue-600" />
-        <NutrientCell label="碳水" value={output.carbsG} unit="g" color="text-amber-600" />
-        <NutrientCell label="脂肪" value={output.fatG} unit="g" color="text-rose-500" />
+        <NutrientCell label={t("common:macro.calories")} value={output.calories} unit="kcal" color="text-green-600" />
+        <NutrientCell label={t("common:macro.protein")} value={output.proteinG} unit="g" color="text-blue-600" />
+        <NutrientCell label={t("common:macro.carbs")} value={output.carbsG} unit="g" color="text-amber-600" />
+        <NutrientCell label={t("common:macro.fat")} value={output.fatG} unit="g" color="text-rose-500" />
       </div>
 
       <div className="px-4 pb-1 text-xs text-neutral-400">
@@ -175,14 +170,14 @@ export function FoodCreationCard({ part }: FoodCreationCardProps) {
           ) : (
             <Check className="h-4 w-4" strokeWidth={1.5} />
           )}
-          加入日記
+          {t("ai:foodCreation.addToDiary")}
         </button>
         <button
           onClick={handleEdit}
           className="flex items-center gap-1.5 rounded-lg border border-black/[0.06] dark:border-white/[0.06] px-3 py-2 text-sm font-light transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
         >
           <Pencil className="h-3.5 w-3.5" strokeWidth={1.5} />
-          編輯
+          {t("common:buttons.edit")}
         </button>
       </div>
     </div>

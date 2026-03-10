@@ -18,6 +18,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 function parseDateParam(param: string | null): Date {
   if (param) {
@@ -27,13 +28,10 @@ function parseDateParam(param: string | null): Date {
   return new Date();
 }
 
-const RANGES = [
-  { label: "7 天", days: 7 },
-  { label: "30 天", days: 30 },
-  { label: "90 天", days: 90 },
-] as const;
+const RANGE_DAYS = [7, 30, 90] as const;
 
 function StepsContent() {
+  const { t } = useTranslation(["progress", "common"]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const date = parseDateParam(searchParams.get("date"));
@@ -74,7 +72,7 @@ function StepsContent() {
     });
   };
 
-  const dayLabel = isToday(date) ? "今日" : format(date, "M/d");
+  const dayLabel = isToday(date) ? t("common:time.todayShort") : format(date, "M/d");
 
   const stepsData =
     analytics?.steps.map((s) => ({
@@ -108,7 +106,7 @@ function StepsContent() {
       <div className="px-4 space-y-6">
         <div className="flex items-center gap-2">
           <Footprints className="h-5 w-5 text-neutral-400" strokeWidth={1.5} />
-          <h1 className="text-xl font-light tracking-wide">步數紀錄</h1>
+          <h1 className="text-xl font-light tracking-wide">{t("progress:stepsRecord")}</h1>
         </div>
 
         {/* Input */}
@@ -117,7 +115,7 @@ function StepsContent() {
             <Input
               type="number"
               step="1"
-              placeholder="步數"
+              placeholder={t("progress:stepsPlaceholder")}
               value={steps}
               onChange={(e) => setSteps(e.target.value)}
               className="flex-1 border-black/[0.06] dark:border-white/[0.06] font-light"
@@ -127,18 +125,18 @@ function StepsContent() {
               disabled={!steps || isPending}
               className="px-6 py-2 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-md transition-all duration-300 hover:border-foreground/20 disabled:opacity-30"
             >
-              {isPending ? "..." : currentSteps !== null ? "更新" : "記錄"}
+              {isPending ? "..." : currentSteps !== null ? t("common:buttons.update") : t("common:buttons.record")}
             </button>
           </div>
           <div className="flex items-center gap-2 text-sm font-light text-neutral-500">
             {currentSteps !== null ? (
-              <span>{dayLabel}：{currentSteps.toLocaleString()} 步</span>
+              <span>{dayLabel}: {currentSteps.toLocaleString()} {t("common:units.steps")}</span>
             ) : (
-              <span>{dayLabel} 尚無記錄</span>
+              <span>{dayLabel} {t("progress:noRecord")}</span>
             )}
             {recentStepsAvg !== null && (
               <span className="ml-auto">
-                近 {stepsHistory!.length} 天平均：{recentStepsAvg.toLocaleString()} 步
+                {t("progress:recentDaysAvg", { count: stepsHistory!.length, avg: recentStepsAvg.toLocaleString() })}
               </span>
             )}
           </div>
@@ -147,19 +145,19 @@ function StepsContent() {
         {/* Summary Cards */}
         <div className="grid grid-cols-3 gap-3">
           <SummaryCard
-            label={`${dayLabel}步數`}
+            label={t("progress:todaySteps", { day: dayLabel })}
             value={currentSteps !== null ? currentSteps.toLocaleString() : "--"}
-            unit="步"
+            unit={t("common:units.steps")}
           />
           <SummaryCard
-            label="7 天平均"
+            label={t("progress:sevenDayAvg")}
             value={recentStepsAvg !== null ? recentStepsAvg.toLocaleString() : "--"}
-            unit="步"
+            unit={t("common:units.steps")}
           />
           <SummaryCard
-            label="7 天最高"
+            label={t("progress:sevenDayMax")}
             value={maxSteps !== null ? maxSteps.toLocaleString() : "--"}
-            unit="步"
+            unit={t("common:units.steps")}
           />
         </div>
 
@@ -170,20 +168,20 @@ function StepsContent() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-              步數趨勢
+              {t("progress:stepsTrend")}
             </p>
             <div className="flex gap-1.5">
-              {RANGES.map((r) => (
+              {RANGE_DAYS.map((days) => (
                 <button
-                  key={r.days}
-                  onClick={() => setSelectedRange(r.days)}
+                  key={days}
+                  onClick={() => setSelectedRange(days)}
                   className={`px-2.5 py-1 text-[10px] font-light rounded border transition-all duration-300 ${
-                    selectedRange === r.days
+                    selectedRange === days
                       ? "border-foreground/20 bg-foreground/5"
                       : "border-black/[0.06] dark:border-white/[0.06] hover:border-foreground/20"
                   }`}
                 >
-                  {r.label}
+                  {t("progress:rangeDays", { days })}
                 </button>
               ))}
             </div>
@@ -207,13 +205,13 @@ function StepsContent() {
                   fill="var(--color-primary)"
                   opacity={0.7}
                   radius={[2, 2, 0, 0]}
-                  name="步數"
+                  name={t("progress:stepsName")}
                 />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <p className="text-sm font-light text-neutral-300 dark:text-neutral-700 text-center py-8">
-              尚無步數記錄
+              {t("progress:noStepsData")}
             </p>
           )}
         </div>
@@ -223,7 +221,7 @@ function StepsContent() {
           <>
             <div className="border-t border-black/[0.06] dark:border-white/[0.06]" />
             <div className="text-center text-sm font-light text-neutral-500">
-              近 7 天累計：{totalSteps.toLocaleString()} 步
+              {t("progress:totalSteps", { total: totalSteps.toLocaleString() })}
             </div>
           </>
         )}
@@ -234,7 +232,7 @@ function StepsContent() {
 
 export default function StepsPage() {
   return (
-    <Suspense fallback={<div className="px-4 py-6"><p className="text-center text-neutral-400 font-light">載入中...</p></div>}>
+    <Suspense fallback={<div className="px-4 py-6"><p className="text-center text-neutral-400 font-light">...</p></div>}>
       <StepsContent />
     </Suspense>
   );

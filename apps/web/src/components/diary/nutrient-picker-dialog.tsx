@@ -9,6 +9,7 @@ import {
 import { trpc } from "@/lib/trpc-client";
 import { NUTRIENT_NAME_ZH, MACRO_NUTRIENT_IDS, NUTRIENT_CATEGORY_LABELS } from "@open-health/shared/constants";
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const EXCLUDED_SET = new Set(MACRO_NUTRIENT_IDS);
 
@@ -25,6 +26,7 @@ export function NutrientPickerDialog({
   selectedIds,
   onSave,
 }: NutrientPickerDialogProps) {
+  const { t } = useTranslation(["diary", "common"]);
   const [selected, setSelected] = useState<Set<number>>(new Set(selectedIds));
   const { data: nutrients } = trpc.user.getNutrientDefinitions.useQuery(
     undefined,
@@ -65,7 +67,7 @@ export function NutrientPickerDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogHeader>
         <DialogTitle className="font-light tracking-wide">
-          選擇追蹤營養素
+          {t("diary:selectTrackedNutrients")}
         </DialogTitle>
       </DialogHeader>
 
@@ -123,13 +125,13 @@ export function NutrientPickerDialog({
           onClick={() => onOpenChange(false)}
           className="px-4 py-2 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-md hover:border-foreground/20 transition-all duration-200"
         >
-          取消
+          {t("common:buttons.cancel")}
         </button>
         <button
           onClick={handleSave}
           className="px-4 py-2 text-sm font-light bg-primary text-white rounded-md hover:bg-primary/90 transition-all duration-200"
         >
-          儲存 ({selected.size})
+          {t("diary:saveCount", { count: selected.size })}
         </button>
       </div>
     </Dialog>

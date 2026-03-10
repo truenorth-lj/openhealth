@@ -3,5 +3,11 @@
   "addWeight": "Add Weight",
   "currentWeight": "Current Weight",
   "goalWeight": "Goal Weight",
-  "noEntries": "No weight entries yet"
+  "noEntries": "No weight entries yet",
+  "weightPlaceholder": "Weight (kg)",
+  "weightTrend": "Weight Trend",
+  "weightKg": "Weight (kg)",
+  "recentChange": "7-day Change",
+  "needMinRecords": "Need at least 2 weight entries to show trends",
+  "rangeDay": "{{count}} days"
 }

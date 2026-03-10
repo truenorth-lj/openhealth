@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { signIn, signUp } from "@/lib/auth-client";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
 interface LoginDialogProps {
   open: boolean;
@@ -15,6 +16,7 @@ interface LoginDialogProps {
 }
 
 export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps) {
+  const { t } = useTranslation("common");
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [name, setName] = useState("");
@@ -44,20 +46,20 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
       if (mode === "login") {
         const result = await signIn.email({ email, password });
         if (result.error) {
-          setError(result.error.message || "登入失敗");
+          setError(result.error.message || t("auth.loginFailed"));
           setLoading(false);
           return;
         }
         posthog.capture("user_logged_in", { method: "email" });
       } else {
         if (password.length < 8) {
-          setError("密碼至少需要 8 個字元");
+          setError(t("auth.passwordMinLength"));
           setLoading(false);
           return;
         }
         const result = await signUp.email({ name, email, password });
         if (result.error) {
-          setError(result.error.message || "註冊失敗");
+          setError(result.error.message || t("auth.registerFailed"));
           setLoading(false);
           return;
         }
@@ -70,13 +72,13 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
             const referralResult = await applyReferralCode({ code: referralCode.trim() });
             if (!referralResult.success) {
               // Registration succeeded but referral failed — show error and keep dialog open
-              setError(`註冊成功，但推薦碼套用失敗：${referralResult.error}`);
+              setError(t("auth.registerSuccessReferralFailedWithError", { error: referralResult.error }));
               setLoading(false);
               setReferralCode("");
               return;
             }
           } catch {
-            setError("註冊成功，但推薦碼套用失敗");
+            setError(t("auth.registerSuccessReferralFailed"));
             setLoading(false);
             setReferralCode("");
             return;
@@ -92,7 +94,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
         router.refresh();
       }
     } catch {
-      setError(mode === "login" ? "登入失敗，請稍後再試" : "註冊失敗，請稍後再試");
+      setError(mode === "login" ? t("auth.loginFailedRetry") : t("auth.registerFailedRetry"));
       setLoading(false);
     }
   };
@@ -106,12 +108,12 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
     <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) resetForm(); }}>
       <DialogHeader>
         <DialogTitle className="text-center text-primary">
-          {mode === "login" ? "登入以繼續" : "建立帳號"}
+          {mode === "login" ? t("auth.loginToContinue") : t("auth.createAccount")}
         </DialogTitle>
         <DialogDescription className="text-center">
           {mode === "login"
-            ? "登入後即可使用完整的健康追蹤功能"
-            : "註冊帳號，開啟你的健康作業系統"}
+            ? t("auth.loginDescription")
+            : t("auth.registerDescription")}
         </DialogDescription>
       </DialogHeader>
 
@@ -134,7 +136,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
               await signIn.social({ provider: "google" });
               posthog.capture("user_logged_in", { method: "google" });
             } catch {
-              setError("Google 登入失敗，請稍後再試");
+              setError(t("auth.googleLoginFailed"));
               setGoogleLoading(false);
             }
           }}
@@ -157,7 +159,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
               fill="#EA4335"
             />
           </svg>
-          {googleLoading ? "登入中..." : "使用 Google 登入"}
+          {googleLoading ? t("auth.loggingIn") : t("auth.useGoogleLogin")}
         </Button>
 
         <Button
@@ -172,7 +174,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
               await signIn.social({ provider: "apple" });
               posthog.capture("user_logged_in", { method: "apple" });
             } catch {
-              setError("Apple 登入失敗，請稍後再試");
+              setError(t("auth.appleLoginFailed"));
               setAppleLoading(false);
             }
           }}
@@ -180,7 +182,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
           </svg>
-          {appleLoading ? "登入中..." : "使用 Apple 登入"}
+          {appleLoading ? t("auth.loggingIn") : t("auth.useAppleLogin")}
         </Button>
 
         <div className="relative">
@@ -188,7 +190,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">或</span>
+            <span className="bg-background px-2 text-muted-foreground">{t("auth.or")}</span>
           </div>
         </div>
       </div>
@@ -197,7 +199,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
 
         {mode === "register" && (
           <Input
-            placeholder="名稱"
+            placeholder={t("auth.namePlaceholder")}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -206,7 +208,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
 
         <Input
           type="email"
-          placeholder="電子郵件"
+          placeholder={t("auth.emailPlaceholder")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -214,7 +216,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
 
         <Input
           type="password"
-          placeholder={mode === "register" ? "密碼 (至少 8 字元)" : "密碼"}
+          placeholder={mode === "register" ? t("auth.passwordRegisterPlaceholder") : t("auth.passwordPlaceholder")}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -223,7 +225,7 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
 
         {mode === "register" && (
           <Input
-            placeholder="推薦碼（選填）"
+            placeholder={t("auth.referralCodePlaceholder")}
             value={referralCode}
             onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
             maxLength={12}
@@ -232,19 +234,19 @@ export function LoginDialog({ open, onOpenChange, onSuccess }: LoginDialogProps)
 
         <Button type="submit" className="w-full" disabled={loading}>
           {loading
-            ? (mode === "login" ? "登入中..." : "註冊中...")
-            : (mode === "login" ? "登入" : "註冊")}
+            ? (mode === "login" ? t("auth.loggingIn") : t("auth.registering"))
+            : (mode === "login" ? t("auth.login") : t("auth.register"))}
         </Button>
       </form>
 
       <p className="mt-3 text-center text-sm text-muted-foreground">
-        {mode === "login" ? "還沒有帳號？" : "已有帳號？"}{" "}
+        {mode === "login" ? t("auth.noAccount") : t("auth.hasAccount")}{" "}
         <button
           type="button"
           onClick={switchMode}
           className="text-primary hover:underline"
         >
-          {mode === "login" ? "註冊" : "登入"}
+          {mode === "login" ? t("auth.register") : t("auth.login")}
         </button>
       </p>
     </Dialog>

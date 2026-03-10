@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { MicroNutrientSection } from "./micro-nutrient-section";
 
 interface DailySummaryProps {
@@ -33,6 +34,7 @@ export function DailySummary({
   date,
   trackedNutrientIds = [],
 }: DailySummaryProps) {
+  const { t } = useTranslation("common");
   const remaining = calorieTarget - calories + exerciseCalories;
   const caloriePercent = calorieTarget > 0 ? Math.min((calories / calorieTarget) * 100, 100) : 0;
 
@@ -42,7 +44,7 @@ export function DailySummary({
       <div className="flex items-end justify-between">
         <div>
           <p className="text-3xl font-extralight tabular-nums">{Math.round(calories)}</p>
-          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">已攝取</p>
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">{t("labels.consumed")}</p>
         </div>
         <div className="text-right">
           <p
@@ -52,13 +54,13 @@ export function DailySummary({
           >
             {Math.round(remaining)}
           </p>
-          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">剩餘</p>
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">{t("labels.remaining")}</p>
         </div>
         <div className="text-right">
           <p className="text-3xl font-extralight tabular-nums text-neutral-300 dark:text-neutral-700">
             {calorieTarget}
           </p>
-          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">目標</p>
+          <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 dark:text-neutral-600 mt-1">{t("labels.target")}</p>
         </div>
       </div>
 
@@ -66,7 +68,7 @@ export function DailySummary({
       {exerciseCalories > 0 && (
         <div className="flex items-center justify-end gap-1 text-xs text-orange-500">
           <span className="tabular-nums">+{Math.round(exerciseCalories)}</span>
-          <span>運動消耗</span>
+          <span>{t("labels.exerciseBurned")}</span>
         </div>
       )}
 
@@ -81,25 +83,25 @@ export function DailySummary({
       {/* Macro Summary */}
       <div className="grid grid-cols-4 gap-4">
         <MacroItem
-          label="蛋白質"
+          label={t("macro.protein")}
           current={protein}
           target={proteinTarget}
           color="bg-blue-500"
         />
         <MacroItem
-          label="碳水"
+          label={t("macro.carbs")}
           current={carbs}
           target={carbsTarget}
           color="bg-amber-500"
         />
         <MacroItem
-          label="脂肪"
+          label={t("macro.fat")}
           current={fat}
           target={fatTarget}
           color="bg-rose-500"
         />
         <MacroItem
-          label="纖維"
+          label={t("macro.fiber")}
           current={fiber}
           target={fiberTarget}
           color="bg-emerald-500"

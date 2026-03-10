@@ -8,16 +8,9 @@ import Link from "next/link";
 import { requestNotificationPermission } from "@/hooks/use-water-reminder";
 import { NotificationPermissionGuard } from "@/components/notification-permission-guard";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useTranslation } from "react-i18next";
 
-const INTERVAL_OPTIONS = [
-  { value: 30, label: "30 分鐘" },
-  { value: 60, label: "1 小時" },
-  { value: 90, label: "1.5 小時" },
-  { value: 120, label: "2 小時" },
-  { value: 180, label: "3 小時" },
-  { value: 240, label: "4 小時" },
-  { value: 360, label: "6 小時" },
-];
+const INTERVAL_VALUES = [30, 60, 90, 120, 180, 240, 360];
 
 export default function NotificationSettingsPage() {
   const { data: settings, isLoading } =
@@ -26,7 +19,7 @@ export default function NotificationSettingsPage() {
   const updateSettings =
     trpc.notification.updateWaterReminderSettings.useMutation({
       onSuccess: () => {
-        toast.success("已儲存通知設定");
+        toast.success(t("settings:notificationsPage.settingsSaved"));
         utils.notification.getWaterReminderSettings.invalidate();
       },
       onError: (err) => toast.error(err.message),
@@ -34,6 +27,7 @@ export default function NotificationSettingsPage() {
 
   const utils = trpc.useUtils();
 
+  const { t } = useTranslation(["settings", "common"]);
   const [enabled, setEnabled] = useState(false);
   const [startTime, setStartTime] = useState("08:00");
   const [endTime, setEndTime] = useState("22:00");
@@ -62,7 +56,7 @@ export default function NotificationSettingsPage() {
       const permission = await requestNotificationPermission();
       setPermissionState(permission);
       if (permission !== "granted") {
-        toast.error("請允許瀏覽器通知權限才能啟用提醒");
+        toast.error(t("settings:notificationsPage.enableNotification"));
         return;
       }
     }
@@ -99,7 +93,7 @@ export default function NotificationSettingsPage() {
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-light tracking-wide">通知設定</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("settings:notifications")}</h1>
       </div>
 
       {/* Notification permission guard — auto-detects & guides user */}
@@ -113,7 +107,7 @@ export default function NotificationSettingsPage() {
             strokeWidth={1.5}
           />
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-            喝水提醒
+            {t("notificationsPage.waterReminder")}
           </p>
         </div>
 
@@ -124,7 +118,7 @@ export default function NotificationSettingsPage() {
               className="h-4 w-4 text-neutral-400 dark:text-neutral-600"
               strokeWidth={1.5}
             />
-            <span className="text-sm font-light">啟用喝水提醒</span>
+            <span className="text-sm font-light">{t("settings:notificationsPage.enableWaterReminder")}</span>
           </div>
           <button
             onClick={() => handleToggleEnabled(!enabled)}
@@ -148,12 +142,12 @@ export default function NotificationSettingsPage() {
             {/* Time range */}
             <div className="space-y-3">
               <p className="text-xs font-light text-neutral-400">
-                提醒時段
+                {t("notificationsPage.reminderPeriod")}
               </p>
               <div className="flex items-center gap-3">
                 <div className="flex-1">
                   <label className="text-[10px] text-neutral-400 dark:text-neutral-600">
-                    開始
+                    {t("notificationsPage.startTime")}
                   </label>
                   <input
                     type="time"
@@ -167,7 +161,7 @@ export default function NotificationSettingsPage() {
                 </span>
                 <div className="flex-1">
                   <label className="text-[10px] text-neutral-400 dark:text-neutral-600">
-                    結束
+                    {t("notificationsPage.endTime")}
                   </label>
                   <input
                     type="time"
@@ -182,20 +176,20 @@ export default function NotificationSettingsPage() {
             {/* Interval */}
             <div className="space-y-3">
               <p className="text-xs font-light text-neutral-400">
-                提醒間隔
+                {t("notificationsPage.reminderInterval")}
               </p>
               <div className="flex flex-wrap gap-2">
-                {INTERVAL_OPTIONS.map((option) => (
+                {INTERVAL_VALUES.map((val) => (
                   <button
-                    key={option.value}
-                    onClick={() => setIntervalMinutes(option.value)}
+                    key={val}
+                    onClick={() => setIntervalMinutes(val)}
                     className={`rounded-lg border px-3 py-2 text-sm font-light transition-all duration-300 ${
-                      intervalMinutes === option.value
+                      intervalMinutes === val
                         ? "border-blue-500 text-blue-500"
                         : "border-black/[0.06] dark:border-white/[0.06] text-neutral-400 dark:text-neutral-600 hover:text-foreground hover:border-foreground/10"
                     }`}
                   >
-                    {option.label}
+                    {t(`notificationsPage.interval${val}`)}
                   </button>
                 ))}
               </div>
@@ -204,9 +198,9 @@ export default function NotificationSettingsPage() {
             {/* Stop when goal reached */}
             <div className="flex items-center justify-between py-3 border-b border-black/[0.06] dark:border-white/[0.06]">
               <div>
-                <span className="text-sm font-light">達標後停止提醒</span>
+                <span className="text-sm font-light">{t("settings:notificationsPage.stopAfterGoal")}</span>
                 <p className="text-xs text-neutral-400 dark:text-neutral-600 mt-0.5">
-                  當日飲水達到目標後不再提醒
+                  {t("notificationsPage.stopAfterGoalDesc")}
                 </p>
               </div>
               <button
@@ -231,7 +225,7 @@ export default function NotificationSettingsPage() {
 
             {/* Info text */}
             <p className="text-xs text-neutral-400 dark:text-neutral-600">
-              提醒會在你設定的時段內，每隔指定時間發送瀏覽器通知。請確保瀏覽器分頁保持開啟。
+              {t("notificationsPage.reminderNote")}
             </p>
           </div>
         )}
@@ -244,7 +238,7 @@ export default function NotificationSettingsPage() {
           disabled={updateSettings.isPending}
           className="w-full rounded-lg bg-blue-500 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 disabled:opacity-50"
         >
-          {updateSettings.isPending ? "儲存中..." : "儲存設定"}
+          {updateSettings.isPending ? t("notificationsPage.saving") : t("notificationsPage.saveSettings")}
         </button>
       )}
     </div>

@@ -3,6 +3,7 @@
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc-client";
 import posthog from "posthog-js";
+import { useTranslation } from "react-i18next";
 
 const QUICK_AMOUNTS = [150, 250, 350, 500];
 
@@ -13,6 +14,7 @@ export function WaterQuickAdd({
   date: string;
   isAuthenticated: boolean;
 }) {
+  const { t } = useTranslation("water");
   const utils = trpc.useUtils();
 
   const logWater = trpc.water.logWater.useMutation({
@@ -22,7 +24,7 @@ export function WaterQuickAdd({
       posthog.capture("water_logged", { amount_ml: variables.amountMl });
     },
     onError: () => {
-      toast.error("無法記錄飲水");
+      toast.error(t("logError"));
     },
   });
 

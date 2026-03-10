@@ -3,5 +3,11 @@
   "addWeight": "新增體重",
   "currentWeight": "目前體重",
   "goalWeight": "目標體重",
-  "noEntries": "還沒有體重記錄"
+  "noEntries": "還沒有體重記錄",
+  "weightPlaceholder": "體重 (kg)",
+  "weightTrend": "體重趨勢",
+  "weightKg": "體重 (kg)",
+  "recentChange": "近 7 天變化",
+  "needMinRecords": "需要至少 2 筆體重記錄才能顯示趨勢",
+  "rangeDay": "{{count}} 天"
 }

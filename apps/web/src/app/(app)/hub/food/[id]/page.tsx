@@ -9,17 +9,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc-client";
 import { useSession } from "@/lib/auth-client";
 import { NUTRIENT_IDS, NUTRIENT_NAME_ZH } from "@open-health/shared/constants";
+import { useTranslation } from "react-i18next";
 
-const categoryLabels: Record<string, string> = {
-  macro: "巨量營養素",
-  vitamin: "維生素",
-  mineral: "礦物質",
-  other: "其他",
-};
+
 
 const categoryOrder = ["macro", "vitamin", "mineral", "other"];
 
 export default function FoodDetailPage() {
+  const { t } = useTranslation(["food", "common"]);
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { data: session } = useSession();
@@ -48,7 +45,7 @@ export default function FoodDetailPage() {
 
   const handleDelete = () => {
     if (!food) return;
-    if (!window.confirm("確定要刪除這個食物嗎？相關的日記紀錄也會一併刪除。")) return;
+    if (!window.confirm(t("food:confirmDelete"))) return;
     deleteMutation.mutate({ id: food.id });
   };
 
@@ -94,7 +91,7 @@ export default function FoodDetailPage() {
     const servingSize = Number(editForm.servingSize);
     const calories = Number(editForm.calories);
     if (isNaN(servingSize) || servingSize <= 0 || isNaN(calories) || calories < 0) {
-      setValidationError("請輸入有效的數值");
+      setValidationError(t("food:enterValidNumber"));
       return;
     }
     setValidationError(undefined);
@@ -140,7 +137,7 @@ export default function FoodDetailPage() {
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="font-semibold">找不到食物</h1>
+          <h1 className="font-semibold">{t("food:notFound")}</h1>
         </div>
       </div>
     );
@@ -157,7 +154,7 @@ export default function FoodDetailPage() {
   const nutrientsByCategory = categoryOrder
     .map((cat) => ({
       category: cat,
-      label: categoryLabels[cat],
+      label: cat,
       nutrients: food.nutrients.filter((n) => n.category === cat),
     }))
     .filter((group) => group.nutrients.length > 0);
@@ -229,7 +226,7 @@ export default function FoodDetailPage() {
           <Input
             value={editForm.brand}
             onChange={(e) => setEditForm((f) => ({ ...f, brand: e.target.value }))}
-            placeholder="品牌（選填）"
+            placeholder={t("food:brandOptional")}
           />
         </div>
       )}
@@ -237,32 +234,32 @@ export default function FoodDetailPage() {
       {/* Serving info */}
       {isEditing ? (
         <div className="rounded-lg bg-muted/50 px-4 py-3 mb-4 space-y-2">
-          <p className="text-sm text-muted-foreground">每份</p>
+          <p className="text-sm text-muted-foreground">{t("food:perServing")}</p>
           <div className="flex gap-2">
             <Input
               type="number"
               value={editForm.servingSize}
               onChange={(e) => setEditForm((f) => ({ ...f, servingSize: e.target.value }))}
-              placeholder="份量"
+              placeholder={t("food:servingSizeLabel")}
               className="w-24"
             />
             <Input
               value={editForm.servingUnit}
               onChange={(e) => setEditForm((f) => ({ ...f, servingUnit: e.target.value }))}
-              placeholder="單位"
+              placeholder={t("food:unitLabel")}
               className="w-20"
             />
             <Input
               value={editForm.householdServing}
               onChange={(e) => setEditForm((f) => ({ ...f, householdServing: e.target.value }))}
-              placeholder="家用份量（選填）"
+              placeholder={t("food:householdServing")}
               className="flex-1"
             />
           </div>
         </div>
       ) : (
         <div className="rounded-lg bg-muted/50 px-4 py-3 mb-4">
-          <p className="text-sm text-muted-foreground">每份</p>
+          <p className="text-sm text-muted-foreground">{t("food:perServing")}</p>
           <p className="text-lg font-semibold">
             {food.servingSize}{food.servingUnit}
             {food.householdServing ? ` (${food.householdServing})` : ""}
@@ -281,28 +278,28 @@ export default function FoodDetailPage() {
                 onChange={(e) => setEditForm((f) => ({ ...f, calories: e.target.value }))}
                 className="w-28 text-center text-xl font-bold"
               />
-              <span className="text-sm text-muted-foreground">大卡</span>
+              <span className="text-sm text-muted-foreground">{t("common:units.kcal")}</span>
             </div>
           ) : (
             <>
               <p className="text-3xl font-bold">{Math.round(Number(food.calories ?? 0))}</p>
-              <p className="text-sm text-muted-foreground">大卡</p>
+              <p className="text-sm text-muted-foreground">{t("common:units.kcal")}</p>
             </>
           )}
         </div>
         {isEditing ? (
           <div className="grid grid-cols-4 gap-2 text-center">
-            <EditableMacro label="蛋白質" value={editForm.protein} onChange={(v) => setEditForm((f) => ({ ...f, protein: v }))} />
-            <EditableMacro label="碳水" value={editForm.carbs} onChange={(v) => setEditForm((f) => ({ ...f, carbs: v }))} />
-            <EditableMacro label="脂肪" value={editForm.fat} onChange={(v) => setEditForm((f) => ({ ...f, fat: v }))} />
-            <EditableMacro label="纖維" value={editForm.fiber} onChange={(v) => setEditForm((f) => ({ ...f, fiber: v }))} />
+            <EditableMacro label={t("common:macro.protein")} value={editForm.protein} onChange={(v) => setEditForm((f) => ({ ...f, protein: v }))} />
+            <EditableMacro label={t("common:macro.carbs")} value={editForm.carbs} onChange={(v) => setEditForm((f) => ({ ...f, carbs: v }))} />
+            <EditableMacro label={t("common:macro.fat")} value={editForm.fat} onChange={(v) => setEditForm((f) => ({ ...f, fat: v }))} />
+            <EditableMacro label={t("common:macro.fiber")} value={editForm.fiber} onChange={(v) => setEditForm((f) => ({ ...f, fiber: v }))} />
           </div>
         ) : (
           <div className="grid grid-cols-4 gap-2 text-center">
-            <MacroItem label="蛋白質" value={proteinG} unit="g" />
-            <MacroItem label="碳水" value={carbsG} unit="g" />
-            <MacroItem label="脂肪" value={fatG} unit="g" />
-            <MacroItem label="纖維" value={fiberG} unit="g" />
+            <MacroItem label={t("common:macro.protein")} value={proteinG} unit="g" />
+            <MacroItem label={t("common:macro.carbs")} value={carbsG} unit="g" />
+            <MacroItem label={t("common:macro.fat")} value={fatG} unit="g" />
+            <MacroItem label={t("common:macro.fiber")} value={fiberG} unit="g" />
           </div>
         )}
       </div>
@@ -320,7 +317,7 @@ export default function FoodDetailPage() {
       {/* Full nutrient list by category */}
       {nutrientsByCategory.map((group) => (
         <div key={group.category} className="mb-4">
-          <h2 className="text-sm font-semibold mb-2 px-1">{group.label}</h2>
+          <h2 className="text-sm font-semibold mb-2 px-1">{t(`food:category.${group.label}`)}</h2>
           <div className="rounded-lg border divide-y">
             {group.nutrients.map((nutrient, idx) => {
               const amount = Number(nutrient.amount ?? 0);
@@ -356,14 +353,14 @@ export default function FoodDetailPage() {
           <Textarea
             value={editForm.description}
             onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
-            placeholder="備註（選填）"
+            placeholder={t("common:labels.notes")}
             rows={3}
           />
         </div>
       ) : (
         food.description && (
           <div className="mb-4">
-            <h2 className="text-sm font-semibold mb-2 px-1">備註</h2>
+            <h2 className="text-sm font-semibold mb-2 px-1">{t("common:labels.notes")}</h2>
             <p className="text-sm text-muted-foreground px-1 whitespace-pre-wrap">{food.description}</p>
           </div>
         )

@@ -6,8 +6,10 @@ import { trpc } from "@/lib/trpc-client";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { formatDuration } from "@/hooks/use-workout-timer";
+import { useTranslation } from "react-i18next";
 
 export default function WorkoutHistoryPage() {
+  const { t } = useTranslation(["workout", "common"]);
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } =
     useAuthGuard();
 
@@ -49,7 +51,7 @@ export default function WorkoutHistoryPage() {
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={1.5} />
         </Link>
-        <h1 className="text-xl font-light tracking-wide">訓練歷史</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("workout:history")}</h1>
       </div>
 
       {allItems.length > 0 ? (
@@ -86,7 +88,7 @@ export default function WorkoutHistoryPage() {
                       className="h-3 w-3 inline mr-0.5"
                       strokeWidth={1.5}
                     />
-                    {w.exerciseCount} 動作 · {w.totalSets} 組
+                    {t("workout:exerciseAndSets", { exercises: w.exerciseCount, sets: w.totalSets })}
                   </span>
                 </div>
               </div>
@@ -104,13 +106,13 @@ export default function WorkoutHistoryPage() {
               disabled={isFetchingNextPage}
               className="w-full py-3 text-sm text-neutral-400 hover:text-foreground transition-colors"
             >
-              {isFetchingNextPage ? "載入中..." : "載入更多"}
+              {isFetchingNextPage ? t("common:buttons.loading") : t("workout:loadMore")}
             </button>
           )}
         </div>
       ) : (
         <p className="text-sm font-light text-neutral-300 dark:text-neutral-700 text-center py-10">
-          還沒有訓練紀錄
+          {t("workout:noHistory")}
         </p>
       )}
 

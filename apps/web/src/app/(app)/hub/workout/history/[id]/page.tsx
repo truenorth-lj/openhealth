@@ -8,12 +8,14 @@ import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { formatDuration } from "@/hooks/use-workout-timer";
 import { EXERCISE_CATEGORY_LABELS } from "@open-health/shared/constants";
+import { useTranslation } from "react-i18next";
 
 export default function WorkoutDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { t } = useTranslation(["workout", "common"]);
   const { id } = use(params);
   const { isAuthenticated, showLoginDialog, setShowLoginDialog } =
     useAuthGuard();
@@ -34,12 +36,12 @@ export default function WorkoutDetailPage({
   if (!workout) {
     return (
       <div className="px-4 py-20 text-center">
-        <p className="text-sm text-neutral-400">找不到此訓練</p>
+        <p className="text-sm text-neutral-400">{t("workout:detailPage.notFound")}</p>
         <Link
           href="/hub/workout/history"
           className="mt-4 inline-block text-sm text-primary hover:underline"
         >
-          返回歷史
+          {t("workout:detailPage.backToHistory")}
         </Link>
       </div>
     );
@@ -116,7 +118,7 @@ export default function WorkoutDetailPage({
           <p className="text-lg font-extralight tabular-nums">
             {workout.durationSec ? formatDuration(workout.durationSec) : "-"}
           </p>
-          <p className="text-[10px] text-neutral-400">時間</p>
+          <p className="text-[10px] text-neutral-400">{t("workout:detailPage.duration")}</p>
         </div>
         <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-3 text-center">
           <Dumbbell
@@ -126,7 +128,7 @@ export default function WorkoutDetailPage({
           <p className="text-lg font-extralight tabular-nums text-primary">
             {Math.round(totalVolume).toLocaleString()}
           </p>
-          <p className="text-[10px] text-neutral-400">總訓練量 (kg)</p>
+          <p className="text-[10px] text-neutral-400">{t("workout:detailPage.totalVolume")}</p>
         </div>
         <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-3 text-center">
           <Trophy
@@ -136,14 +138,14 @@ export default function WorkoutDetailPage({
           <p className="text-lg font-extralight tabular-nums">
             {workout.exercises.length} · {totalSets}
           </p>
-          <p className="text-[10px] text-neutral-400">動作 · 組數</p>
+          <p className="text-[10px] text-neutral-400">{t("workout:detailPage.exercisesAndSets")}</p>
         </div>
       </div>
 
       {prCount > 0 && (
         <div className="flex items-center justify-center gap-1.5 py-2 rounded-lg bg-amber-500/10 text-amber-500 text-sm">
           <Trophy className="h-4 w-4" strokeWidth={2} />
-          {prCount} 個個人紀錄
+          {t("workout:detailPage.personalRecords", { count: prCount })}
         </div>
       )}
 
@@ -171,9 +173,9 @@ export default function WorkoutDetailPage({
             <div className="p-3">
               {/* Column headers */}
               <div className="grid grid-cols-[40px_1fr_1fr] gap-2 text-[10px] text-neutral-400 mb-1">
-                <span>組</span>
-                <span>重量 (kg)</span>
-                <span>次數</span>
+                <span>{t("workout:detailPage.set")}</span>
+                <span>{t("workout:detailPage.weightKg")}</span>
+                <span>{t("workout:detailPage.reps")}</span>
               </div>
 
               {ex.sets.map((set) => (
@@ -209,7 +211,7 @@ export default function WorkoutDetailPage({
 
       {workout.note && (
         <div className="rounded-lg bg-neutral-50 dark:bg-neutral-900 p-3">
-          <p className="text-xs text-neutral-400 mb-1">備註</p>
+          <p className="text-xs text-neutral-400 mb-1">{t("common:labels.notes")}</p>
           <p className="text-sm font-light">{workout.note}</p>
         </div>
       )}

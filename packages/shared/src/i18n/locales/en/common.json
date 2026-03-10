@@ -11,7 +11,33 @@
   "auth": {
     "login": "Sign In",
     "logout": "Sign Out",
-    "register": "Sign Up"
+    "register": "Sign Up",
+    "loginToContinue": "Sign in to continue",
+    "createAccount": "Create Account",
+    "loginDescription": "Sign in to access full health tracking features",
+    "registerDescription": "Create an account to start your Health OS",
+    "loginFailed": "Sign in failed",
+    "registerFailed": "Sign up failed",
+    "loginFailedRetry": "Sign in failed, please try again later",
+    "registerFailedRetry": "Sign up failed, please try again later",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "registerSuccessReferralFailed": "Registered successfully, but referral code application failed",
+    "registerSuccessReferralFailedWithError": "Registered successfully, but referral code application failed: {{error}}",
+    "googleLoginFailed": "Google sign in failed, please try again later",
+    "appleLoginFailed": "Apple sign in failed, please try again later",
+    "useGoogleLogin": "Sign in with Google",
+    "useAppleLogin": "Sign in with Apple",
+    "loggingIn": "Signing in...",
+    "registering": "Signing up...",
+    "or": "or",
+    "namePlaceholder": "Name",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "passwordRegisterPlaceholder": "Password (min 8 characters)",
+    "referralCodePlaceholder": "Referral code (optional)",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "pleaseLoginFirst": "Please sign in first"
   },
   "theme": {
     "label": "Appearance",
@@ -30,7 +56,15 @@
     "close": "Close",
     "search": "Search",
     "loading": "Loading...",
-    "retry": "Retry"
+    "retry": "Retry",
+    "update": "Update",
+    "record": "Record",
+    "saving": "Saving...",
+    "creating": "Creating...",
+    "start": "Start",
+    "stop": "Stop",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All"
   },
   "toast": {
     "saveSuccess": "Saved successfully",
@@ -38,7 +72,16 @@
     "deleteSuccess": "Deleted successfully",
     "deleteFailed": "Failed to delete",
     "error": "An error occurred",
-    "networkError": "Network error, please try again later"
+    "networkError": "Network error, please try again later",
+    "addedToDiary": "Added to diary",
+    "addFailed": "Failed to add, please retry",
+    "createFoodFailed": "Failed to create food, please retry",
+    "saveFailed2": "Failed to save, please retry",
+    "errorRetry": "An error occurred, please try again later or contact support"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "Sorry, an error occurred on this page"
   },
   "empty": {
     "noData": "No data yet",
@@ -47,7 +90,13 @@
   "time": {
     "today": "Today",
     "yesterday": "Yesterday",
-    "tomorrow": "Tomorrow"
+    "tomorrow": "Tomorrow",
+    "todayShort": "Today",
+    "backToToday": "Back to today",
+    "days": "days",
+    "hours": "hours",
+    "minutes": "minutes",
+    "seconds": "seconds"
   },
   "units": {
     "kcal": "kcal",
@@ -55,6 +104,95 @@
     "mg": "mg",
     "ml": "ml",
     "kg": "kg",
-    "cm": "cm"
+    "cm": "cm",
+    "steps": "steps",
+    "pieces": "pcs"
+  },
+  "macro": {
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "fiber": "Fiber",
+    "calories": "Calories"
+  },
+  "labels": {
+    "consumed": "Consumed",
+    "remaining": "Remaining",
+    "target": "Target",
+    "exerciseBurned": "Exercise burned",
+    "basicInfo": "Basic Info",
+    "nutritionInfo": "Nutrition Info",
+    "nutritionInfoPerServing": "Nutrition Info (per serving)",
+    "otherNutrients": "Other Nutrients",
+    "microNutrients": "Micronutrients",
+    "notes": "Notes",
+    "optional": "Optional",
+    "required": "Required"
+  },
+  "nutrientLabels": {
+    "saturatedFat": "Saturated Fat",
+    "transFat": "Trans Fat",
+    "sugar": "Sugar",
+    "dietaryFiber": "Dietary Fiber",
+    "sodium": "Sodium",
+    "cholesterol": "Cholesterol",
+    "calcium": "Calcium",
+    "iron": "Iron",
+    "potassium": "Potassium",
+    "vitaminA": "Vitamin A",
+    "vitaminC": "Vitamin C",
+    "vitaminD": "Vitamin D"
+  },
+  "hub": {
+    "title": "Feature Hub",
+    "sections": {
+      "tracking": "Tracking",
+      "tools": "Tools",
+      "life": "Life",
+      "account": "Account",
+      "dataManagement": "Data Management",
+      "community": "Community"
+    },
+    "items": {
+      "diary": "Food Diary",
+      "exercise": "Exercise Log",
+      "workout": "Workout Log",
+      "water": "Water Tracking",
+      "fasting": "Intermittent Fasting",
+      "sleep": "Sleep Tracking",
+      "weight": "Weight Log",
+      "steps": "Step Counter",
+      "posture": "Posture Reminder",
+      "aiAdvisor": "AI Advisor",
+      "progress": "Progress Analysis",
+      "goals": "Goal Settings",
+      "scanLabel": "Scan Label",
+      "foodDatabase": "Food Database",
+      "achievements": "Achievements",
+      "referral": "Referral Code",
+      "subscription": "Subscription",
+      "profile": "Profile",
+      "notifications": "Notifications",
+      "coaching": "My Coach",
+      "settings": "Settings",
+      "export": "Export Data",
+      "lineCommunity": "Line Community",
+      "reportIssue": "Report Issue"
+    },
+    "badges": {
+      "new": "New",
+      "coming": "Soon",
+      "app": "App"
+    },
+    "tooltips": {
+      "mobileOnly": "App Only",
+      "comingSoon": "Coming Soon"
+    }
+  },
+  "upgrade": {
+    "title": "Upgrade to Pro",
+    "description": "Unlock all advanced features for better health management",
+    "comingSoon": "Coming Soon",
+    "paymentDeveloping": "Payment feature is under development, subscription will be available once ready"
   }
 }

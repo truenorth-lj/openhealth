@@ -8,6 +8,7 @@ import { Dialog, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import posthog from "posthog-js";
 import { FASTING_PROTOCOLS, type FastingProtocol } from "@open-health/shared/constants";
+import { useTranslation } from "react-i18next";
 
 const MS_PER_HOUR = 3600 * 1000;
 // SVG circle circumference: 2 * PI * r(86) ≈ 540
@@ -41,6 +42,7 @@ function formatDateTime(date: Date | string) {
 }
 
 export default function FastingPage() {
+  const { t } = useTranslation(["fasting", "exercise"]);
   const utils = trpc.useUtils();
 
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
@@ -57,7 +59,7 @@ export default function FastingPage() {
     onSuccess: () => {
       utils.fasting.getConfig.invalidate();
       setConfigDialogOpen(false);
-      toast.success("設定已儲存");
+      toast.success(t("fasting:configSaved"));
       posthog.capture("fasting_config_saved", { protocol: selectedProtocol });
     },
     onError: (err) => toast.error(err.message),
@@ -67,7 +69,7 @@ export default function FastingPage() {
     onSuccess: () => {
       utils.fasting.getActiveFast.invalidate();
       utils.fasting.getHistory.invalidate();
-      toast.success("開始斷食！");
+      toast.success(t("fasting:fastingStarted"));
       posthog.capture("fasting_started");
     },
     onError: (err) => toast.error(err.message),
@@ -78,9 +80,9 @@ export default function FastingPage() {
       utils.fasting.getActiveFast.invalidate();
       utils.fasting.getHistory.invalidate();
       if (data.completed) {
-        toast.success(`斷食完成！實際 ${data.actualHours} 小時`);
+        toast.success(t("fasting:fastingCompleted", { hours: data.actualHours }));
       } else {
-        toast(`斷食結束，實際 ${data.actualHours} 小時`);
+        toast(t("fasting:fastingEnded", { hours: data.actualHours }));
       }
       posthog.capture("fasting_ended", { actual_hours: data.actualHours, completed: data.completed });
     },
@@ -90,7 +92,7 @@ export default function FastingPage() {
   const deleteFast = trpc.fasting.deleteFast.useMutation({
     onSuccess: () => {
       utils.fasting.getHistory.invalidate();
-      toast.success("記錄已刪除");
+      toast.success(t("fasting:recordDeleted"));
     },
     onError: (err) => toast.error(err.message),
   });
@@ -163,7 +165,7 @@ export default function FastingPage() {
   return (
     <div className="px-4 py-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-light tracking-wide">間歇性斷食</h1>
+        <h1 className="text-xl font-light tracking-wide">{t("fasting:title")}</h1>
         <button
           onClick={handleOpenConfig}
           className="text-neutral-400 hover:text-foreground transition-colors"
@@ -176,9 +178,9 @@ export default function FastingPage() {
       {config && (
         <div className="text-center">
           <p className="text-sm font-light text-neutral-400">
-            {FASTING_PROTOCOLS.find((p) => p.value === config.protocol)?.label ?? "自訂"} 模式
+            {FASTING_PROTOCOLS.find((p) => p.value === config.protocol)?.label ?? t("exercise:custom")} {t("fasting:mode")}
             <span className="mx-2">·</span>
-            進食時間 {config.eatingStart.slice(0, 5)} - {config.eatingEnd.slice(0, 5)}
+            {t("fasting:eatingTime")} {config.eatingStart.slice(0, 5)} - {config.eatingEnd.slice(0, 5)}
           </p>
         </div>
       )}
@@ -218,19 +220,19 @@ export default function FastingPage() {
             {activeFast ? (
               <>
                 <p className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 mb-1">
-                  {isOvertime ? "已超時" : "已經過"}
+                  {isOvertime ? t("fasting:overtime") : t("fasting:elapsed")}
                 </p>
                 <span className="text-3xl font-extralight tabular-nums tracking-wider">
                   {elapsed.hours}:{elapsed.minutes}:{elapsed.seconds}
                 </span>
                 <p className="text-xs font-light text-neutral-400 mt-1">
-                  {isOvertime ? "目標已達成！" : `剩餘 ${remaining.hours}:${remaining.minutes}`}
+                  {isOvertime ? t("fasting:goalReached") : t("fasting:remainingTime", { time: `${remaining.hours}:${remaining.minutes}` })}
                 </p>
               </>
             ) : (
               <>
                 <Timer className="h-6 w-6 text-green-500 mb-2" strokeWidth={1.5} />
-                <span className="text-sm font-light text-neutral-400">尚未開始</span>
+                <span className="text-sm font-light text-neutral-400">{t("fasting:notStarted")}</span>
               </>
             )}
           </div>
@@ -246,7 +248,7 @@ export default function FastingPage() {
             className="flex items-center gap-2 px-8 py-3 rounded-full border border-red-500/30 text-red-500 text-sm font-light transition-all hover:bg-red-500/10 disabled:opacity-50"
           >
             <Square className="h-4 w-4" strokeWidth={1.5} />
-            {endFast.isPending ? "結束中..." : "結束斷食"}
+            {endFast.isPending ? t("fasting:ending") : t("fasting:endFasting")}
           </button>
         ) : (
           <button
@@ -255,14 +257,14 @@ export default function FastingPage() {
             className="flex items-center gap-2 px-8 py-3 rounded-full border border-green-500/30 text-green-500 text-sm font-light transition-all hover:bg-green-500/10 disabled:opacity-50"
           >
             <Play className="h-4 w-4" strokeWidth={1.5} />
-            {startFast.isPending ? "開始中..." : "開始斷食"}
+            {startFast.isPending ? t("fasting:starting") : t("fasting:startFasting")}
           </button>
         )}
       </div>
 
       {!config && (
         <p className="text-center text-sm font-light text-neutral-400">
-          請先點擊右上角設定斷食模式
+          {t("fasting:setupFirst")}
         </p>
       )}
 
@@ -272,7 +274,7 @@ export default function FastingPage() {
       {/* History */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          歷史紀錄
+          {t("fasting:history")}
         </p>
         {history && history.length > 0 ? (
           <div className="space-y-0">
@@ -297,7 +299,7 @@ export default function FastingPage() {
                   </div>
                   <div>
                     <p className="text-sm font-light">
-                      {Number(log.actualHours).toFixed(1)} / {Number(log.plannedHours).toFixed(0)} 小時
+                      {Number(log.actualHours).toFixed(1)} / {Number(log.plannedHours).toFixed(0)} {t("fasting:hoursCount")}
                     </p>
                     <p className="text-xs text-neutral-400 tabular-nums">
                       {formatDateTime(log.startedAt)}
@@ -316,7 +318,7 @@ export default function FastingPage() {
           </div>
         ) : (
           <p className="text-sm font-light text-neutral-300 dark:text-neutral-700">
-            還沒有斷食紀錄
+            {t("fasting:noHistory")}
           </p>
         )}
       </div>
@@ -324,12 +326,12 @@ export default function FastingPage() {
       {/* Config Dialog */}
       <Dialog open={configDialogOpen} onOpenChange={setConfigDialogOpen}>
         <DialogHeader>
-          <DialogTitle>斷食設定</DialogTitle>
+          <DialogTitle>{t("fasting:configTitle")}</DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4">
           {/* Protocol Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-light text-neutral-500">斷食模式</label>
+            <label className="text-sm font-light text-neutral-500">{t("fasting:fastingMode")}</label>
             <div className="grid grid-cols-2 gap-2">
               {FASTING_PROTOCOLS.map((p) => (
                 <button
@@ -350,10 +352,10 @@ export default function FastingPage() {
 
           {/* Eating Window */}
           <div className="space-y-2">
-            <label className="text-sm font-light text-neutral-500">進食窗口</label>
+            <label className="text-sm font-light text-neutral-500">{t("fasting:eatingWindow")}</label>
             <div className="flex items-center gap-3">
               <div className="flex-1">
-                <label className="text-xs text-neutral-400">開始</label>
+                <label className="text-xs text-neutral-400">{t("fasting:startLabel")}</label>
                 <input
                   type="time"
                   value={customEatingStart}
@@ -363,7 +365,7 @@ export default function FastingPage() {
               </div>
               <span className="text-neutral-400 mt-5">-</span>
               <div className="flex-1">
-                <label className="text-xs text-neutral-400">結束</label>
+                <label className="text-xs text-neutral-400">{t("fasting:endLabel")}</label>
                 <input
                   type="time"
                   value={customEatingEnd}
@@ -379,7 +381,7 @@ export default function FastingPage() {
             disabled={upsertConfig.isPending}
             className="w-full rounded-lg bg-green-500 py-2 text-sm font-medium text-white transition-colors hover:bg-green-600 disabled:opacity-50"
           >
-            {upsertConfig.isPending ? "儲存中..." : "儲存"}
+            {upsertConfig.isPending ? t("fasting:configSaving") : t("fasting:save")}
           </button>
         </div>
       </Dialog>
