@@ -19,7 +19,7 @@ import {
   Settings2,
   Bell,
   Apple,
-  Armchair,
+  AlarmClock,
   Activity,
   Download,
   Moon,
@@ -70,7 +70,7 @@ const sections: HubSection[] = [
       { href: "", labelKey: "hub.items.sleep", icon: Moon, implemented: true, badgeKey: "hub.badges.new", platform: "mobile" },
       { href: "/hub/weight", labelKey: "hub.items.weight", icon: Scale, implemented: true },
       { href: "/hub/steps", labelKey: "hub.items.steps", icon: Footprints, implemented: true },
-      { href: "/hub/posture", labelKey: "hub.items.posture", icon: Armchair, implemented: true, badgeKey: "hub.badges.new" },
+      { href: "/hub/posture", labelKey: "hub.items.posture", icon: AlarmClock, implemented: true, badgeKey: "hub.badges.new" },
     ],
   },
   {

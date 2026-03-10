@@ -1,7 +1,7 @@
 /**
  * Huberman Lab YouTube Digest 腳本
  * 自動抓取 Huberman Lab YouTube 頻道的新影片逐字稿，
- * 用 MiniMax AI 分析後生成繁體中文摘要文章存入資料庫。
+ * 用 MiniMax AI 分析後生成摘要文章存入資料庫。
  *
  * 用法：
  *   cd apps/web && source .env.local && \
@@ -11,10 +11,12 @@
  *   pnpm huberman -- --limit 3
  *   pnpm huberman -- --dry-run
  *   pnpm huberman -- --video-id dQw4w9WgXcQ
+ *   pnpm huberman -- --locale en          # 產生英文版
+ *   pnpm huberman -- --locale en --limit 10
  */
 
 import { drizzle } from "drizzle-orm/postgres-js";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import postgres from "postgres";
 import { blogPosts } from "../src/server/db/schema";
 
@@ -23,11 +25,13 @@ import { blogPosts } from "../src/server/db/schema";
 const HUBERMAN_CHANNEL_ID = "UC2D2CMWXMOVWx7giW1n3LIg";
 const MINIMAX_API_URL = "https://api.minimax.io/v1/text/chatcompletion_v2";
 const MINIMAX_MODEL = "MiniMax-M2.5";
-const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 3000;
+const MAX_RETRIES = 5;
+const RETRY_DELAY_MS = 5000;
 const CHUNK_SIZE = 80000; // ~80K chars per chunk for map-reduce
 
 // ---------- Types ----------
+
+type Locale = "zh-TW" | "en";
 
 interface YouTubeVideo {
   id: string;
@@ -43,6 +47,107 @@ interface ArticleResult {
   content: string;
   tags: string[];
 }
+
+// ---------- Phase 1 Summary Budget ----------
+// Keep Phase 2 total input under ~12K chars to avoid MiniMax socket disconnects.
+// Budget per chunk = floor(PHASE2_BUDGET / numChunks)
+
+const PHASE2_BUDGET = 12000;
+
+function summaryBudget(numChunks: number): number | null {
+  if (numChunks <= 1) return null; // no limit for single chunk
+  return Math.floor(PHASE2_BUDGET / numChunks);
+}
+
+function getPhase1System(locale: Locale, charLimit: number | null): string {
+  const base =
+    locale === "zh-TW"
+      ? `你是一位專業的健康科學內容分析師。你會收到 Huberman Lab podcast 的逐字稿片段（含時間戳）。
+
+請提取以下內容：
+1. **核心科學概念**：主要討論的生物機制、神經科學原理
+2. **實用建議**：具體的健康/生活方式建議（劑量、時間、方法）
+3. **研究數據**：引用的研究結果和數據
+4. **關鍵時間點**：重要話題的時間戳
+
+輸出格式為繁體中文，保持條理清晰。保留重要的英文術語（括號標注）。`
+      : `You are an expert health science content analyst. You will receive transcript segments (with timestamps) from the Huberman Lab podcast.
+
+Extract the following:
+1. **Core Scientific Concepts**: Key biological mechanisms and neuroscience principles discussed
+2. **Practical Advice**: Specific health/lifestyle recommendations (dosages, timing, methods)
+3. **Research Data**: Referenced study results and data points
+4. **Key Timestamps**: Timestamps of important topics
+
+Output in clear, well-organized English. Retain scientific terminology accurately.`;
+
+  if (charLimit) {
+    const suffix =
+      locale === "zh-TW"
+        ? `\n\n⚠️ 嚴格限制：輸出總長度不超過 ${charLimit} 字元。只保留最重要的要點，刪除次要細節和冗長引述。用精簡的條列式呈現。`
+        : `\n\n⚠️ STRICT LIMIT: Keep your entire output under ${charLimit} characters. Focus only on the most important points, use concise bullet points, and omit secondary details and lengthy quotes.`;
+    return base + suffix;
+  }
+  return base;
+}
+
+// ---------- Locale-specific Prompts ----------
+
+const PROMPTS = {
+  "zh-TW": {
+
+    phase2System: `你是一位專業的健康科學科普作家。你會收到 Huberman Lab podcast 的分段摘要，請整合成一篇完整的繁體中文深度筆記文章。
+
+輸出嚴格的 JSON 格式（不要包含 markdown code block 標記）：
+{
+  "title": "繁體中文標題（簡潔有力，點出核心主題）",
+  "slug": "english-url-slug-with-hyphens",
+  "summary": "精華摘要（300-500 字，涵蓋核心觀點和最重要的實用建議）",
+  "content": "深度筆記（Markdown 格式，包含以下章節：\\n## 核心主題\\n## 科學機制\\n## 實用建議\\n## 關鍵時間點\\n## 延伸資源）",
+  "tags": ["標籤1", "標籤2"]
+}
+
+重要規則：
+1. 所有內容使用繁體中文
+2. 保留重要英文術語（括號標注）
+3. 實用建議要具體（包含劑量、時間、頻率等）
+4. content 使用 Markdown 格式，章節用 ## 標題
+5. tags 選擇 3-6 個相關標籤（如：睡眠、多巴胺、運動、營養等）
+6. slug 使用英文，用連字號分隔，簡短描述主題`,
+
+    phase1User: (title: string, i: number, total: number, chunk: string) =>
+      `影片標題：${title}\n\n逐字稿片段 ${i}/${total}：\n\n${chunk}`,
+    phase2User: (title: string, summaries: string) =>
+      `影片標題：${title}\n\n以下是各段落的摘要：\n\n${summaries}`,
+    chunkLabel: (i: number) => `--- 段落 ${i} 摘要 ---`,
+  },
+  en: {
+    phase2System: `You are an expert health science writer. You will receive segmented summaries from a Huberman Lab podcast episode. Synthesize them into a comprehensive English article.
+
+Output strict JSON format (do NOT include markdown code block markers):
+{
+  "title": "Concise, compelling English title highlighting the core topic",
+  "slug": "english-url-slug-with-hyphens",
+  "summary": "Executive summary (150-300 words) covering core insights and the most important practical takeaways",
+  "content": "In-depth notes (Markdown format with these sections:\\n## Core Topic\\n## Scientific Mechanisms\\n## Practical Recommendations\\n## Key Timestamps\\n## Further Resources)",
+  "tags": ["Tag1", "Tag2"]
+}
+
+Important rules:
+1. All content in English
+2. Use accurate scientific terminology
+3. Practical advice must be specific (include dosages, timing, frequency, etc.)
+4. content uses Markdown format with ## headings
+5. Select 3-6 relevant tags (e.g.: Sleep, Dopamine, Exercise, Nutrition, etc.)
+6. slug uses lowercase English with hyphens, briefly describing the topic`,
+
+    phase1User: (title: string, i: number, total: number, chunk: string) =>
+      `Video title: ${title}\n\nTranscript segment ${i}/${total}:\n\n${chunk}`,
+    phase2User: (title: string, summaries: string) =>
+      `Video title: ${title}\n\nSegment summaries:\n\n${summaries}`,
+    chunkLabel: (i: number) => `--- Segment ${i} Summary ---`,
+  },
+} as const;
 
 // ---------- YouTube Data API ----------
 
@@ -98,24 +203,53 @@ async function fetchChannelVideos(
   return videos;
 }
 
-// ---------- YouTube Transcript ----------
+// ---------- YouTube Transcript (via yt-dlp) ----------
 
 async function fetchTranscript(videoId: string): Promise<string> {
-  const { YoutubeTranscript } = await import("@danielxceron/youtube-transcript");
+  const { execSync } = await import("child_process");
+  const { readFileSync, unlinkSync } = await import("fs");
+  const tmpFile = `/tmp/yt-transcript-${videoId}`;
 
-  const segments = await YoutubeTranscript.fetchTranscript(videoId);
-  if (!segments || segments.length === 0) {
-    throw new Error(`No transcript available for video ${videoId}`);
+  try {
+    execSync(
+      `yt-dlp --write-auto-sub --sub-lang en --skip-download --sub-format json3 -o "${tmpFile}" "https://www.youtube.com/watch?v=${videoId}"`,
+      { stdio: "pipe", timeout: 60000 }
+    );
+
+    const json3Path = `${tmpFile}.en.json3`;
+    const data = JSON.parse(readFileSync(json3Path, "utf-8"));
+    unlinkSync(json3Path);
+
+    const events: Array<{ tStartMs?: number; segs?: Array<{ utf8: string }> }> =
+      data.events || [];
+    const lines: string[] = [];
+
+    for (const ev of events) {
+      if (ev.segs === undefined) continue;
+      const segText = ev.segs.map((s) => s.utf8).join("");
+      if (segText.trim()) {
+        const ms = ev.tStartMs || 0;
+        const mins = Math.floor(ms / 60000);
+        const secs = Math.floor((ms % 60000) / 1000);
+        const ts = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+        lines.push(`[${ts}] ${segText.trim()}`);
+      }
+    }
+
+    if (lines.length === 0) {
+      throw new Error(`No transcript segments found for video ${videoId}`);
+    }
+
+    return lines.join("\n");
+  } catch (err) {
+    // Clean up temp files on error
+    try {
+      unlinkSync(`${tmpFile}.en.json3`);
+    } catch {
+      // ignore
+    }
+    throw new Error(`Failed to fetch transcript for ${videoId}: ${err}`);
   }
-
-  return segments
-    .map((s: { offset: number; text: string }) => {
-      const mins = Math.floor(s.offset / 60000);
-      const secs = Math.floor((s.offset % 60000) / 1000);
-      const ts = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-      return `[${ts}] ${s.text}`;
-    })
-    .join("\n");
 }
 
 // ---------- MiniMax AI ----------
@@ -123,7 +257,8 @@ async function fetchTranscript(videoId: string): Promise<string> {
 async function callMiniMax(
   apiKey: string,
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
+  maxTokens = 16000
 ): Promise<string> {
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
@@ -139,7 +274,7 @@ async function callMiniMax(
             { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt },
           ],
-          max_tokens: 16000,
+          max_tokens: maxTokens,
           temperature: 0.3,
         }),
       });
@@ -169,35 +304,6 @@ async function callMiniMax(
 
 // ---------- Map-Reduce Processing ----------
 
-const PHASE1_SYSTEM = `你是一位專業的健康科學內容分析師。你會收到 Huberman Lab podcast 的逐字稿片段（含時間戳）。
-
-請提取以下內容：
-1. **核心科學概念**：主要討論的生物機制、神經科學原理
-2. **實用建議**：具體的健康/生活方式建議（劑量、時間、方法）
-3. **研究數據**：引用的研究結果和數據
-4. **關鍵時間點**：重要話題的時間戳
-
-輸出格式為繁體中文，保持條理清晰。保留重要的英文術語（括號標注）。`;
-
-const PHASE2_SYSTEM = `你是一位專業的健康科學科普作家。你會收到 Huberman Lab podcast 的分段摘要，請整合成一篇完整的繁體中文深度筆記文章。
-
-輸出嚴格的 JSON 格式（不要包含 markdown code block 標記）：
-{
-  "title": "繁體中文標題（簡潔有力，點出核心主題）",
-  "slug": "english-url-slug-with-hyphens",
-  "summary": "精華摘要（300-500 字，涵蓋核心觀點和最重要的實用建議）",
-  "content": "深度筆記（Markdown 格式，包含以下章節：\\n## 核心主題\\n## 科學機制\\n## 實用建議\\n## 關鍵時間點\\n## 延伸資源）",
-  "tags": ["標籤1", "標籤2"]
-}
-
-重要規則：
-1. 所有內容使用繁體中文
-2. 保留重要英文術語（括號標注）
-3. 實用建議要具體（包含劑量、時間、頻率等）
-4. content 使用 Markdown 格式，章節用 ## 標題
-5. tags 選擇 3-6 個相關標籤（如：睡眠、多巴胺、運動、營養等）
-6. slug 使用英文，用連字號分隔，簡短描述主題`;
-
 function chunkTranscript(transcript: string): string[] {
   if (transcript.length <= CHUNK_SIZE) {
     return [transcript];
@@ -225,37 +331,45 @@ function chunkTranscript(transcript: string): string[] {
 async function processTranscript(
   minimaxKey: string,
   transcript: string,
-  videoTitle: string
+  videoTitle: string,
+  locale: Locale
 ): Promise<ArticleResult> {
+  const prompts = PROMPTS[locale];
   const chunks = chunkTranscript(transcript);
+  const budget = summaryBudget(chunks.length);
   console.log(
-    `  Transcript: ${transcript.length} chars, ${chunks.length} chunk(s)`
+    `  Transcript: ${transcript.length} chars, ${chunks.length} chunk(s), budget: ${budget ?? "unlimited"} chars/chunk`
   );
 
-  // Phase 1: Extract key points from each chunk
+  // Phase 1: Extract key points from each chunk (with length budget)
+  const p1System = getPhase1System(locale, budget);
   const chunkSummaries: string[] = [];
   for (let i = 0; i < chunks.length; i++) {
     console.log(
       `  Phase 1: Processing chunk ${i + 1}/${chunks.length} (${chunks[i].length} chars)...`
     );
+    // ~4 chars per token; cap Phase 1 output tokens to match budget
+    const p1MaxTokens = budget ? Math.ceil(budget / 4) + 200 : 16000;
     const summary = await callMiniMax(
       minimaxKey,
-      PHASE1_SYSTEM,
-      `影片標題：${videoTitle}\n\n逐字稿片段 ${i + 1}/${chunks.length}：\n\n${chunks[i]}`
+      p1System,
+      prompts.phase1User(videoTitle, i + 1, chunks.length, chunks[i]),
+      p1MaxTokens
     );
     chunkSummaries.push(summary);
   }
 
   // Phase 2: Merge summaries into final article
-  console.log("  Phase 2: Generating final article...");
   const mergedSummaries = chunkSummaries
-    .map((s, i) => `--- 段落 ${i + 1} 摘要 ---\n${s}`)
+    .map((s, i) => `${prompts.chunkLabel(i + 1)}\n${s}`)
     .join("\n\n");
+
+  console.log(`  Phase 2: Generating final article... (merged summaries: ${mergedSummaries.length} chars)`);
 
   const finalResponse = await callMiniMax(
     minimaxKey,
-    PHASE2_SYSTEM,
-    `影片標題：${videoTitle}\n\n以下是各段落的摘要：\n\n${mergedSummaries}`
+    prompts.phase2System,
+    prompts.phase2User(videoTitle, mergedSummaries)
   );
 
   // Parse JSON from response (handle potential markdown code blocks)
@@ -286,10 +400,12 @@ function parseArgs(argv: string[]): {
   limit: number;
   dryRun: boolean;
   videoId: string | null;
+  locale: Locale;
 } {
   let limit = 5;
   let dryRun = false;
   let videoId: string | null = null;
+  let locale: Locale = "zh-TW";
 
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--limit" && argv[i + 1]) {
@@ -300,10 +416,18 @@ function parseArgs(argv: string[]): {
     } else if (argv[i] === "--video-id" && argv[i + 1]) {
       videoId = argv[i + 1];
       i++;
+    } else if (argv[i] === "--locale" && argv[i + 1]) {
+      const val = argv[i + 1];
+      if (val !== "zh-TW" && val !== "en") {
+        console.error(`Invalid locale: ${val}. Supported: zh-TW, en`);
+        process.exit(1);
+      }
+      locale = val;
+      i++;
     }
   }
 
-  return { limit, dryRun, videoId };
+  return { limit, dryRun, videoId, locale };
 }
 
 // ---------- Main ----------
@@ -311,7 +435,7 @@ function parseArgs(argv: string[]): {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   console.log("=== Huberman Lab YouTube Digest ===");
-  console.log(`Config: limit=${args.limit}, dryRun=${args.dryRun}, videoId=${args.videoId || "auto"}`);
+  console.log(`Config: limit=${args.limit}, dryRun=${args.dryRun}, locale=${args.locale}, videoId=${args.videoId || "auto"}`);
 
   // Validate env vars
   const databaseUrl = process.env.DATABASE_URL;
@@ -380,16 +504,21 @@ async function main() {
 
     console.log(`Found ${videos.length} video(s)`);
 
-    // Filter out already-processed videos
+    // Filter out already-processed videos (check by videoId + locale)
     const newVideos: YouTubeVideo[] = [];
     for (const video of videos) {
       const existing = await db
         .select({ id: blogPosts.id })
         .from(blogPosts)
-        .where(eq(blogPosts.youtubeVideoId, video.id))
+        .where(
+          and(
+            eq(blogPosts.youtubeVideoId, video.id),
+            eq(blogPosts.locale, args.locale)
+          )
+        )
         .limit(1);
       if (existing.length > 0) {
-        console.log(`  [SKIP] Already processed: ${video.title}`);
+        console.log(`  [SKIP] Already processed (${args.locale}): ${video.title}`);
       } else {
         newVideos.push(video);
       }
@@ -427,7 +556,8 @@ async function main() {
         const article = await processTranscript(
           minimaxKey,
           transcript,
-          video.title
+          video.title,
+          args.locale
         );
         console.log(`  Article generated: "${article.title}"`);
         console.log(`  Tags: ${article.tags.join(", ")}`);
@@ -443,12 +573,14 @@ async function main() {
           youtubeChannel: "Huberman Lab",
           videoPublishedAt: new Date(video.publishedAt),
           tags: article.tags,
+          locale: args.locale,
           status: "published",
           metadata: {
             model: MINIMAX_MODEL,
             originalTitle: video.title,
             transcriptLength: transcript.length,
             processedAt: new Date().toISOString(),
+            locale: args.locale,
           },
         });
 

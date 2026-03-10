@@ -164,6 +164,7 @@
       "sleep": "Sleep Tracking",
       "weight": "Weight Log",
       "steps": "Step Counter",
+      "postureDetection": "AirPods\nPosture Detection",
       "posture": "Posture Reminder",
       "aiAdvisor": "AI Advisor",
       "progress": "Progress Analysis",
