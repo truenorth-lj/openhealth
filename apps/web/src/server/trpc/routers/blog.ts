@@ -10,12 +10,14 @@ export const blogRouter = router({
         .object({
           limit: z.number().min(1).max(50).default(20),
           offset: z.number().min(0).default(0),
+          locale: z.string().default("zh-TW"),
         })
         .optional()
     )
     .query(async ({ ctx, input }) => {
       const limit = input?.limit ?? 20;
       const offset = input?.offset ?? 0;
+      const locale = input?.locale ?? "zh-TW";
 
       const posts = await ctx.db
         .select({
@@ -30,7 +32,12 @@ export const blogRouter = router({
           videoPublishedAt: blogPosts.videoPublishedAt,
         })
         .from(blogPosts)
-        .where(eq(blogPosts.status, "published"))
+        .where(
+          and(
+            eq(blogPosts.status, "published"),
+            eq(blogPosts.locale, locale)
+          )
+        )
         .orderBy(desc(blogPosts.createdAt))
         .limit(limit)
         .offset(offset);
@@ -39,18 +46,34 @@ export const blogRouter = router({
     }),
 
   getBySlug: publicProcedure
-    .input(z.object({ slug: z.string() }))
+    .input(z.object({ slug: z.string(), locale: z.string().default("zh-TW") }))
     .query(async ({ ctx, input }) => {
-      const post = await ctx.db
+      let post = await ctx.db
         .select()
         .from(blogPosts)
         .where(
           and(
             eq(blogPosts.slug, input.slug),
-            eq(blogPosts.status, "published")
+            eq(blogPosts.status, "published"),
+            eq(blogPosts.locale, input.locale)
           )
         )
         .limit(1);
+
+      // Fallback to zh-TW if not found
+      if (!post[0] && input.locale !== "zh-TW") {
+        post = await ctx.db
+          .select()
+          .from(blogPosts)
+          .where(
+            and(
+              eq(blogPosts.slug, input.slug),
+              eq(blogPosts.status, "published"),
+              eq(blogPosts.locale, "zh-TW")
+            )
+          )
+          .limit(1);
+      }
 
       return post[0] ?? null;
     }),

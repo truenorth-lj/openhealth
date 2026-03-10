@@ -20,19 +20,41 @@ interface Props {
   params: Promise<{ locale: string; slug: string }>;
 }
 
-async function getPost(slug: string) {
-  const result = await db
+async function getPost(slug: string, locale: string) {
+  let result = await db
     .select()
     .from(blogPosts)
-    .where(and(eq(blogPosts.slug, slug), eq(blogPosts.status, "published")))
+    .where(
+      and(
+        eq(blogPosts.slug, slug),
+        eq(blogPosts.status, "published"),
+        eq(blogPosts.locale, locale)
+      )
+    )
     .limit(1);
+
+  // Fallback to zh-TW if not found
+  if (!result[0] && locale !== "zh-TW") {
+    result = await db
+      .select()
+      .from(blogPosts)
+      .where(
+        and(
+          eq(blogPosts.slug, slug),
+          eq(blogPosts.status, "published"),
+          eq(blogPosts.locale, "zh-TW")
+        )
+      )
+      .limit(1);
+  }
+
   return result[0] ?? null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
   const lang = (locale as Locale) || defaultLocale;
-  const post = await getPost(slug);
+  const post = await getPost(slug, lang);
   if (!post) return { title: notFoundTitles[lang] };
 
   return {
@@ -55,8 +77,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-  const { slug } = await params;
-  const post = await getPost(slug);
+  const { locale, slug } = await params;
+  const lang = (locale as Locale) || defaultLocale;
+  const post = await getPost(slug, lang);
   if (!post) notFound();
 
   return (

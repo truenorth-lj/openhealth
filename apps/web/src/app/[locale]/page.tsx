@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SiteNav } from "@/components/layout/site-nav";
 import { db } from "@/server/db";
 import { blogPosts } from "@/server/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { LandingContent } from "./landing-content";
 import { defaultLocale, type Locale } from "@/lib/i18n-config";
 
@@ -37,7 +37,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function LandingPage() {
+export default async function LandingPage({ params }: Props) {
+  const { locale } = await params;
+  const lang = (locale as Locale) || defaultLocale;
+
   const recentPosts = await db
     .select({
       id: blogPosts.id,
@@ -50,7 +53,9 @@ export default async function LandingPage() {
       createdAt: blogPosts.createdAt,
     })
     .from(blogPosts)
-    .where(eq(blogPosts.status, "published"))
+    .where(
+      and(eq(blogPosts.status, "published"), eq(blogPosts.locale, lang))
+    )
     .orderBy(desc(blogPosts.videoPublishedAt))
     .limit(3);
 

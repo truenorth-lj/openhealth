@@ -33,24 +33,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  // Dynamic blog posts
+  // Dynamic blog posts (grouped by slug, with locale awareness)
   const posts = await db
-    .select({ slug: blogPosts.slug, updatedAt: blogPosts.updatedAt })
+    .select({
+      slug: blogPosts.slug,
+      locale: blogPosts.locale,
+      updatedAt: blogPosts.updatedAt,
+    })
     .from(blogPosts)
     .where(eq(blogPosts.status, "published"))
     .orderBy(desc(blogPosts.videoPublishedAt))
-    .limit(100);
+    .limit(200);
 
+  // Group by slug to avoid duplicate sitemap entries
+  const slugMap = new Map<
+    string,
+    { updatedAt: Date | null; locales: Set<string> }
+  >();
   for (const post of posts) {
+    const existing = slugMap.get(post.slug);
+    if (existing) {
+      existing.locales.add(post.locale);
+      if (post.updatedAt && (!existing.updatedAt || post.updatedAt > existing.updatedAt)) {
+        existing.updatedAt = post.updatedAt;
+      }
+    } else {
+      slugMap.set(post.slug, {
+        updatedAt: post.updatedAt,
+        locales: new Set([post.locale]),
+      });
+    }
+  }
+
+  for (const [slug, data] of slugMap) {
     entries.push({
-      url: `${BASE_URL}/blog/${post.slug}`,
-      lastModified: post.updatedAt ?? new Date(),
+      url: `${BASE_URL}/blog/${slug}`,
+      lastModified: data.updatedAt ?? new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
       alternates: {
         languages: {
-          "zh-TW": `${BASE_URL}/blog/${post.slug}`,
-          en: `${BASE_URL}/en/blog/${post.slug}`,
+          "zh-TW": `${BASE_URL}/blog/${slug}`,
+          en: `${BASE_URL}/en/blog/${slug}`,
         },
       },
     });

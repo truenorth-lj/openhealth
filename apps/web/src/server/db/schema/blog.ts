@@ -29,6 +29,7 @@ export const blogPosts = pgTable(
     youtubeChannel: varchar("youtube_channel", { length: 255 }),
     videoPublishedAt: timestamp("video_published_at", { withTimezone: true }),
     tags: jsonb("tags").$type<string[]>().default([]),
+    locale: varchar("locale", { length: 10 }).default("zh-TW").notNull(),
     status: blogStatusEnum("status").default("draft").notNull(),
     metadata: jsonb("metadata").$type<Record<string, unknown>>(),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -39,8 +40,9 @@ export const blogPosts = pgTable(
       .notNull(),
   },
   (table) => [
-    uniqueIndex("blog_posts_slug_idx").on(table.slug),
+    uniqueIndex("blog_posts_slug_locale_idx").on(table.slug, table.locale),
     uniqueIndex("blog_posts_youtube_video_id_idx").on(table.youtubeVideoId),
     index("blog_posts_status_created_idx").on(table.status, table.createdAt),
+    index("blog_posts_locale_idx").on(table.locale),
   ]
 );
