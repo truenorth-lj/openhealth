@@ -185,10 +185,12 @@
     "badges": {
       "new": "新",
       "coming": "即將",
-      "app": "App"
+      "app": "App",
+      "web": "Web"
     },
     "tooltips": {
       "mobileOnly": "僅限 App",
+      "webOnly": "僅限 Web",
       "comingSoon": "敬請期待"
     }
   },

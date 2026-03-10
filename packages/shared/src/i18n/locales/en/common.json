@@ -185,10 +185,12 @@
     "badges": {
       "new": "New",
       "coming": "Soon",
-      "app": "App"
+      "app": "App",
+      "web": "Web"
     },
     "tooltips": {
       "mobileOnly": "App Only",
+      "webOnly": "Web Only",
       "comingSoon": "Coming Soon"
     }
   },

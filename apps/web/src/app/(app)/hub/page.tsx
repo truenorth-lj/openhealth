@@ -3,27 +3,28 @@
 import Link from "next/link";
 import {
   UtensilsCrossed,
+  Activity,
   Dumbbell,
   Droplets,
+  Timer,
+  Moon,
+  Scale,
+  Footprints,
+  Headphones,
+  AlarmClock,
   Bot,
   TrendingUp,
   Target,
   Camera,
-  Timer,
-  Scale,
-  Footprints,
+  Apple,
   Trophy,
   Gift,
   CreditCard,
   User,
   Settings2,
   Bell,
-  Apple,
-  AlarmClock,
-  Activity,
-  Download,
-  Moon,
   GraduationCap,
+  Download,
   MessageCircle,
 } from "lucide-react";
 
@@ -70,6 +71,7 @@ const sections: HubSection[] = [
       { href: "", labelKey: "hub.items.sleep", icon: Moon, implemented: true, badgeKey: "hub.badges.new", platform: "mobile" },
       { href: "/hub/weight", labelKey: "hub.items.weight", icon: Scale, implemented: true },
       { href: "/hub/steps", labelKey: "hub.items.steps", icon: Footprints, implemented: true },
+      { href: "", labelKey: "hub.items.postureDetection", icon: Headphones, implemented: true, badgeKey: "hub.badges.new", platform: "mobile" },
       { href: "/hub/posture", labelKey: "hub.items.posture", icon: AlarmClock, implemented: true, badgeKey: "hub.badges.new" },
     ],
   },
@@ -146,10 +148,21 @@ export default function HubPage() {
 function HubIcon({ item }: { item: HubItem }) {
   const { t } = useTranslation("common");
   const isDisabled = !item.implemented || item.platform === "mobile";
-  const tooltipText = item.platform === "mobile" ? t("hub.tooltips.mobileOnly") : t("hub.tooltips.comingSoon");
+  const tooltipText = item.platform === "mobile"
+    ? t("hub.tooltips.mobileOnly")
+    : !item.implemented
+      ? t("hub.tooltips.comingSoon")
+      : "";
 
-  const badgeText = item.platform === "mobile" ? t("hub.badges.app") : item.badgeKey ? t(item.badgeKey) : undefined;
-  const badgeStyle = item.platform === "mobile"
+  const badgeText = item.platform === "mobile"
+    ? t("hub.badges.app")
+    : item.platform === "web"
+      ? t("hub.badges.web")
+      : item.badgeKey
+        ? t(item.badgeKey)
+        : undefined;
+
+  const badgeStyle = item.platform === "mobile" || item.platform === "web"
     ? "bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400"
     : item.badgeKey === "hub.badges.new"
       ? "bg-primary text-primary-foreground"
