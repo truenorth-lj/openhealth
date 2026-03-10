@@ -8,6 +8,7 @@ import {
   type ReactNode,
   type TouchEvent,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowDown, ArrowUp, Loader2 } from "lucide-react";
 
 const THRESHOLD = 80;
@@ -23,6 +24,7 @@ export function PullToRefresh({
   children: ReactNode;
   onRefresh?: () => Promise<void>;
 }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const [pullState, setPullState] = useState<PullState>("idle");
   const [pullDistance, setPullDistance] = useState(0);
@@ -108,19 +110,19 @@ export function PullToRefresh({
         {pullState === "pulling" && (
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <ArrowDown className="h-4 w-4" />
-            <span>下拉重新整理</span>
+            <span>{t("pullToRefresh.pull")}</span>
           </div>
         )}
         {pullState === "ready" && (
           <div className="flex items-center gap-1.5 text-sm text-primary">
             <ArrowUp className="h-4 w-4" />
-            <span>放開重新整理</span>
+            <span>{t("pullToRefresh.release")}</span>
           </div>
         )}
         {pullState === "refreshing" && (
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span>重新整理中...</span>
+            <span>{t("pullToRefresh.refreshing")}</span>
           </div>
         )}
       </div>

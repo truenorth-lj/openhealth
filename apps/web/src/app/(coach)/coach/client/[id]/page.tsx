@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { trpc } from "@/lib/trpc-client";
 import { useSession } from "@/lib/auth-client";
 import { ClientInfoHeader } from "@/components/coach/client-info-header";
@@ -22,6 +23,7 @@ export default function ClientDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id: clientId } = use(params);
+  const { t } = useTranslation("coach");
   const { data: session } = useSession();
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()));
 
@@ -39,7 +41,7 @@ export default function ClientDetailPage({
   if (!session?.user) {
     return (
       <div className="py-20 text-center text-sm text-neutral-400">
-        請先登入
+        {t("auth.pleaseLoginFirst", { ns: "common" })}
       </div>
     );
   }
@@ -47,7 +49,7 @@ export default function ClientDetailPage({
   if (isLoading) {
     return (
       <div className="py-20 text-center text-sm text-neutral-400">
-        載入中...
+        {t("buttons.loading", { ns: "common" })}
       </div>
     );
   }
@@ -55,7 +57,7 @@ export default function ClientDetailPage({
   if (!detail) {
     return (
       <div className="py-20 text-center text-sm text-neutral-400">
-        找不到此學員
+        {t("clientNotFound")}
       </div>
     );
   }
@@ -78,7 +80,7 @@ export default function ClientDetailPage({
       {/* Coach Notes */}
       <div className="space-y-3">
         <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-          教練備註與目標
+          {t("coachNotesAndGoals")}
         </p>
         <CoachNotesEditor
           clientId={clientId}
@@ -94,14 +96,14 @@ export default function ClientDetailPage({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-            每週數據
+            {t("weeklyData")}
           </p>
           <WeekNavigator weekStart={weekStart} onWeekChange={setWeekStart} />
         </div>
 
         {weekLoading ? (
           <div className="py-10 text-center text-sm text-neutral-400">
-            載入中...
+            {t("buttons.loading", { ns: "common" })}
           </div>
         ) : weeklyData ? (
           <div className="rounded-xl border border-black/[0.06] dark:border-white/[0.06] overflow-hidden">

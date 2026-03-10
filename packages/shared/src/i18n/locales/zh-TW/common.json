@@ -43,7 +43,9 @@
     "label": "外觀",
     "light": "淺色",
     "dark": "深色",
-    "system": "系統"
+    "system": "系統",
+    "switchToLight": "切換至淺色模式",
+    "switchToDark": "切換至深色模式"
   },
   "buttons": {
     "save": "儲存",
@@ -188,6 +190,11 @@
       "mobileOnly": "僅限 App",
       "comingSoon": "敬請期待"
     }
+  },
+  "pullToRefresh": {
+    "pull": "下拉重新整理",
+    "release": "放開重新整理",
+    "refreshing": "重新整理中..."
   },
   "upgrade": {
     "title": "升級至 Pro",

@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "description": "Open Health OS. Integrate diet, exercise, sleep, weight — all health data on one open-source platform."
+  },
+  "hero": {
+    "subtitle": "An open Health OS — diet, exercise, sleep, weight, all in one platform",
+    "cta": "Get Started"
+  },
+  "philosophy": {
+    "quote1": "Your health",
+    "quote2": "shouldn't be scattered across ten apps.",
+    "desc1": "Open Health is an open Health OS,",
+    "desc2": "integrating diet, exercise, sleep, and weight on one platform.",
+    "tagline": "Not another tracking app. It's your Health OS."
+  },
+  "features": {
+    "title01": "All-in-One Tracking",
+    "desc01": "Diet, exercise, sleep, weight, water, fasting — no more juggling multiple apps. One platform covers all aspects of health, with data naturally connected.",
+    "title02": "AI-Powered",
+    "desc02": "Photo-recognize nutrition labels, AI coach analyzes your health data and gives personalized advice. Let technology serve your health.",
+    "title03": "Data Visualization",
+    "desc03": "Weight trends, nutrition intake, sleep quality, exercise performance — all at a glance. Make better decisions with an integrated perspective.",
+    "title04": "Open Platform",
+    "desc04": "Your data is entirely yours, no lock-in, no paywalls. Open-source architecture, community-driven, anyone can contribute and extend."
+  },
+  "install": {
+    "title": "Install on Your Device",
+    "subtitle": "PWA app — no app store needed, install directly to your home screen.",
+    "ios01": "Open openhealth.blog in Safari",
+    "ios02": "Tap the share button at the bottom",
+    "ios03": "Select \"Add to Home Screen\"",
+    "android01": "Open openhealth.blog in Chrome",
+    "android02": "Tap the menu button ⋮ at the top right",
+    "android03": "Select \"Install app\"",
+    "fullGuide": "View full installation guide →"
+  },
+  "blog": {
+    "title": "Health Knowledge Base",
+    "subtitle": "In-depth content on nutrition science, training methods, and sleep optimization.",
+    "comingSoon": "Coming Soon",
+    "goToBlog": "Go to Blog →"
+  },
+  "footer": {
+    "product": "Product",
+    "getStarted": "Get Started",
+    "installGuide": "Installation Guide",
+    "privacyPolicy": "Privacy Policy",
+    "community": "Community",
+    "lineCommunity": "LINE Community",
+    "githubComingSoon": "GitHub — Coming Soon",
+    "blog": "Blog"
+  }
+}

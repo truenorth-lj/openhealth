@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { User } from "lucide-react";
 
 type Sex = "male" | "female" | "other";
@@ -23,12 +24,12 @@ interface ClientInfoHeaderProps {
   tdee: number | null;
 }
 
-const ACTIVITY_LABELS: Record<string, string> = {
-  sedentary: "久坐",
-  lightly_active: "輕度活動",
-  moderately_active: "中度活動",
-  very_active: "高度活動",
-  extremely_active: "極高活動",
+const ACTIVITY_KEYS: Record<string, string> = {
+  sedentary: "activitySedentary",
+  lightly_active: "activityLightlyActive",
+  moderately_active: "activityModeratelyActive",
+  very_active: "activityVeryActive",
+  extremely_active: "activityExtremelyActive",
 };
 
 export function ClientInfoHeader({
@@ -41,6 +42,8 @@ export function ClientInfoHeader({
   bmr,
   tdee,
 }: ClientInfoHeaderProps) {
+  const { t } = useTranslation("coach");
+
   return (
     <div className="flex flex-col sm:flex-row sm:items-start gap-4">
       <div className="flex items-center gap-3">
@@ -58,21 +61,21 @@ export function ClientInfoHeader({
       <div className="flex flex-wrap gap-4 sm:ml-auto">
         {latestWeight && (
           <InfoChip
-            label="體重"
+            label={t("weight")}
             value={`${Number(latestWeight.weightKg).toFixed(1)} kg`}
           />
         )}
-        {heightCm && <InfoChip label="身高" value={`${heightCm} cm`} />}
+        {heightCm && <InfoChip label={t("height")} value={`${heightCm} cm`} />}
         {sex && (
           <InfoChip
-            label="性別"
-            value={sex === "male" ? "男" : sex === "female" ? "女" : "其他"}
+            label={t("sex")}
+            value={sex === "male" ? t("sexMale") : sex === "female" ? t("sexFemale") : t("sexOther")}
           />
         )}
         {activityLevel && (
           <InfoChip
-            label="活動量"
-            value={ACTIVITY_LABELS[activityLevel] ?? activityLevel}
+            label={t("activityLevel")}
+            value={ACTIVITY_KEYS[activityLevel] ? t(ACTIVITY_KEYS[activityLevel]) : activityLevel}
           />
         )}
         {bmr != null && <InfoChip label="BMR" value={`${bmr} kcal`} />}

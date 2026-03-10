@@ -1,0 +1,53 @@
+{
+  "metadata": {
+    "description": "開放的健康作業系統。飲食、運動、睡眠、體重——所有健康數據整合在一個開源平台。"
+  },
+  "hero": {
+    "subtitle": "開放的健康作業系統——飲食、運動、睡眠、體重，一個平台全部搞定",
+    "cta": "開始使用"
+  },
+  "philosophy": {
+    "quote1": "你的健康，",
+    "quote2": "不該被分散在十個 App 裡。",
+    "desc1": "Open Health 是一個開放的健康作業系統，",
+    "desc2": "將飲食、運動、睡眠、體重整合在同一個平台。",
+    "tagline": "不是另一個追蹤 App。是你的健康 OS。"
+  },
+  "features": {
+    "title01": "全方位健康追蹤",
+    "desc01": "飲食、運動、睡眠、體重、水分、斷食——不再需要多個 App。一個平台涵蓋所有健康面向，數據自然互通。",
+    "title02": "AI 智能助手",
+    "desc02": "拍照辨識營養標籤、AI 教練分析你的健康數據，給出個人化建議。讓科技為你的健康服務。",
+    "title03": "數據視覺化",
+    "desc03": "體重趨勢、營養攝取、睡眠品質、運動表現——所有數據一目瞭然。用整合的視角做出更好的決策。",
+    "title04": "開源開放",
+    "desc04": "數據完全屬於你，沒有鎖定、沒有付費牆。開源架構，社群驅動，任何人都可以貢獻與擴展。"
+  },
+  "install": {
+    "title": "安裝到你的裝置",
+    "subtitle": "PWA 應用程式——無需商店下載，直接安裝到主畫面。",
+    "ios01": "用 Safari 開啟 openhealth.blog",
+    "ios02": "點選底部分享按鈕",
+    "ios03": "選擇「加入主畫面」",
+    "android01": "用 Chrome 開啟 openhealth.blog",
+    "android02": "點選右上角選單 ⋮",
+    "android03": "選擇「安裝應用程式」",
+    "fullGuide": "查看完整安裝指南 →"
+  },
+  "blog": {
+    "title": "健康知識庫",
+    "subtitle": "營養科學、訓練方法、睡眠優化的深度內容。",
+    "comingSoon": "即將推出",
+    "goToBlog": "前往部落格 →"
+  },
+  "footer": {
+    "product": "產品",
+    "getStarted": "開始使用",
+    "installGuide": "安裝指南",
+    "privacyPolicy": "隱私權政策",
+    "community": "社群",
+    "lineCommunity": "LINE 社群",
+    "githubComingSoon": "GitHub — 敬請期待",
+    "blog": "部落格"
+  }
+}

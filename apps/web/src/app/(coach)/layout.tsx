@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { CoachSidebar } from "@/components/coach/coach-sidebar";
 
 export default function CoachLayout({
@@ -6,6 +9,8 @@ export default function CoachLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { t } = useTranslation("coach");
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-40 border-b border-black/[0.06] dark:border-white/[0.06] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -20,7 +25,7 @@ export default function CoachLayout({
             href="/hub"
             className="text-sm font-light text-neutral-500 transition-all duration-300 hover:text-foreground"
           >
-            返回 App
+            {t("backToApp")}
           </Link>
         </div>
       </header>

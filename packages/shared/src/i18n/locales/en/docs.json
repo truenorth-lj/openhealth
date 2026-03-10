@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "title": "User Guide — Open Health",
+    "description": "Learn how to install Open Health on your device and enable notifications. Supports iOS, Android, and desktop browsers."
+  },
+  "title": "User Guide",
+  "intro": "Open Health is a Progressive Web App (PWA). No need to download from the App Store or Google Play — install directly from your browser to your device's home screen, and your all-in-one Health OS is available anytime, anywhere.",
+  "quickStart": {
+    "title": "Quick Start",
+    "step1Title": "1. Add to Home Screen",
+    "step1Desc": "Open <site>openhealth.blog</site> in your browser and add it to your home screen. Once installed, use it like a regular app. See the platform-specific instructions below for details.",
+    "step2Title": "2. Create an Account",
+    "step2Desc": "Open the app from your home screen and tap \"Sign Up\" to create an account. Email sign-up and Google sign-in are supported.",
+    "step3Title": "3. Enable Notifications",
+    "step3Desc": "In the app, go to <highlight>Settings → Notifications</highlight> to enable water or posture reminders. The app will automatically request notification permission on first use. See the <link>Enable Notifications</link> section below for details."
+  },
+  "whatIsPwa": {
+    "title": "What is a PWA?",
+    "desc": "A Progressive Web App is a web application that can be installed on your device. Once installed, it appears on your home screen like a regular app, with its own app window, offline caching, and push notification support. It takes up minimal storage and is always up to date."
+  },
+  "ios": {
+    "step01": "Open Safari",
+    "step01Desc": "You must use the Safari browser. Chrome and Firefox on iOS do not support PWA installation.",
+    "step02": "Go to Website",
+    "step02Desc": "Enter openhealth.blog in the address bar and go.",
+    "step03": "Tap Share Button",
+    "step03Desc": "Tap the share button in Safari's bottom toolbar (the square with an arrow ↑).",
+    "step04": "Add to Home Screen",
+    "step04Desc": "Scroll down in the share menu, find \"Add to Home Screen\" and tap it.",
+    "step05": "Confirm Installation",
+    "step05Desc": "You can customize the name, then tap \"Add\" in the top right to complete installation."
+  },
+  "android": {
+    "step01": "Open Chrome",
+    "step01Desc": "Chrome browser is recommended for the best experience.",
+    "step02": "Go to Website",
+    "step02Desc": "Enter openhealth.blog in the address bar and go.",
+    "step03": "Open Menu",
+    "step03Desc": "Tap the three-dot menu (⋮) in the top right.",
+    "step04": "Install App",
+    "step04Desc": "Find \"Install app\" or \"Add to Home Screen\" in the menu.",
+    "step05": "Confirm Installation",
+    "step05Desc": "Tap \"Install\" to complete. The app will appear on your home screen."
+  },
+  "desktop": {
+    "step01": "Open Chrome",
+    "step01Desc": "Use Chrome or Edge browser on your computer.",
+    "step02": "Go to Website",
+    "step02Desc": "Enter openhealth.blog in the address bar.",
+    "step03": "Install",
+    "step03Desc": "Click the install icon (⊕) on the right side of the address bar, or select \"Install Open Health\" from the menu."
+  },
+  "notifications": {
+    "title": "Enable Notifications",
+    "desc": "Open Health supports push notifications to remind you to drink water, adjust your posture, and other daily health habits. After installing as a PWA, you need to enable notification permission to receive reminders.",
+    "iosStep01": "Open Settings App",
+    "iosStep01Desc": "Go to \"Settings\" on your iPhone / iPad.",
+    "iosStep02": "Find Open Health",
+    "iosStep02Desc": "Scroll down and find \"Open Health PWA\" in the app list.",
+    "iosStep03": "Enable Notifications",
+    "iosStep03Desc": "Tap \"Notifications\", then turn on \"Allow Notifications\". We recommend also enabling \"Lock Screen\", \"Notification Center\", and \"Banners\".",
+    "iosStep04": "Return to App",
+    "iosStep04Desc": "Go back to Open Health and navigate to \"Settings → Notifications\" to enable reminder features.",
+    "androidDesc": "Android devices will show a notification permission dialog when the app first requests it. Tap \"Allow\". If you accidentally declined, go to \"Settings → Apps → Open Health → Notifications\" to re-enable.",
+    "desktopDesc": "The browser will show a notification permission dialog when first requested. Click \"Allow\". If notifications are blocked, click the lock icon on the left side of the address bar and change the notification permission to \"Allow\"."
+  },
+  "faq": {
+    "title": "FAQ",
+    "q1": "What's the difference between a PWA and a native app?",
+    "a1": "PWAs run through browser technology and don't need to be installed from an app store. They take up less storage and are always up to date. Functionally, they're nearly identical to native apps.",
+    "q2": "Can I use it offline?",
+    "a2": "Basic page browsing works offline. Data syncing requires an internet connection.",
+    "q3": "Why am I not receiving notifications?",
+    "a3": "iOS users need to first add the website to their home screen (install as PWA), then enable notification permissions in the \"Settings\" app. Just opening it in Safari is not enough. See the <link>Enable Notifications</link> section above.",
+    "q4": "How do I update the PWA?",
+    "a4": "PWAs update automatically. Each time you open it, the Service Worker checks for new versions in the background."
+  },
+  "backToHome": "← Back to Home"
+}

@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { trpc } from "@/lib/trpc-client";
 import { useSession } from "@/lib/auth-client";
 import { User, Users, Settings, PanelLeftClose, PanelLeft } from "lucide-react";
@@ -9,6 +10,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export function CoachSidebar() {
+  const { t } = useTranslation("coach");
   const { data: session } = useSession();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
@@ -31,7 +33,7 @@ export function CoachSidebar() {
       <div className="flex items-center justify-between p-3 border-b border-black/[0.06] dark:border-white/[0.06]">
         {!collapsed && !isLoading && (
           <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-            學員 ({clients?.length ?? 0})
+            {t("sidebar.clients")} ({clients?.length ?? 0})
           </p>
         )}
         <button
@@ -59,7 +61,7 @@ export function CoachSidebar() {
           )}
         >
           <Settings className="h-4 w-4 shrink-0" strokeWidth={1.5} />
-          {!collapsed && <span className="text-sm font-light">總覽</span>}
+          {!collapsed && <span className="text-sm font-light">{t("sidebar.overview")}</span>}
         </Link>
 
         {/* Divider */}
@@ -68,14 +70,14 @@ export function CoachSidebar() {
         {isLoading ? (
           !collapsed && (
             <div className="py-8 text-center text-xs text-neutral-400">
-              載入中...
+              {t("buttons.loading", { ns: "common" })}
             </div>
           )
         ) : !clients?.length ? (
           !collapsed && (
             <div className="flex flex-col items-center gap-2 py-8 text-neutral-400">
               <Users className="h-5 w-5" strokeWidth={1} />
-              <p className="text-xs font-light">尚無學員</p>
+              <p className="text-xs font-light">{t("sidebar.noClients")}</p>
             </div>
           )
         ) : (

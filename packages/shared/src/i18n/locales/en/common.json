@@ -43,7 +43,9 @@
     "label": "Appearance",
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "system": "System",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode"
   },
   "buttons": {
     "save": "Save",
@@ -188,6 +190,11 @@
       "mobileOnly": "App Only",
       "comingSoon": "Coming Soon"
     }
+  },
+  "pullToRefresh": {
+    "pull": "Pull to refresh",
+    "release": "Release to refresh",
+    "refreshing": "Refreshing..."
   },
   "upgrade": {
     "title": "Upgrade to Pro",

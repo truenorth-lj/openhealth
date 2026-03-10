@@ -1,0 +1,73 @@
+{
+  "metadata": {
+    "title": "Privacy Policy - Open Health",
+    "description": "Open Health Privacy Policy — how we collect, use, and protect your health data and personal information."
+  },
+  "title": "Privacy Policy",
+  "lastUpdated": "Last updated: March 4, 2025",
+  "overview": {
+    "title": "Overview",
+    "desc": "Open Health (hereinafter \"the Service\") values your privacy. This privacy policy explains how we collect, use, store, and protect your personal data when you use the Service."
+  },
+  "dataCollected": {
+    "title": "Data We Collect",
+    "accountTitle": "Account Data",
+    "accountDesc": ": Email address, password (encrypted). If you sign in with Google, we receive your Google account name and email.",
+    "profileTitle": "Profile",
+    "profileDesc": ": Height, weight, age, gender, and other information you provide, used to calculate daily nutrition goals.",
+    "dietTitle": "Diet Records",
+    "dietDesc": ": Food entries, nutrient intake, water intake, weight changes, and other health tracking data you record.",
+    "imageTitle": "Uploaded Images",
+    "imageDesc": ": Nutrition label photos you upload, processed by AI recognition and not stored long-term."
+  },
+  "dataUsage": {
+    "title": "How We Use Your Data",
+    "intro": "We only use your data for the following purposes:",
+    "item1": "- Providing core features such as diet logging, nutrition tracking, and weight management",
+    "item2": "- Using AI to recognize nutrition labels and simplify food logging",
+    "item3": "- Calculating and displaying personalized nutrition goals and progress",
+    "item4": "- Maintaining and improving service quality"
+  },
+  "thirdParty": {
+    "title": "Third-Party Services",
+    "intro": "The Service uses the following third-party services:",
+    "gemini": ": Used for nutrition label image recognition. Uploaded images are sent to the Google API for processing.",
+    "oauth": ": Provides third-party sign-in options.",
+    "sentry": ": Used for error tracking and service stability monitoring, may collect anonymous error report data."
+  },
+  "security": {
+    "title": "Data Storage & Security",
+    "item1": "- Your data is stored in a protected PostgreSQL database",
+    "item2": "- Passwords are encrypted; we cannot access your plain-text password",
+    "item3": "- All data transmission is encrypted via HTTPS"
+  },
+  "rights": {
+    "title": "Your Data Rights",
+    "intro": "You have full control over your data:",
+    "accessTitle": "Access",
+    "accessDesc": ": You can view all your data at any time",
+    "exportTitle": "Export",
+    "exportDesc": ": You can export your complete data",
+    "deleteTitle": "Delete",
+    "deleteDesc": ": You can request deletion of your account and all related data",
+    "portabilityTitle": "Portability",
+    "portabilityDesc": ": We will never prevent you from taking your data with you",
+    "outro": "We will not create any data export barriers to retain users, or do anything that harms user interests."
+  },
+  "wontDo": {
+    "title": "What We Won't Do",
+    "item1": "- We will not sell your personal data to third parties",
+    "item2": "- We will not serve ads in the service",
+    "item3": "- We will not share your data without your consent",
+    "item4": "- We will not use your health data for marketing"
+  },
+  "changes": {
+    "title": "Policy Changes",
+    "desc": "This privacy policy may be updated periodically. For significant changes, we will notify you through in-app notifications or email. Continued use of the Service indicates your agreement to the updated policy."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "desc": "If you have any questions about this privacy policy, please contact us via email:"
+  },
+  "backToHome": "Back to Home →"
+}

@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Copy, Check } from "lucide-react";
 
 export function InviteLink({ referralCode }: { referralCode: string | null }) {
+  const { t } = useTranslation("coach");
   const [copied, setCopied] = useState(false);
 
   if (!referralCode) {
     return (
       <p className="text-sm text-neutral-400">
-        請先到設定頁面設定你的推薦碼，學員才能透過推薦碼加入。
+        {t("noReferralCode")}
       </p>
     );
   }
@@ -32,12 +34,12 @@ export function InviteLink({ referralCode }: { referralCode: string | null }) {
         {copied ? (
           <>
             <Check className="h-4 w-4" strokeWidth={1.5} />
-            已複製
+            {t("copied")}
           </>
         ) : (
           <>
             <Copy className="h-4 w-4" strokeWidth={1.5} />
-            複製
+            {t("copy")}
           </>
         )}
       </button>

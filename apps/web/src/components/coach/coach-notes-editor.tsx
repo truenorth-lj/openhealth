@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
 
@@ -21,6 +22,7 @@ export function CoachNotesEditor({
   initialCarbsPct,
   initialFatPct,
 }: CoachNotesEditorProps) {
+  const { t } = useTranslation("coach");
   const [notes, setNotes] = useState(initialNotes ?? "");
   const [calorieTarget, setCalorieTarget] = useState(
     initialCalorieTarget?.toString() ?? ""
@@ -32,7 +34,7 @@ export function CoachNotesEditor({
   const utils = trpc.useUtils();
   const mutation = trpc.coach.updateClientNotes.useMutation({
     onSuccess: () => {
-      toast.success("已儲存");
+      toast.success(t("saved"));
       utils.coach.getClientDetail.invalidate({ clientId });
     },
     onError: (err) => {
@@ -55,13 +57,13 @@ export function CoachNotesEditor({
     <div className="space-y-4">
       <div>
         <label className="text-xs text-neutral-400 dark:text-neutral-600 block mb-1.5">
-          教練備註
+          {t("coachNotes")}
         </label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
-          placeholder="例：每天攝取熱量 2306大卡，蛋白質30% 碳水45% 脂肪25%"
+          placeholder={t("notesPlaceholder")}
           className="w-full rounded-lg border border-black/[0.06] dark:border-white/[0.06] bg-transparent px-3 py-2 text-sm font-light placeholder:text-neutral-300 dark:placeholder:text-neutral-700 focus:outline-none focus:border-foreground/20"
         />
       </div>
@@ -69,7 +71,7 @@ export function CoachNotesEditor({
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
           <label className="text-xs text-neutral-400 dark:text-neutral-600 block mb-1.5">
-            熱量目標 (kcal)
+            {t("calorieTarget")}
           </label>
           <input
             type="number"
@@ -81,7 +83,7 @@ export function CoachNotesEditor({
         </div>
         <div>
           <label className="text-xs text-neutral-400 dark:text-neutral-600 block mb-1.5">
-            蛋白質 %
+            {t("proteinPct")}
           </label>
           <input
             type="number"
@@ -93,7 +95,7 @@ export function CoachNotesEditor({
         </div>
         <div>
           <label className="text-xs text-neutral-400 dark:text-neutral-600 block mb-1.5">
-            碳水 %
+            {t("carbsPct")}
           </label>
           <input
             type="number"
@@ -105,7 +107,7 @@ export function CoachNotesEditor({
         </div>
         <div>
           <label className="text-xs text-neutral-400 dark:text-neutral-600 block mb-1.5">
-            脂肪 %
+            {t("fatPct")}
           </label>
           <input
             type="number"
@@ -122,7 +124,7 @@ export function CoachNotesEditor({
         disabled={mutation.isPending}
         className="rounded-lg border border-foreground/20 px-4 py-2 text-sm font-light transition-all hover:bg-foreground/5 disabled:opacity-50"
       >
-        {mutation.isPending ? "儲存中..." : "儲存備註"}
+        {mutation.isPending ? t("buttons.saving", { ns: "common" }) : t("saveNotes")}
       </button>
     </div>
   );

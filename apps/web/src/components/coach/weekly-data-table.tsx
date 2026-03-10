@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 interface DayData {
@@ -27,7 +28,7 @@ interface WeeklyDataTableProps {
   calorieTarget?: number | null;
 }
 
-const DAY_LABELS = ["一", "二", "三", "四", "五", "六", "日"];
+const DAY_LABEL_KEYS = ["dayMon", "dayTue", "dayWed", "dayThu", "dayFri", "daySat", "daySun"];
 const CALORIE_OVERAGE_MULTIPLIER = 1.1;
 
 export function WeeklyDataTable({
@@ -35,10 +36,13 @@ export function WeeklyDataTable({
   averages,
   calorieTarget,
 }: WeeklyDataTableProps) {
+  const { t } = useTranslation("coach");
+  const tc = (key: string) => t(key, { ns: "common" });
+
   const getDayLabel = (dateStr: string) => {
     const d = new Date(dateStr);
     const day = d.getDay();
-    return DAY_LABELS[day === 0 ? 6 : day - 1];
+    return t(DAY_LABEL_KEYS[day === 0 ? 6 : day - 1]);
   };
 
   const formatDate = (dateStr: string) => {
@@ -52,25 +56,25 @@ export function WeeklyDataTable({
         <thead>
           <tr className="border-b border-black/[0.06] dark:border-white/[0.06]">
             <th className="py-2 px-3 text-left font-light text-neutral-400 dark:text-neutral-600 text-xs">
-              日期
+              {t("date")}
             </th>
             <th className="py-2 px-3 text-right font-light text-neutral-400 dark:text-neutral-600 text-xs">
-              體重
+              {t("weight")}
             </th>
             <th className="py-2 px-3 text-right font-light text-neutral-400 dark:text-neutral-600 text-xs">
-              步數
+              {t("steps")}
             </th>
             <th className="py-2 px-3 text-right font-light text-neutral-400 dark:text-neutral-600 text-xs">
-              熱量
+              {tc("macro.calories")}
             </th>
             <th className="py-2 px-3 text-right font-light text-neutral-400 dark:text-neutral-600 text-xs">
-              蛋白質
+              {tc("macro.protein")}
             </th>
             <th className="py-2 px-3 text-right font-light text-neutral-400 dark:text-neutral-600 text-xs">
-              碳水
+              {tc("macro.carbs")}
             </th>
             <th className="py-2 px-3 text-right font-light text-neutral-400 dark:text-neutral-600 text-xs">
-              脂肪
+              {tc("macro.fat")}
             </th>
           </tr>
         </thead>
@@ -116,7 +120,7 @@ export function WeeklyDataTable({
           ))}
           {/* Averages row */}
           <tr className="bg-black/[0.02] dark:bg-white/[0.02] font-medium">
-            <td className="py-2.5 px-3 text-xs text-neutral-500">週平均</td>
+            <td className="py-2.5 px-3 text-xs text-neutral-500">{t("weekAverage")}</td>
             <td className="py-2.5 px-3 text-right">
               {averages.weightKg != null ? averages.weightKg.toFixed(1) : "-"}
             </td>

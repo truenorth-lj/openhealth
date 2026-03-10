@@ -2,8 +2,10 @@
 
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function ThemeToggle({ className }: { className?: string }) {
+  const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -19,7 +21,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className={`relative w-9 h-9 flex items-center justify-center rounded-full transition-colors duration-300 hover:bg-neutral-200 dark:hover:bg-white/10 ${className ?? ""}`}
-      aria-label={isDark ? "切換至淺色模式" : "切換至深色模式"}
+      aria-label={isDark ? t("theme.switchToLight") : t("theme.switchToDark")}
     >
       {/* Sun icon */}
       <svg
