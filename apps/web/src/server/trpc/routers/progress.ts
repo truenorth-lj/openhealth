@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { logWeightSchema, logMeasurementsSchema, logStepsSchema } from "@open-health/shared/schemas";
+import { logWeightSchema, logMeasurementsSchema, logStepsSchema, logStepsBatchSchema, logWeightBatchSchema } from "@open-health/shared/schemas";
 import { DEFAULT_WATER_GOAL_ML } from "@open-health/shared/constants";
 import { protectedProcedure, router } from "../trpc";
 import { weightLogs, bodyMeasurements, tdeeCalculations, stepLogs } from "@/server/db/schema";
@@ -179,6 +179,52 @@ export const progressRouter = router({
           },
         });
 
+      return { success: true };
+    }),
+
+  logStepsBatch: protectedProcedure
+    .input(logStepsBatchSchema)
+    .mutation(async ({ ctx, input }) => {
+      for (const entry of input.entries) {
+        await ctx.db
+          .insert(stepLogs)
+          .values({
+            userId: ctx.user.id,
+            date: entry.date,
+            steps: String(entry.steps),
+            note: entry.note,
+          })
+          .onConflictDoUpdate({
+            target: [stepLogs.userId, stepLogs.date],
+            set: {
+              steps: String(entry.steps),
+              note: entry.note,
+            },
+          });
+      }
+      return { success: true };
+    }),
+
+  logWeightBatch: protectedProcedure
+    .input(logWeightBatchSchema)
+    .mutation(async ({ ctx, input }) => {
+      for (const entry of input.entries) {
+        await ctx.db
+          .insert(weightLogs)
+          .values({
+            userId: ctx.user.id,
+            date: entry.date,
+            weightKg: String(entry.weightKg),
+            note: entry.note,
+          })
+          .onConflictDoUpdate({
+            target: [weightLogs.userId, weightLogs.date],
+            set: {
+              weightKg: String(entry.weightKg),
+              note: entry.note,
+            },
+          });
+      }
       return { success: true };
     }),
 

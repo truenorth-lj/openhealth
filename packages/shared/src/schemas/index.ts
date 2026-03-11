@@ -101,6 +101,22 @@ export const logStepsSchema = z.object({
   note: z.string().max(500).optional(),
 });
 
+export const logStepsBatchSchema = z.object({
+  entries: z.array(z.object({
+    date: dateString,
+    steps: z.number().int().min(0).max(MAX_STEPS),
+    note: z.string().max(500).optional(),
+  })).min(1).max(30),
+});
+
+export const logWeightBatchSchema = z.object({
+  entries: z.array(z.object({
+    date: dateString,
+    weightKg: z.number().positive().max(500),
+    note: z.string().max(500).optional(),
+  })).min(1).max(30),
+});
+
 export const logMeasurementsSchema = z.object({
   date: dateString,
   waistCm: z.number().positive().optional(),
