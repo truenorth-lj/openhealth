@@ -142,6 +142,11 @@ export const removeEntrySchema = z.object({
   entryId: z.string().uuid(),
 });
 
+export const updateEntryServingsSchema = z.object({
+  entryId: z.string().uuid(),
+  servingQty: z.number().min(0.5).max(99),
+});
+
 export const applyReferralCodeSchema = z.object({
   code: z
     .string()

@@ -68,6 +68,41 @@ export async function removeEntry(db: Db, userId: string, entryId: string) {
     );
 }
 
+export async function updateEntryServings(
+  db: Db,
+  userId: string,
+  entryId: string,
+  newServingQty: number
+) {
+  // Fetch current entry to get foodId
+  const entry = await db
+    .select({ foodId: diaryEntries.foodId })
+    .from(diaryEntries)
+    .where(
+      and(eq(diaryEntries.id, entryId), eq(diaryEntries.userId, userId))
+    )
+    .then((rows) => rows[0]);
+
+  if (!entry) throw new Error(`Entry not found: ${entryId}`);
+
+  // Recalculate nutrition from source food data (avoids floating point drift)
+  const nutrition = await calculateNutrition(entry.foodId, newServingQty);
+
+  await db
+    .update(diaryEntries)
+    .set({
+      servingQty: String(newServingQty),
+      calories: String(nutrition.calories),
+      proteinG: String(nutrition.proteinG),
+      carbsG: String(nutrition.carbsG),
+      fatG: String(nutrition.fatG),
+      fiberG: String(nutrition.fiberG),
+    })
+    .where(
+      and(eq(diaryEntries.id, entryId), eq(diaryEntries.userId, userId))
+    );
+}
+
 export async function copyMealToDate(
   db: Db,
   userId: string,

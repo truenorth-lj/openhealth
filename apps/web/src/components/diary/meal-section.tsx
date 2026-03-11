@@ -1,9 +1,9 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Minus, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { removeEntry } from "@/server/actions/diary";
-import { useTransition } from "react";
+import { removeEntry, updateEntryServings } from "@/server/actions/diary";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc-client";
 import posthog from "posthog-js";
@@ -94,6 +94,8 @@ export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenti
 
 function EntryRow({ entry, mealType }: { entry: DiaryEntry; mealType: MealType }) {
   const [isPending, startTransition] = useTransition();
+  const [isEditingQty, setIsEditingQty] = useState(false);
+  const [localQty, setLocalQty] = useState(Number(entry.servingQty));
   const router = useRouter();
   const utils = trpc.useUtils();
 
@@ -106,23 +108,74 @@ function EntryRow({ entry, mealType }: { entry: DiaryEntry; mealType: MealType }
     });
   };
 
+  const handleQtyChange = (delta: number) => {
+    const prevQty = localQty;
+    const newQty = Math.max(0.5, Math.round((localQty + delta) * 2) / 2);
+    setLocalQty(newQty);
+    startTransition(async () => {
+      try {
+        await updateEntryServings({ entryId: entry.id, servingQty: newQty });
+        await utils.diary.getDay.invalidate();
+        router.refresh();
+      } catch {
+        setLocalQty(prevQty);
+      }
+    });
+  };
+
+  // Compute display calories based on localQty vs stored qty
+  const perServingCal = Number(entry.calories || 0) / Number(entry.servingQty || 1);
+  const displayCal = Math.round(perServingCal * localQty);
+
   return (
     <div
       className={`flex items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] py-2.5 ${
         isPending ? "opacity-30" : ""
       }`}
     >
-      <Link href={`/hub/food/${entry.foodId}`} className="flex-1 min-w-0">
-        <p className="text-sm font-light truncate">{entry.foodName}</p>
-        <p className="text-xs text-neutral-400 dark:text-neutral-600">
-          {entry.servingQty} x {entry.foodServingSize}
-          {entry.foodServingUnit}
-          {entry.foodBrand ? ` · ${entry.foodBrand}` : ""}
-        </p>
-      </Link>
+      <div className="flex-1 min-w-0">
+        <Link href={`/hub/food/${entry.foodId}`}>
+          <p className="text-sm font-light truncate">{entry.foodName}</p>
+        </Link>
+        <div className="flex items-center gap-1 mt-0.5">
+          {isEditingQty ? (
+            <div className="flex items-center gap-1">
+              <button
+                className="flex items-center justify-center h-5 w-5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                onClick={() => handleQtyChange(-0.5)}
+                disabled={isPending || localQty <= 0.5}
+              >
+                <Minus className="h-3 w-3" strokeWidth={2} />
+              </button>
+              <span className="text-xs tabular-nums font-medium min-w-[2rem] text-center">
+                {localQty}
+              </span>
+              <button
+                className="flex items-center justify-center h-5 w-5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                onClick={() => handleQtyChange(0.5)}
+                disabled={isPending}
+              >
+                <Plus className="h-3 w-3" strokeWidth={2} />
+              </button>
+              <span className="text-xs text-neutral-400 dark:text-neutral-600 ml-0.5">
+                × {entry.foodServingSize}{entry.foodServingUnit}
+              </span>
+            </div>
+          ) : (
+            <button
+              className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-primary transition-colors"
+              onClick={() => setIsEditingQty(true)}
+            >
+              {localQty} × {entry.foodServingSize}
+              {entry.foodServingUnit}
+              {entry.foodBrand ? ` · ${entry.foodBrand}` : ""}
+            </button>
+          )}
+        </div>
+      </div>
       <div className="flex items-center gap-2 ml-2">
         <span className="text-sm font-light tabular-nums text-neutral-500">
-          {Math.round(Number(entry.calories || 0))}
+          {displayCal}
         </span>
         <button
           className="p-1 text-neutral-300 dark:text-neutral-700 transition-all duration-300 hover:text-destructive"

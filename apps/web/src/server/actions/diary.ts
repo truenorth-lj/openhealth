@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { logFoodSchema } from "@open-health/shared/schemas";
+import { logFoodSchema, updateEntryServingsSchema } from "@open-health/shared/schemas";
 import { getSession } from "@/server/lib/get-session";
 import { db } from "@/server/db";
 import { revalidatePath } from "next/cache";
@@ -19,6 +19,22 @@ export async function logFood(input: z.infer<typeof logFoodSchema>) {
 export async function removeEntry(entryId: string) {
   const user = await getSession();
   await diaryService.removeEntry(db, user.id, entryId);
+
+  revalidatePath(`/hub/diary`);
+  return { success: true };
+}
+
+export async function updateEntryServings(
+  input: z.infer<typeof updateEntryServingsSchema>
+) {
+  const user = await getSession();
+  const validated = updateEntryServingsSchema.parse(input);
+  await diaryService.updateEntryServings(
+    db,
+    user.id,
+    validated.entryId,
+    validated.servingQty
+  );
 
   revalidatePath(`/hub/diary`);
   return { success: true };

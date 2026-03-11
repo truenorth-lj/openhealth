@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { logFoodSchema, copyMealSchema, removeEntrySchema } from "@open-health/shared/schemas";
+import { logFoodSchema, copyMealSchema, removeEntrySchema, updateEntryServingsSchema } from "@open-health/shared/schemas";
 import { protectedProcedure, router } from "../trpc";
 import { diaryEntries, foodNutrients, nutrientDefinitions } from "@/server/db/schema";
 import { foods } from "@/server/db/schema";
@@ -95,6 +95,18 @@ export const diaryRouter = router({
     .input(removeEntrySchema)
     .mutation(async ({ ctx, input }) => {
       await diaryService.removeEntry(ctx.db, ctx.user.id, input.entryId);
+      return { success: true };
+    }),
+
+  updateEntryServings: protectedProcedure
+    .input(updateEntryServingsSchema)
+    .mutation(async ({ ctx, input }) => {
+      await diaryService.updateEntryServings(
+        ctx.db,
+        ctx.user.id,
+        input.entryId,
+        input.servingQty
+      );
       return { success: true };
     }),
 
