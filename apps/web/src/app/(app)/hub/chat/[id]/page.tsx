@@ -268,6 +268,9 @@ function ChatDetail() {
               </button>
             </form>
           )}
+          <p className="text-center text-[10px] font-light text-neutral-400 dark:text-neutral-600 mt-2">
+            {t("disclaimer")}
+          </p>
         </div>
       </div>
 

@@ -45,5 +45,6 @@
   "todayCard": {
     "title": "AI 營養顧問",
     "description": "分析飲食、規劃餐點"
-  }
+  },
+  "disclaimer": "AI 建議僅供參考，不構成醫療建議。如有健康問題請諮詢專業醫師或營養師。"
 }

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { updateProfileSchema, updateGoalsSchema } from "@open-health/shared/schemas";
 import { protectedProcedure, router } from "../trpc";
-import { userProfiles, userGoals, nutrientDefinitions } from "@/server/db/schema";
+import { userProfiles, userGoals, nutrientDefinitions, users, foods } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { getAiUsage } from "@/server/services/plan";
 import * as userService from "@/server/services/user-mutation";
@@ -62,6 +62,19 @@ export const userRouter = router({
       .orderBy(nutrientDefinitions.displayOrder, nutrientDefinitions.id);
 
     return defs;
+  }),
+
+  deleteAccount: protectedProcedure.mutation(async ({ ctx }) => {
+    // Nullify foods.createdBy (no cascade on this FK)
+    await ctx.db
+      .update(foods)
+      .set({ createdBy: null })
+      .where(eq(foods.createdBy, ctx.user.id));
+
+    // Delete user row — cascades to all related tables
+    await ctx.db.delete(users).where(eq(users.id, ctx.user.id));
+
+    return { success: true };
   }),
 
   updateTrackedNutrients: protectedProcedure

@@ -12,10 +12,13 @@ import {
   Monitor,
   GraduationCap,
   Globe,
+  Trash2,
 } from "lucide-react";
+import { deleteAccount } from "@/server/actions/account";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import type { SupportedLanguage } from "@open-health/shared/i18n";
 
 const menuItems = [
@@ -39,10 +42,25 @@ export default function SettingsPage() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const { t, i18n } = useTranslation(["common", "settings"]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSignOut = async () => {
     await signOut();
     router.push("/hub");
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteAccount();
+      router.push("/login");
+    } catch {
+      alert(t("settings:deleteAccountError"));
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
   };
 
   const handleLanguageChange = (lng: SupportedLanguage) => {
@@ -138,13 +156,50 @@ export default function SettingsPage() {
       </div>
 
       {session?.user && (
-        <button
-          onClick={handleSignOut}
-          className="flex w-full items-center justify-center gap-2 py-3 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-destructive"
-        >
-          <LogOut className="h-4 w-4" strokeWidth={1.5} />
-          {t("auth.logout")}
-        </button>
+        <div className="space-y-3">
+          <button
+            onClick={handleSignOut}
+            className="flex w-full items-center justify-center gap-2 py-3 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-destructive"
+          >
+            <LogOut className="h-4 w-4" strokeWidth={1.5} />
+            {t("auth.logout")}
+          </button>
+
+          {!showDeleteConfirm ? (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="flex w-full items-center justify-center gap-2 py-3 text-xs font-light text-neutral-300 dark:text-neutral-700 transition-all duration-300 hover:text-destructive"
+            >
+              <Trash2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+              {t("settings:deleteAccount")}
+            </button>
+          ) : (
+            <div className="rounded-lg border border-destructive/20 p-4 space-y-3">
+              <p className="text-sm font-medium text-destructive">
+                {t("settings:deleteAccountConfirmTitle")}
+              </p>
+              <p className="text-xs font-light text-neutral-500">
+                {t("settings:deleteAccountConfirmMessage")}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={isDeleting}
+                  className="flex-1 rounded-lg border border-black/[0.06] dark:border-white/[0.06] py-2 text-sm font-light transition-all duration-300 hover:border-foreground/20"
+                >
+                  {t("settings:deleteAccountCancel")}
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={isDeleting}
+                  className="flex-1 rounded-lg bg-destructive py-2 text-sm font-light text-white transition-all duration-300 hover:opacity-80 disabled:opacity-50"
+                >
+                  {isDeleting ? "..." : t("settings:deleteAccountConfirm")}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

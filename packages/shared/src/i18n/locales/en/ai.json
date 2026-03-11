@@ -45,5 +45,6 @@
   "todayCard": {
     "title": "AI Nutrition Advisor",
     "description": "Analyze diet, plan meals"
-  }
+  },
+  "disclaimer": "AI suggestions are for reference only and do not constitute medical advice. Please consult a doctor or dietitian for health concerns."
 }
