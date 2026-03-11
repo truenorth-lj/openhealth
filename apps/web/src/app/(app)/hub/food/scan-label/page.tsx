@@ -180,6 +180,23 @@ function ScanLabelContent() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Client-side validation (replaces HTML5 native validation which is invisible in PWA)
+    if (!name.trim()) {
+      toast.error(t("food:foodName") + " " + t("common:validation.required", { defaultValue: "為必填欄位" }));
+      return;
+    }
+    const parsedServing = parseFloat(servingSize);
+    if (!parsedServing || parsedServing <= 0) {
+      toast.error(t("food:servingSizeLabel") + " " + t("common:validation.mustBePositive", { defaultValue: "必須大於 0" }));
+      return;
+    }
+    const parsedCalories = parseFloat(calories);
+    if (isNaN(parsedCalories) || parsedCalories < 0) {
+      toast.error(t("food:caloriesKcalRequired") + " " + t("common:validation.mustBeNonNegative", { defaultValue: "必須大於等於 0" }));
+      return;
+    }
+
     startTransition(async () => {
       try {
         const nutrients: { nutrientId: number; amount: number }[] = [
@@ -203,12 +220,12 @@ function ScanLabelContent() {
         if (vitaminD) nutrients.push({ nutrientId: NUTRIENT_IDS.vitaminD, amount: parseFloat(vitaminD) });
 
         const result = await createCustomFood({
-          name,
+          name: name.trim(),
           brand: brand || undefined,
           description: notes || undefined,
-          servingSize: parseFloat(servingSize),
+          servingSize: parsedServing,
           servingUnit,
-          calories: parseFloat(calories),
+          calories: parsedCalories,
           nutrients,
         });
 
@@ -318,26 +335,25 @@ function ScanLabelContent() {
 
       {/* Stage 3: Edit & Confirm */}
       {stage === "edit" && (
-        <div className="space-y-4">
-          {imagePreview && (
-            <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden bg-muted">
-              <Image
-                src={imagePreview}
-                alt={t("food:labelPhotoAlt")}
-                fill
-                className="object-contain"
-              />
-            </div>
-          )}
-
-          <div className="flex justify-end">
+        <div className="space-y-4 pb-16">
+          <div className="flex items-center justify-between">
+            {imagePreview && (
+              <div className="relative h-12 w-12 shrink-0 rounded-md overflow-hidden bg-muted">
+                <Image
+                  src={imagePreview}
+                  alt={t("food:labelPhotoAlt")}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
             <Button variant="outline" size="sm" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-1" />
               {t("food:retakePhoto")}
             </Button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form id="scan-label-form" onSubmit={handleSubmit} noValidate className="space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">{t("common:labels.basicInfo")}</CardTitle>
@@ -541,10 +557,25 @@ function ScanLabelContent() {
               </CardContent>
             </Card>
 
-            <Button type="submit" className="w-full" disabled={isPending}>
-              {isPending ? t("common:buttons.creating") : t("food:confirmAndAdd")}
-            </Button>
           </form>
+
+          <div className="fixed bottom-0 left-0 right-0 border-t bg-background p-4">
+            <div className="max-w-lg mx-auto">
+              <Button
+                type="submit"
+                form="scan-label-form"
+                className="w-full"
+                disabled={isPending}
+                onTouchEnd={() => {
+                  if (document.activeElement instanceof HTMLElement) {
+                    document.activeElement.blur();
+                  }
+                }}
+              >
+                {isPending ? t("common:buttons.creating") : t("food:confirmAndAdd")}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
