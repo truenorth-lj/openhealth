@@ -24,22 +24,13 @@
     "desc04": "數據完全屬於你，沒有鎖定、沒有付費牆。開源架構，社群驅動，任何人都可以貢獻與擴展。"
   },
   "install": {
-    "title": "下載 Open Health",
-    "subtitle": "選擇最適合你的方式，開始追蹤健康。",
     "comingSoon": "敬請期待",
     "available": "可下載",
-    "appStoreDesc": "iPhone 與 iPad 原生體驗，開發中。",
-    "playStoreDesc": "Android 原生體驗，開發中。",
-    "pwaDesc": "免商店下載，直接安裝到主畫面。",
     "pwaInstallButton": "立即安裝",
     "pwaInstalled": "已安裝 ✓",
-    "ios01": "用 Safari 開啟 openhealth.blog",
+    "webCta": "直接使用 →",
     "ios02": "點選底部分享按鈕",
-    "ios03": "選擇「加入主畫面」",
-    "android01": "用 Chrome 開啟 openhealth.blog",
-    "android02": "點選右上角選單 ⋮",
-    "android03": "選擇「安裝應用程式」",
-    "fullGuide": "查看完整安裝指南 →"
+    "android02": "點選右上角選單 ⋮"
   },
   "blog": {
     "title": "健康知識庫",
