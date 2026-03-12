@@ -37,7 +37,8 @@ function Hero() {
     }
 
     if (window.matchMedia("(display-mode: standalone)").matches) {
-      setInstalled(true);
+      window.location.replace("/hub");
+      return;
     }
 
     setMounted(true);
