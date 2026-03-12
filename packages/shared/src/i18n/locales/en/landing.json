@@ -24,8 +24,15 @@
     "desc04": "Your data is entirely yours, no lock-in, no paywalls. Open-source architecture, community-driven, anyone can contribute and extend."
   },
   "install": {
-    "title": "Install on Your Device",
-    "subtitle": "PWA app — no app store needed, install directly to your home screen.",
+    "title": "Download Open Health",
+    "subtitle": "Choose the best way for you to start tracking your health.",
+    "comingSoon": "Coming Soon",
+    "available": "Available",
+    "appStoreDesc": "Native experience for iPhone and iPad, in development.",
+    "playStoreDesc": "Native experience for Android, in development.",
+    "pwaDesc": "No app store needed, install directly to your home screen.",
+    "pwaInstallButton": "Install Now",
+    "pwaInstalled": "Installed ✓",
     "ios01": "Open openhealth.blog in Safari",
     "ios02": "Tap the share button at the bottom",
     "ios03": "Select \"Add to Home Screen\"",
