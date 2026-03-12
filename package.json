@@ -6,12 +6,14 @@
     "dev": "turbo dev",
     "dev:web": "turbo dev --filter=@open-health/web",
     "dev:mobile": "turbo dev --filter=@open-health/mobile",
-    "build": "turbo build --filter=@open-health/web",
+    "build": "turbo build --filter=@open-health/web --filter=@open-health/zenlife-web",
     "start": "cd apps/web && npm start",
     "lint": "turbo lint",
     "test": "turbo test",
     "test:watch": "vitest",
     "test:integration": "vitest run --config apps/web/vitest.integration.config.ts",
+    "dev:zenlife": "turbo dev --filter=@open-health/zenlife-web",
+    "db:generate": "cd packages/db && source ../../apps/web/.env.local && DATABASE_URL=$DATABASE_URL pnpm db:generate",
     "test:e2e": "cd apps/web && pnpm test:e2e"
   },
   "devDependencies": {

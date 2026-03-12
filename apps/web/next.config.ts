@@ -3,7 +3,7 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  transpilePackages: ["@open-health/shared"],
+  transpilePackages: ["@open-health/shared", "@open-health/db"],
   serverExternalPackages: ["postgres"],
   images: {
     remotePatterns: [
@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
     ],
   },
   outputFileTracingIncludes: {
-    "/": ["./src/server/db/migrations/**/*"],
+    "/": ["./node_modules/@open-health/db/src/migrations/**/*"],
   },
   experimental: {
     serverActions: {

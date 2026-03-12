@@ -8,7 +8,7 @@ export async function register() {
       // Path is relative to CWD. Migration files are included in standalone build
       // via outputFileTracingIncludes in next.config.ts.
       try {
-        await migrate(db, { migrationsFolder: "./src/server/db/migrations" });
+        await migrate(db, { migrationsFolder: "./node_modules/@open-health/db/src/migrations" });
         // Auto-seed preset exercises if table is empty
         await seedPresetExercises(db);
       } catch (err) {
