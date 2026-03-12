@@ -1,4 +1,4 @@
-const CACHE_NAME = "open-health-v5";
+const CACHE_NAME = "open-health-v6";
 
 const PRECACHE_URLS = [
   "/manifest.json",
@@ -43,6 +43,9 @@ self.addEventListener("message", (event) => {
         icon: icon || "/icon.svg",
         tag: tag || undefined,
         data: { url: url || "/" },
+        vibrate: [200, 100, 200, 100, 200],
+        requireInteraction: true,
+        silent: false,
       })
     );
   }
@@ -57,6 +60,9 @@ self.addEventListener("push", (event) => {
     icon: "/icon.svg",
     tag: data.tag || "posture-reminder",
     data: { url: data.url || "/hub/posture" },
+    vibrate: [200, 100, 200, 100, 200],
+    requireInteraction: true,
+    silent: false,
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });

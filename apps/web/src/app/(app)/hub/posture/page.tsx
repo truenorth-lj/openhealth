@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -173,13 +173,46 @@ export default function PosturePage() {
     config?.reminderEnabled !== false &&
     !isSnoozed;
 
-  // Mark session as reminded when overtime (UI state only — push notification is sent server-side)
+  const alarmRef = useRef<HTMLAudioElement | null>(null);
+
+  // Mark session as reminded + play alarm sound when overtime
   useEffect(() => {
     if (shouldRemind && activeSession && !hasNotified) {
       markReminded.mutate({ id: activeSession.id });
       setHasNotified(true);
+
+      // Play alarm sound (loops for 30s)
+      const audio = new Audio("/alarm.mp3");
+      audio.loop = true;
+      audio.play().catch(() => {});
+      alarmRef.current = audio;
+
+      setTimeout(() => {
+        if (alarmRef.current === audio) {
+          audio.pause();
+          alarmRef.current = null;
+        }
+      }, 30_000);
     }
-  }, [shouldRemind, activeSession, hasNotified]);
+  }, [shouldRemind, activeSession, hasNotified, markReminded]);
+
+  // Stop alarm when user snoozes or switches posture
+  useEffect(() => {
+    if (!shouldRemind && alarmRef.current) {
+      alarmRef.current.pause();
+      alarmRef.current = null;
+    }
+  }, [shouldRemind]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (alarmRef.current) {
+        alarmRef.current.pause();
+        alarmRef.current = null;
+      }
+    };
+  }, []);
 
   const handleSnooze = useCallback(() => {
     const snoozeMs = (config?.snoozeMinutes ?? 10) * MS_PER_MINUTE;
