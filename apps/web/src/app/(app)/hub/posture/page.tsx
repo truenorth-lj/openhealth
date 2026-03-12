@@ -182,7 +182,7 @@ export default function PosturePage() {
       setHasNotified(true);
 
       // Play alarm sound (loops for 30s), reuse pre-unlocked audio if available
-      const audio = alarmRef.current ?? new Audio("/alarm.mp3");
+      const audio = alarmRef.current ?? new Audio("/alarm.m4a");
       audio.loop = true;
       audio.currentTime = 0;
       audio.volume = 1;
@@ -225,7 +225,7 @@ export default function PosturePage() {
   const handleSwitchPosture = (postureId: string) => {
     // Unlock audio autoplay policy on user gesture — preload alarm sound
     if (!alarmRef.current) {
-      const audio = new Audio("/alarm.mp3");
+      const audio = new Audio("/alarm.m4a");
       audio.volume = 0;
       audio.play().then(() => {
         audio.pause();
