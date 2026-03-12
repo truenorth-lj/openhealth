@@ -199,6 +199,13 @@
     "release": "放開重新整理",
     "refreshing": "重新整理中..."
   },
+  "pwa": {
+    "installTitle": "安裝 App，體驗更好",
+    "installButton": "安裝",
+    "iosTitle": "加入主畫面，體驗更好",
+    "iosStep1": "點選底部分享按鈕",
+    "iosStep2": "選擇「加入主畫面」"
+  },
   "upgrade": {
     "title": "升級至 Pro",
     "description": "解鎖所有進階功能，讓健康管理更完整",
