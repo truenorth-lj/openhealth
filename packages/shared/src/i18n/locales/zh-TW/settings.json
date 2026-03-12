@@ -92,8 +92,28 @@
     "saving": "儲存中..."
   },
   "subscriptionPage": {
-    "comingSoon": "敬請期待",
-    "paymentDeveloping": "付款功能正在開發中，完成後將在此頁面開放訂閱"
+    "currentPlan": "目前方案",
+    "month": "月",
+    "upgrade": "升級 Pro",
+    "redirecting": "跳轉中...",
+    "manageSubscription": "管理訂閱",
+    "status": "狀態",
+    "active": "使用中",
+    "trialing": "試用中",
+    "renewsOn": "下次續費",
+    "expiresOn": "到期日",
+    "canceledNote": "訂閱已取消，將在到期日後停止 Pro 功能。",
+    "successMessage": "訂閱成功！Pro 功能已啟用。",
+    "canceledMessage": "結帳已取消，如有任何問題請聯繫我們。",
+    "features": {
+      "unlimitedAI": "無限次 AI 營養辨識與估算",
+      "micronutrients": "微量營養素追蹤",
+      "exercise": "運動紀錄",
+      "fasting": "斷食追蹤",
+      "progressPhotos": "進度照片",
+      "exportData": "匯出資料",
+      "savedMeals": "無限常用餐點"
+    }
   },
   "exportPage": {
     "description": "選擇要匯出的項目，資料將以 CSV 格式下載。",

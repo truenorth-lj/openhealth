@@ -92,8 +92,28 @@
     "saving": "Saving..."
   },
   "subscriptionPage": {
-    "comingSoon": "Coming Soon",
-    "paymentDeveloping": "Payment feature is under development, subscription will be available here once ready"
+    "currentPlan": "Current Plan",
+    "month": "month",
+    "upgrade": "Upgrade to Pro",
+    "redirecting": "Redirecting...",
+    "manageSubscription": "Manage Subscription",
+    "status": "Status",
+    "active": "Active",
+    "trialing": "Trial",
+    "renewsOn": "Renews on",
+    "expiresOn": "Expires on",
+    "canceledNote": "Subscription canceled. Pro features will stop after the expiration date.",
+    "successMessage": "Subscription successful! Pro features are now active.",
+    "canceledMessage": "Checkout was canceled. Contact us if you have any questions.",
+    "features": {
+      "unlimitedAI": "Unlimited AI nutrition recognition & estimation",
+      "micronutrients": "Micronutrient tracking",
+      "exercise": "Exercise logging",
+      "fasting": "Fasting tracker",
+      "progressPhotos": "Progress photos",
+      "exportData": "Data export",
+      "savedMeals": "Unlimited saved meals"
+    }
   },
   "exportPage": {
     "description": "Select items to export. Data will be downloaded in CSV format.",

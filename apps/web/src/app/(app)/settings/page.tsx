@@ -13,6 +13,7 @@ import {
   GraduationCap,
   Globe,
   Trash2,
+  Crown,
 } from "lucide-react";
 import { deleteAccount } from "@/server/actions/account";
 import Link from "next/link";
@@ -23,6 +24,7 @@ import type { SupportedLanguage } from "@open-health/shared/i18n";
 
 const menuItems = [
   { href: "/settings/profile", labelKey: "settings:profile" as const, icon: User },
+  { href: "/settings/subscription", labelKey: "settings:subscription" as const, icon: Crown },
   { href: "/settings/coaching", labelKey: "settings:coaching" as const, icon: GraduationCap },
 ];
 

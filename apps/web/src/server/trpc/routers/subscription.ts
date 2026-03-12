@@ -85,7 +85,14 @@ export const subscriptionRouter = router({
     const provider = getPaymentProvider();
 
     const sub = await ctx.db
-      .select()
+      .select({
+        id: subscriptions.id,
+        plan: subscriptions.plan,
+        status: subscriptions.status,
+        currentPeriodStart: subscriptions.currentPeriodStart,
+        currentPeriodEnd: subscriptions.currentPeriodEnd,
+        cancelAtPeriodEnd: subscriptions.cancelAtPeriodEnd,
+      })
       .from(subscriptions)
       .where(
         and(
