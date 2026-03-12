@@ -85,7 +85,7 @@ export default function PosturePage() {
     sortOrder: number;
   } | null>(null);
   const [snoozedUntil, setSnoozedUntil] = useState<number | null>(null);
-  const [hasNotified, setHasNotified] = useState(false);
+  const [hasStartedAlarm, setHasStartedAlarm] = useState(false);
   const [selectedDate, setSelectedDate] = useState(() => new Date());
 
   const dateStr = format(selectedDate, "yyyy-MM-dd");
@@ -103,7 +103,7 @@ export default function PosturePage() {
       utils.posture.getActiveSession.invalidate();
       utils.posture.getHistory.invalidate();
       setSnoozedUntil(null);
-      setHasNotified(false);
+      setHasStartedAlarm(false);
     },
     onError: (err) => toast.error(friendlyError(err, t)),
   });
@@ -113,7 +113,7 @@ export default function PosturePage() {
       utils.posture.getActiveSession.invalidate();
       utils.posture.getHistory.invalidate();
       setSnoozedUntil(null);
-      setHasNotified(false);
+      setHasStartedAlarm(false);
       toast.success(t("posture:stopped"));
     },
     onError: (err) => toast.error(friendlyError(err, t)),
@@ -175,28 +175,45 @@ export default function PosturePage() {
 
   const alarmRef = useRef<HTMLAudioElement | null>(null);
 
-  // Mark session as reminded + play alarm sound when overtime
+  // Start persistent alarm when overtime (plays until user dismisses)
   useEffect(() => {
-    if (shouldRemind && activeSession && !hasNotified) {
+    if (shouldRemind && activeSession && !hasStartedAlarm) {
       markReminded.mutate({ id: activeSession.id });
-      setHasNotified(true);
+      setHasStartedAlarm(true);
 
-      // Play alarm sound (loops for 30s), reuse pre-unlocked audio if available
+      // Play alarm sound on loop — no auto-stop, plays until dismissed
       const audio = alarmRef.current ?? new Audio("/alarm.m4a");
       audio.loop = true;
       audio.currentTime = 0;
       audio.volume = 1;
       audio.play().catch(() => {});
       alarmRef.current = audio;
-
-      setTimeout(() => {
-        if (alarmRef.current === audio) {
-          audio.pause();
-          alarmRef.current = null;
-        }
-      }, 30_000);
     }
-  }, [shouldRemind, activeSession, hasNotified, markReminded]);
+  }, [shouldRemind, activeSession, hasStartedAlarm, markReminded]);
+
+  // Recurring browser notification every 5 minutes while alarm is active
+  useEffect(() => {
+    if (!shouldRemind || !activeSession) return;
+    const REPEAT_INTERVAL = 5 * MS_PER_MINUTE;
+
+    // Send initial notification
+    if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+      new Notification("姿勢超時提醒 ⏰", {
+        body: activeSession.suggestedBreak ?? t("posture:overtimeAlert"),
+        tag: "posture-overtime",
+      });
+    }
+
+    const interval = setInterval(() => {
+      if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+        new Notification("姿勢超時提醒 ⏰", {
+          body: activeSession.suggestedBreak ?? t("posture:overtimeAlert"),
+          tag: "posture-overtime",
+        });
+      }
+    }, REPEAT_INTERVAL);
+    return () => clearInterval(interval);
+  }, [shouldRemind, activeSession, t]);
 
   // Stop alarm when user snoozes or switches posture
   useEffect(() => {
