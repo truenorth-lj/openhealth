@@ -181,9 +181,11 @@ export default function PosturePage() {
       markReminded.mutate({ id: activeSession.id });
       setHasNotified(true);
 
-      // Play alarm sound (loops for 30s)
-      const audio = new Audio("/alarm.mp3");
+      // Play alarm sound (loops for 30s), reuse pre-unlocked audio if available
+      const audio = alarmRef.current ?? new Audio("/alarm.mp3");
       audio.loop = true;
+      audio.currentTime = 0;
+      audio.volume = 1;
       audio.play().catch(() => {});
       alarmRef.current = audio;
 
@@ -221,6 +223,17 @@ export default function PosturePage() {
   }, [config?.snoozeMinutes]);
 
   const handleSwitchPosture = (postureId: string) => {
+    // Unlock audio autoplay policy on user gesture — preload alarm sound
+    if (!alarmRef.current) {
+      const audio = new Audio("/alarm.mp3");
+      audio.volume = 0;
+      audio.play().then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 1;
+      }).catch(() => {});
+      alarmRef.current = audio;
+    }
     switchPosture.mutate({ postureId, lang: i18n.language });
   };
 
