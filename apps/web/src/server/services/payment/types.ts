@@ -40,6 +40,7 @@ export interface PaymentProvider {
 
   getPortalUrl(params: {
     providerCustId: string;
+    providerSubId?: string;
     returnUrl: string;
   }): Promise<PortalResult>;
 }

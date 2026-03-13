@@ -75,14 +75,12 @@ export class LemonSqueezyPaymentProvider implements PaymentProvider {
 
   async getPortalUrl(params: {
     providerCustId: string;
+    providerSubId?: string;
     returnUrl: string;
   }): Promise<PortalResult> {
     this.init();
 
-    // Lemon Squeezy provides a customer portal URL per subscription
-    // We store the customer portal URL from the subscription's urls object
-    // For now, use the update_payment_method URL from the subscription
-    const subId = params.providerCustId; // We store sub ID as cust ID fallback
+    const subId = params.providerSubId ?? params.providerCustId;
     const { data, error } = await getSubscription(subId);
 
     if (error || !data) {

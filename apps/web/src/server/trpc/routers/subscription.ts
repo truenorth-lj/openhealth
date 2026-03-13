@@ -54,7 +54,10 @@ export const subscriptionRouter = router({
     const provider = getPaymentProvider();
 
     const sub = await ctx.db
-      .select({ providerCustId: subscriptions.providerCustId })
+      .select({
+        providerCustId: subscriptions.providerCustId,
+        providerSubId: subscriptions.providerSubId,
+      })
       .from(subscriptions)
       .where(
         and(
@@ -75,6 +78,7 @@ export const subscriptionRouter = router({
       process.env.NEXT_PUBLIC_APP_URL || "https://openhealth.blog";
     const result = await provider.getPortalUrl({
       providerCustId: sub[0].providerCustId,
+      providerSubId: sub[0].providerSubId ?? undefined,
       returnUrl: `${baseUrl}/settings/subscription`,
     });
 
