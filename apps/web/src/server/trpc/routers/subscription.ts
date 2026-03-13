@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "../trpc";
 import { subscriptions, referrals } from "@/server/db/schema";
@@ -104,6 +104,7 @@ export const subscriptionRouter = router({
           eq(subscriptions.provider, provider.name)
         )
       )
+      .orderBy(desc(subscriptions.createdAt))
       .limit(1);
 
     return sub[0] ?? null;
