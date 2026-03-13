@@ -220,7 +220,7 @@ export const referralRouter = router({
         if (totalAmount < REFERRAL.MIN_PAYOUT_CENTS) {
           return {
             success: false as const,
-            error: "可提領餘額不足 NT$500",
+            error: "可提領餘額不足 $5",
           };
         }
 

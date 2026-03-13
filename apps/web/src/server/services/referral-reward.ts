@@ -92,7 +92,7 @@ export async function grantReferralTrialDays(
 /**
  * Calculate and record revenue share for the referrer
  * when a referred user pays their subscription invoice.
- * Amount is assumed to be in NTD smallest unit (cents) from Stripe.
+ * Amount is assumed to be in USD smallest unit (cents) from payment provider.
  */
 export async function calculateAndRecordRevenueShare(
   refereeUserId: string,

@@ -170,7 +170,7 @@ function SubscriptionContent() {
                 <span className="text-lg font-light">Pro</span>
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-light">NT$150</span>
+                <span className="text-2xl font-light">$5</span>
                 <span className="text-sm text-neutral-400 font-light">
                   / {t("subscriptionPage.month")}
                 </span>

@@ -9,8 +9,8 @@ import Link from "next/link";
 import { REFERRAL, REWARD_TYPES, REWARD_STATUSES } from "@open-health/shared/constants";
 import { useTranslation } from "react-i18next";
 
-function formatNtd(cents: number) {
-  return `NT$${Math.floor(cents / 100).toLocaleString()}`;
+function formatUsd(cents: number) {
+  return `$${(cents / 100).toFixed(2)}`;
 }
 
 function statusLabel(status: string, t: (key: string) => string) {
@@ -114,7 +114,7 @@ export default function RewardsPage() {
                 <span>{t("rewardsPage.totalRevenue")}</span>
               </div>
               <p className="text-lg font-light">
-                {formatNtd(
+                {formatUsd(
                   stats.totalPending + stats.totalConfirmed + stats.totalPaid
                 )}
               </p>
@@ -125,7 +125,7 @@ export default function RewardsPage() {
                 <span>{t("rewardsPage.withdrawable")}</span>
               </div>
               <p className="text-lg font-light">
-                {formatNtd(stats.withdrawableAmount)}
+                {formatUsd(stats.withdrawableAmount)}
               </p>
             </div>
             <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 space-y-1">
@@ -134,7 +134,7 @@ export default function RewardsPage() {
                 <span>{t("rewardsPage.pending")}</span>
               </div>
               <p className="text-lg font-light">
-                {formatNtd(stats.totalPending)}
+                {formatUsd(stats.totalPending)}
               </p>
             </div>
             <div className="rounded-lg border border-black/[0.06] dark:border-white/[0.06] p-4 space-y-1">
@@ -165,7 +165,7 @@ export default function RewardsPage() {
                 {payoutMutation.isPending
                   ? t("rewardsPage.processing")
                   : canWithdraw
-                    ? t("rewardsPage.withdrawAmount", { amount: formatNtd(stats.withdrawableAmount) })
+                    ? t("rewardsPage.withdrawAmount", { amount: formatUsd(stats.withdrawableAmount) })
                     : t("rewardsPage.insufficientBalance")}
               </Button>
               {payoutError && (
@@ -199,7 +199,7 @@ export default function RewardsPage() {
                       <p className="text-sm font-light">
                         {reward.type === REWARD_TYPES.FREE_DAYS
                           ? t("rewardsPage.freeDays", { count: reward.freeDays ?? 0 })
-                          : t("rewardsPage.revenueAmount", { amount: formatNtd(reward.amountNtd ?? 0) })}
+                          : t("rewardsPage.revenueAmount", { amount: formatUsd(reward.amountNtd ?? 0) })}
                       </p>
                       {reward.subscriptionMonth && (
                         <p className="text-xs text-neutral-400">

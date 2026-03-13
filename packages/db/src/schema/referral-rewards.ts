@@ -24,7 +24,7 @@ export const referralRewards = pgTable(
       .notNull(),
     type: text("type").notNull(), // 'free_days' | 'revenue_share'
     status: text("status").notNull().default("confirmed"), // 'pending' | 'confirmed' | 'paid' | 'clawed_back'
-    amountNtd: integer("amount_ntd"), // for revenue_share, in NTD cents
+    amountNtd: integer("amount_ntd"), // for revenue_share, in USD cents (column name is legacy)
     freeDays: integer("free_days"), // for free_days type
     subscriptionMonth: text("subscription_month"), // e.g. '2026-03' for revenue_share
     providerInvoiceId: text("provider_invoice_id"),
@@ -49,7 +49,7 @@ export const referralPayouts = pgTable(
     userId: text("user_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
-    amountNtd: integer("amount_ntd").notNull(), // in NTD cents
+    amountNtd: integer("amount_ntd").notNull(), // in USD cents (column name is legacy)
     method: text("method").notNull(), // 'subscription_credit' | 'bank_transfer'
     status: text("status").notNull().default("pending"), // 'pending' | 'processing' | 'completed' | 'rejected'
     note: text("note"),
