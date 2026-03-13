@@ -1,0 +1,2 @@
+CREATE INDEX "time_entries_user_week_idx" ON "time_entries" USING btree ("user_id","week_id");--> statement-breakpoint
+CREATE INDEX "weekly_goals_user_week_idx" ON "weekly_goals" USING btree ("user_id","week_id");
