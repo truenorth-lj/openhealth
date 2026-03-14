@@ -1,33 +1,47 @@
 {
   "title": "Pricing",
-  "subtitle": "Open-source and free to self-host, or let us handle everything.",
+  "subtitle": "Choose the plan that works for you.",
+  "free": {
+    "badge": "Free",
+    "price": "$0",
+    "description": "Get started with essential health tracking.",
+    "cta": "Get Started →"
+  },
+  "pro": {
+    "badge": "Pro",
+    "price": "$5",
+    "month": "month",
+    "description": "Unlock all features for complete health management.",
+    "cta": "Upgrade to Pro →",
+    "popular": "Most Popular"
+  },
   "selfHosted": {
     "badge": "Self-Hosted",
     "price": "Free",
-    "description": "Deploy on your own infrastructure. Full control over your data.",
-    "features": {
-      "allFeatures": "All features included",
-      "ownData": "Complete data ownership",
-      "ownAiKeys": "Use your own AI API keys",
-      "communitySupport": "Community support",
-      "unlimitedUsers": "Unlimited users"
-    },
+    "description": "Deploy on your own infrastructure. Full control.",
     "cta": "View on GitHub →",
-    "comingSoon": "Coming Soon"
-  },
-  "cloud": {
-    "badge": "Cloud",
-    "month": "month",
-    "description": "Zero setup, ready to use. We handle hosting and maintenance.",
-    "features": {
-      "allFeatures": "All features included",
-      "zeroSetup": "Zero setup, instant access",
-      "autoBackup": "Automatic backups",
-      "autoUpdates": "Always on the latest version",
-      "prioritySupport": "Priority support"
-    },
     "comingSoon": "Coming Soon",
-    "cta": "Get Started →"
+    "allIncluded": "All features included"
+  },
+  "features": {
+    "title": "Feature Comparison",
+    "foodDiary": "Food Diary",
+    "foodSearch": "Food Search",
+    "weightTracking": "Weight Tracking",
+    "waterTracking": "Water Tracking",
+    "sleepTracking": "Sleep Tracking",
+    "aiOcr": "AI Label Scan",
+    "aiEstimate": "AI Food Estimate",
+    "aiChat": "AI Health Chat",
+    "micronutrients": "Micronutrients",
+    "exercise": "Exercise Tracking",
+    "fasting": "Intermittent Fasting",
+    "progressPhotos": "Progress Photos",
+    "exportData": "Export Data",
+    "savedMeals": "Saved Meals",
+    "unlimited": "Unlimited",
+    "limited": "Limited",
+    "perDay": "{{count}}/day"
   },
   "faq": {
     "openSource": "Open Health is open-source. The full source code is publicly available.",
