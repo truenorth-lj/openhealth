@@ -94,7 +94,6 @@ export function MealSection({ mealType, entries, date, onRequireAuth, isAuthenti
 
 function EntryRow({ entry, mealType }: { entry: DiaryEntry; mealType: MealType }) {
   const [isPending, startTransition] = useTransition();
-  const [isEditingQty, setIsEditingQty] = useState(false);
   const [localQty, setLocalQty] = useState(Number(entry.servingQty));
   const router = useRouter();
   const utils = trpc.useUtils();
@@ -110,7 +109,7 @@ function EntryRow({ entry, mealType }: { entry: DiaryEntry; mealType: MealType }
 
   const handleQtyChange = (delta: number) => {
     const prevQty = localQty;
-    const newQty = Math.max(0.5, Math.round((localQty + delta) * 2) / 2);
+    const newQty = Math.max(1, localQty + delta);
     setLocalQty(newQty);
     startTransition(async () => {
       try {
@@ -138,39 +137,27 @@ function EntryRow({ entry, mealType }: { entry: DiaryEntry; mealType: MealType }
           <p className="text-sm font-light truncate">{entry.foodName}</p>
         </Link>
         <div className="flex items-center gap-1 mt-0.5">
-          {isEditingQty ? (
-            <div className="flex items-center gap-1">
-              <button
-                className="flex items-center justify-center h-5 w-5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-                onClick={() => handleQtyChange(-0.5)}
-                disabled={isPending || localQty <= 0.5}
-              >
-                <Minus className="h-3 w-3" strokeWidth={2} />
-              </button>
-              <span className="text-xs tabular-nums font-medium min-w-[2rem] text-center">
-                {localQty}
-              </span>
-              <button
-                className="flex items-center justify-center h-5 w-5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-                onClick={() => handleQtyChange(0.5)}
-                disabled={isPending}
-              >
-                <Plus className="h-3 w-3" strokeWidth={2} />
-              </button>
-              <span className="text-xs text-neutral-400 dark:text-neutral-600 ml-0.5">
-                × {entry.foodServingSize}{entry.foodServingUnit}
-              </span>
-            </div>
-          ) : (
-            <button
-              className="text-xs text-neutral-400 dark:text-neutral-600 hover:text-primary transition-colors"
-              onClick={() => setIsEditingQty(true)}
-            >
-              {localQty} × {entry.foodServingSize}
-              {entry.foodServingUnit}
-              {entry.foodBrand ? ` · ${entry.foodBrand}` : ""}
-            </button>
-          )}
+          <button
+            className="flex items-center justify-center h-5 w-5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+            onClick={() => handleQtyChange(-1)}
+            disabled={isPending || localQty <= 1}
+          >
+            <Minus className="h-3 w-3" strokeWidth={2} />
+          </button>
+          <span className="text-xs tabular-nums font-medium min-w-[2rem] text-center">
+            {localQty}
+          </span>
+          <button
+            className="flex items-center justify-center h-5 w-5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+            onClick={() => handleQtyChange(1)}
+            disabled={isPending}
+          >
+            <Plus className="h-3 w-3" strokeWidth={2} />
+          </button>
+          <span className="text-xs text-neutral-400 dark:text-neutral-600 ml-0.5">
+            × {entry.foodServingSize}{entry.foodServingUnit}
+            {entry.foodBrand ? ` · ${entry.foodBrand}` : ""}
+          </span>
         </div>
       </div>
       <div className="flex items-center gap-2 ml-2">

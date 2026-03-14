@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc-client";
 import { useSession } from "@/lib/auth-client";
-import { NUTRIENT_IDS, NUTRIENT_NAME_ZH } from "@open-health/shared/constants";
+import { NUTRIENT_IDS, NUTRIENT_I18N_KEY } from "@open-health/shared/constants";
 import { useTranslation } from "react-i18next";
 
 
@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 const categoryOrder = ["macro", "vitamin", "mineral", "other"];
 
 export default function FoodDetailPage() {
-  const { t } = useTranslation(["food", "common"]);
+  const { t } = useTranslation(["food", "common", "nutrients"]);
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { data: session } = useSession();
@@ -329,7 +329,7 @@ export default function FoodDetailPage() {
                   key={idx}
                   className="flex items-center justify-between px-4 py-2"
                 >
-                  <span className="text-sm">{NUTRIENT_NAME_ZH[nutrient.name] ?? nutrient.name}</span>
+                  <span className="text-sm">{NUTRIENT_I18N_KEY[nutrient.name] ? t(`nutrients:${NUTRIENT_I18N_KEY[nutrient.name]}`) : nutrient.name}</span>
                   <div className="flex items-center gap-3">
                     <span className="text-sm tabular-nums">
                       {formatAmount(amount)} {nutrient.unit}

@@ -68,6 +68,51 @@ export const NUTRIENT_CATEGORY_LABELS: Record<string, string> = {
   other: "其他",
 };
 
+// DB nutrient name → i18n key mapping (for use with nutrients.json translations)
+export const NUTRIENT_I18N_KEY: Record<string, string> = {
+  Protein: "protein",
+  "Total Fat": "totalFat",
+  "Total Carbohydrate": "totalCarbohydrate",
+  "Dietary Fiber": "dietaryFiber",
+  "Total Sugars": "totalSugars",
+  "Added Sugars": "addedSugars",
+  "Saturated Fat": "saturatedFat",
+  "Trans Fat": "transFat",
+  "Monounsaturated Fat": "monounsaturatedFat",
+  "Polyunsaturated Fat": "polyunsaturatedFat",
+  Cholesterol: "cholesterol",
+  "Vitamin A": "vitaminA",
+  "Vitamin C": "vitaminC",
+  "Vitamin D": "vitaminD",
+  "Vitamin E": "vitaminE",
+  "Vitamin K": "vitaminK",
+  "Thiamin (B1)": "vitaminB1",
+  "Riboflavin (B2)": "vitaminB2",
+  "Niacin (B3)": "vitaminB3",
+  "Pantothenic Acid (B5)": "vitaminB5",
+  "Vitamin B6": "vitaminB6",
+  "Biotin (B7)": "vitaminB7",
+  "Folate (B9)": "vitaminB9",
+  "Vitamin B12": "vitaminB12",
+  Choline: "choline",
+  Calcium: "calcium",
+  Iron: "iron",
+  Magnesium: "magnesium",
+  Phosphorus: "phosphorus",
+  Potassium: "potassium",
+  Sodium: "sodium",
+  Zinc: "zinc",
+  Copper: "copper",
+  Manganese: "manganese",
+  Selenium: "selenium",
+  Chromium: "chromium",
+  Molybdenum: "molybdenum",
+  Iodine: "iodine",
+  Water: "water",
+  Caffeine: "caffeine",
+  Alcohol: "alcohol",
+};
+
 // Nutrient name translations (English → Traditional Chinese)
 export const NUTRIENT_NAME_ZH: Record<string, string> = {
   // 巨量營養素

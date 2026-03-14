@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, Settings2 } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
-import { NUTRIENT_NAME_ZH } from "@open-health/shared/constants";
+import { NUTRIENT_I18N_KEY } from "@open-health/shared/constants";
 import { NutrientPickerDialog } from "./nutrient-picker-dialog";
 import { useTranslation } from "react-i18next";
 
@@ -16,7 +16,7 @@ export function MicroNutrientSection({
   date,
   trackedNutrientIds,
 }: MicroNutrientSectionProps) {
-  const { t } = useTranslation("diary");
+  const { t } = useTranslation(["diary", "nutrients"]);
   const [expanded, setExpanded] = useState(trackedNutrientIds.length > 0);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -82,7 +82,7 @@ export function MicroNutrientSection({
             const def = allNutrientDefs?.find((d) => d.id === id);
             const dayData = nutrients?.find((n) => n.nutrientId === id);
             const name = def
-              ? NUTRIENT_NAME_ZH[def.name] || def.name
+              ? (NUTRIENT_I18N_KEY[def.name] ? t(`nutrients:${NUTRIENT_I18N_KEY[def.name]}`) : def.name)
               : `#${id}`;
             const unit = def?.unit ?? "";
             const dailyValue = def?.dailyValue ? Number(def.dailyValue) : null;

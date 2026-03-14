@@ -11,14 +11,14 @@ import { createCustomFood } from "@/server/actions/food";
 import { logFood } from "@/server/actions/diary";
 import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
-import { NUTRIENT_IDS, NUTRIENT_NAME_ZH, MACRO_NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
+import { NUTRIENT_IDS, NUTRIENT_I18N_KEY, MACRO_NUTRIENT_IDS, DEFAULT_SERVING_SIZE } from "@open-health/shared/constants";
 import posthog from "posthog-js";
 import { useTranslation } from "react-i18next";
 
 const MACRO_IDS = new Set(MACRO_NUTRIENT_IDS);
 
 function CreateFoodContent() {
-  const { t } = useTranslation(["food", "common"]);
+  const { t } = useTranslation(["food", "common", "nutrients"]);
   const searchParams = useSearchParams();
   const router = useRouter();
   const date = searchParams.get("date") || new Date().toISOString().split("T")[0];
@@ -219,7 +219,7 @@ function CreateFoodContent() {
           {microExpanded && (
             <CardContent className="space-y-3">
               {microNutrients.map((n) => {
-                const label = NUTRIENT_NAME_ZH[n.name] || n.name;
+                const label = NUTRIENT_I18N_KEY[n.name] ? t(`nutrients:${NUTRIENT_I18N_KEY[n.name]}`) : n.name;
                 return (
                   <div key={n.id} className="flex items-center gap-3">
                     <label className="text-sm font-light w-28 shrink-0 truncate">

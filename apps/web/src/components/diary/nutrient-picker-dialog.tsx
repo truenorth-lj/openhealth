@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc-client";
-import { NUTRIENT_NAME_ZH, MACRO_NUTRIENT_IDS, NUTRIENT_CATEGORY_LABELS } from "@open-health/shared/constants";
+import { NUTRIENT_I18N_KEY, MACRO_NUTRIENT_IDS } from "@open-health/shared/constants";
 import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -26,7 +26,7 @@ export function NutrientPickerDialog({
   selectedIds,
   onSave,
 }: NutrientPickerDialogProps) {
-  const { t } = useTranslation(["diary", "common"]);
+  const { t } = useTranslation(["diary", "common", "nutrients", "food"]);
   const [selected, setSelected] = useState<Set<number>>(new Set(selectedIds));
   const { data: nutrients } = trpc.user.getNutrientDefinitions.useQuery(
     undefined,
@@ -79,12 +79,12 @@ export function NutrientPickerDialog({
             return (
               <div key={cat} className="space-y-2">
                 <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-                  {NUTRIENT_CATEGORY_LABELS[cat]}
+                  {t(`food:category.${cat}`)}
                 </p>
                 <div className="space-y-1">
                   {items.map((n) => {
                     const isSelected = selected.has(n.id);
-                    const label = NUTRIENT_NAME_ZH[n.name] || n.name;
+                    const label = NUTRIENT_I18N_KEY[n.name] ? t(`nutrients:${NUTRIENT_I18N_KEY[n.name]}`) : n.name;
                     return (
                       <button
                         key={n.id}
