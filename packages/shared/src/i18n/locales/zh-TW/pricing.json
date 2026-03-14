@@ -12,7 +12,8 @@
       "communitySupport": "社群支援",
       "unlimitedUsers": "不限使用人數"
     },
-    "cta": "查看 GitHub →"
+    "cta": "查看 GitHub →",
+    "comingSoon": "敬請期待"
   },
   "cloud": {
     "badge": "雲端託管",
@@ -25,7 +26,8 @@
       "autoUpdates": "自動更新至最新版",
       "prioritySupport": "優先支援"
     },
-    "comingSoon": "敬請期待"
+    "comingSoon": "敬請期待",
+    "cta": "立即開始 →"
   },
   "faq": {
     "openSource": "Open Health 是開源專案，原始碼完全公開。",

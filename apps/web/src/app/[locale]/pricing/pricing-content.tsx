@@ -25,63 +25,8 @@ export function PricingContent() {
 
         {/* Plans */}
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Self-Hosted */}
-          <div className="rounded-2xl border border-black/[0.08] dark:border-white/[0.08] p-8 space-y-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2.5">
-                <Server className="h-5 w-5 text-neutral-500" strokeWidth={1.5} />
-                <span className="text-sm font-medium tracking-wide uppercase text-neutral-500">
-                  {t("selfHosted.badge")}
-                </span>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-light">{t("selfHosted.price")}</span>
-              </div>
-              <p className="text-sm text-neutral-400 font-light">
-                {t("selfHosted.description")}
-              </p>
-            </div>
-
-            <ul className="space-y-3">
-              {(
-                [
-                  "allFeatures",
-                  "ownData",
-                  "ownAiKeys",
-                  "communitySupport",
-                  "unlimitedUsers",
-                ] as const
-              ).map((key) => (
-                <li key={key} className="flex items-start gap-2.5">
-                  <Check
-                    className="h-4 w-4 mt-0.5 text-green-500 shrink-0"
-                    strokeWidth={2}
-                  />
-                  <span className="text-sm font-light">
-                    {t(`selfHosted.features.${key}`)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            <a
-              href="https://github.com/truenorth-lj/open-health"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex w-full items-center justify-center rounded-lg border border-black/[0.08] dark:border-white/[0.08] py-3 text-sm font-light transition-all duration-300 hover:border-foreground/20"
-            >
-              {t("selfHosted.cta")}
-            </a>
-          </div>
-
-          {/* Cloud */}
-          <div className="relative rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/[0.03] to-transparent p-8 space-y-6">
-            <div className="absolute -top-3 right-6">
-              <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 text-xs font-medium text-amber-600 dark:text-amber-400">
-                {t("cloud.comingSoon")}
-              </span>
-            </div>
-
+          {/* Cloud — available now */}
+          <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/[0.03] to-transparent p-8 space-y-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2.5">
                 <Cloud className="h-5 w-5 text-amber-500" strokeWidth={1.5} />
@@ -122,11 +67,64 @@ export function PricingContent() {
               ))}
             </ul>
 
+            <Link
+              href="/hub"
+              className="flex w-full items-center justify-center rounded-lg bg-amber-500 py-3 text-sm font-medium text-white transition-all duration-300 hover:bg-amber-600"
+            >
+              {t("cloud.cta")}
+            </Link>
+          </div>
+
+          {/* Self-Hosted — coming soon */}
+          <div className="relative rounded-2xl border border-black/[0.08] dark:border-white/[0.08] p-8 space-y-6">
+            <div className="absolute -top-3 right-6">
+              <span className="rounded-full bg-neutral-100 dark:bg-neutral-800 border border-black/[0.08] dark:border-white/[0.08] px-3 py-1 text-xs font-medium text-neutral-500">
+                {t("selfHosted.comingSoon")}
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5">
+                <Server className="h-5 w-5 text-neutral-500" strokeWidth={1.5} />
+                <span className="text-sm font-medium tracking-wide uppercase text-neutral-500">
+                  {t("selfHosted.badge")}
+                </span>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-light">{t("selfHosted.price")}</span>
+              </div>
+              <p className="text-sm text-neutral-400 font-light">
+                {t("selfHosted.description")}
+              </p>
+            </div>
+
+            <ul className="space-y-3">
+              {(
+                [
+                  "allFeatures",
+                  "ownData",
+                  "ownAiKeys",
+                  "communitySupport",
+                  "unlimitedUsers",
+                ] as const
+              ).map((key) => (
+                <li key={key} className="flex items-start gap-2.5">
+                  <Check
+                    className="h-4 w-4 mt-0.5 text-green-500 shrink-0"
+                    strokeWidth={2}
+                  />
+                  <span className="text-sm font-light">
+                    {t(`selfHosted.features.${key}`)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
             <button
               disabled
-              className="flex w-full items-center justify-center rounded-lg bg-amber-500/20 py-3 text-sm font-light text-amber-600/60 dark:text-amber-400/60 cursor-not-allowed"
+              className="flex w-full items-center justify-center rounded-lg border border-black/[0.08] dark:border-white/[0.08] py-3 text-sm font-light text-neutral-400 cursor-not-allowed"
             >
-              {t("cloud.comingSoon")}
+              {t("selfHosted.comingSoon")}
             </button>
           </div>
         </div>

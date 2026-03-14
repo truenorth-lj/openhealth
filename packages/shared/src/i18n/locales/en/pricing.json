@@ -12,7 +12,8 @@
       "communitySupport": "Community support",
       "unlimitedUsers": "Unlimited users"
     },
-    "cta": "View on GitHub →"
+    "cta": "View on GitHub →",
+    "comingSoon": "Coming Soon"
   },
   "cloud": {
     "badge": "Cloud",
@@ -25,7 +26,8 @@
       "autoUpdates": "Always on the latest version",
       "prioritySupport": "Priority support"
     },
-    "comingSoon": "Coming Soon"
+    "comingSoon": "Coming Soon",
+    "cta": "Get Started →"
   },
   "faq": {
     "openSource": "Open Health is open-source. The full source code is publicly available.",
