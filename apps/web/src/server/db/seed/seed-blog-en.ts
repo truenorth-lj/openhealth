@@ -25,7 +25,7 @@ const TITLE = "Open Health Complete Guide: From Food Tracking to Workout Logging
 const SUMMARY =
   "A complete walkthrough of all Open Health features, including food diary, AI food recognition, water tracking, exercise log, intermittent fasting, weight tracking, and the brand-new workout log.";
 const TAGS = ["Guide", "Features", "Workout", "Nutrition Tracking"];
-const THUMBNAIL = "/screenshots/en/01-hub.png";
+const THUMBNAIL = "/blog/open-health-guide-cover.png";
 
 const CONTENT = `## What is Open Health?
 
