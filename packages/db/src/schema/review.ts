@@ -22,13 +22,21 @@ export const weeklyGoals = pgTable(
     title: varchar("title", { length: 200 }).notNull(),
     targetMinutes: integer("target_minutes"),
     sortOrder: integer("sort_order").default(0).notNull(),
+    parentId: uuid("parent_id"),
+    color: varchar("color", { length: 7 }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index("weekly_goals_user_week_idx").on(table.userId, table.weekId)]
 );
 
-export const weeklyGoalsRelations = relations(weeklyGoals, ({ many }) => ({
+export const weeklyGoalsRelations = relations(weeklyGoals, ({ one, many }) => ({
+  parent: one(weeklyGoals, {
+    fields: [weeklyGoals.parentId],
+    references: [weeklyGoals.id],
+    relationName: "parentChild",
+  }),
+  children: many(weeklyGoals, { relationName: "parentChild" }),
   timeEntries: many(timeEntries),
 }));
 
