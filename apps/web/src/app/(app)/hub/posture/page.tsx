@@ -18,8 +18,13 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { DateNavigator } from "@/components/diary/date-navigator";
 import { NotificationPermissionGuard } from "@/components/notification-permission-guard";
 import { useTranslation } from "react-i18next";
+import {
+  getTimerState,
+  computeSnoozeUntil,
+  formatDuration,
+  MS_PER_MINUTE,
+} from "@open-health/shared/posture";
 
-const MS_PER_MINUTE = 60 * 1000;
 const CIRCLE_CIRCUMFERENCE = 540;
 const MIN_MAX_MINUTES = 5;
 const MAX_MAX_MINUTES = 480;
@@ -45,16 +50,6 @@ function friendlyError(err: { message: string }, t: (key: string, opts?: Record<
     // not JSON, use as-is
   }
   return err.message || t("common:toast.errorRetry");
-}
-
-function formatDuration(ms: number): { minutes: string; seconds: string } {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return {
-    minutes: String(minutes).padStart(2, "0"),
-    seconds: String(seconds).padStart(2, "0"),
-  };
 }
 
 function formatTime(date: Date | string, locale = "zh-TW") {
@@ -154,24 +149,17 @@ export default function PosturePage() {
     return () => clearInterval(interval);
   }, [activeSession]);
 
-  // Reminder logic
-  const elapsedMs = activeSession
-    ? now - new Date(activeSession.startedAt).getTime()
-    : 0;
-  const maxMs = activeSession
-    ? activeSession.maxMinutes * MS_PER_MINUTE
-    : 0;
-  const isOvertime = elapsedMs > maxMs && maxMs > 0;
-  const progressPercent =
-    maxMs > 0 ? Math.min((elapsedMs / maxMs) * 100, 100) : 0;
+  // Reminder logic — shared with mobile
+  const timerState = activeSession
+    ? getTimerState(activeSession, config, snoozedUntil, now)
+    : null;
+  const elapsedMs = timerState?.elapsedMs ?? 0;
+  const maxMs = timerState?.maxMs ?? 0;
+  const isOvertime = timerState?.isOvertime ?? false;
+  const progressPercent = timerState?.progressPercent ?? 0;
   const elapsed = formatDuration(elapsedMs);
   const remaining = formatDuration(Math.max(0, maxMs - elapsedMs));
-
-  const isSnoozed = snoozedUntil !== null && now < snoozedUntil;
-  const shouldRemind =
-    isOvertime &&
-    config?.reminderEnabled !== false &&
-    !isSnoozed;
+  const shouldRemind = timerState?.shouldAlarm ?? false;
 
   const alarmRef = useRef<HTMLAudioElement | null>(null);
 
@@ -234,10 +222,9 @@ export default function PosturePage() {
   }, []);
 
   const handleSnooze = useCallback(() => {
-    const snoozeMs = (config?.snoozeMinutes ?? 10) * MS_PER_MINUTE;
-    setSnoozedUntil(Date.now() + snoozeMs);
+    setSnoozedUntil(computeSnoozeUntil(config));
     toast(t("posture:snoozeMinutes", { minutes: config?.snoozeMinutes ?? 10 }));
-  }, [config?.snoozeMinutes]);
+  }, [config, t]);
 
   const handleSwitchPosture = (postureId: string) => {
     // Unlock audio autoplay policy on user gesture — preload alarm sound
