@@ -335,7 +335,7 @@ function ScanLabelContent() {
 
       {/* Stage 3: Edit & Confirm */}
       {stage === "edit" && (
-        <div className="space-y-4 pb-16">
+        <div className="space-y-4 pb-32">
           <div className="flex items-center justify-between">
             {imagePreview && (
               <div className="relative h-12 w-12 shrink-0 rounded-md overflow-hidden bg-muted">
@@ -559,7 +559,7 @@ function ScanLabelContent() {
 
           </form>
 
-          <div className="fixed bottom-0 left-0 right-0 border-t bg-background p-4">
+          <div className="fixed left-0 right-0 z-40 border-t bg-background p-4 bottom-[calc(4rem+env(safe-area-inset-bottom))]">
             <div className="max-w-lg mx-auto">
               <Button
                 type="submit"
