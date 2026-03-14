@@ -72,7 +72,7 @@ export function BlogListContent({ posts }: { posts: BlogPost[] }) {
                       src={post.thumbnailUrl}
                       alt={post.title}
                       fill
-                      className="object-cover opacity-80 group-hover:opacity-100 dark:opacity-70 dark:group-hover:opacity-90 transition-opacity duration-300"
+                      className="object-cover opacity-90 group-hover:opacity-100 dark:opacity-90 dark:group-hover:opacity-100 transition-opacity duration-300"
                       sizes="(max-width: 768px) 100vw, 288px"
                     />
                   </div>
