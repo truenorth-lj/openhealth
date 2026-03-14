@@ -89,7 +89,22 @@
     "interval180": "3 小時",
     "interval240": "4 小時",
     "interval360": "6 小時",
-    "saving": "儲存中..."
+    "saving": "儲存中...",
+    "reminderMode": "提醒模式",
+    "modeInterval": "定時提醒",
+    "modeMilestone": "里程碑提醒",
+    "milestoneCheckpoints": "里程碑設定",
+    "checkpointTime": "時間",
+    "checkpointTarget": "目標 (mL)",
+    "addCheckpoint": "新增里程碑",
+    "maxCheckpoints": "最多 10 個里程碑",
+    "suggestedConfig": "建議配置",
+    "milestoneNote": "在設定的時間點檢查飲水進度，未達標時發送提醒。",
+    "milestoneBehind": "{{time}} 目標 {{target}} mL，目前 {{current}} mL，還差 {{deficit}} mL",
+    "milestoneTitle": "還沒喝到目標！",
+    "deleteCheckpoint": "刪除",
+    "validationTimeOrder": "時間必須由早到晚排列",
+    "validationTargetOrder": "目標量必須遞增"
   },
   "subscriptionPage": {
     "currentPlan": "目前方案",

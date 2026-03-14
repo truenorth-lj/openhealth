@@ -89,7 +89,22 @@
     "interval180": "3 hours",
     "interval240": "4 hours",
     "interval360": "6 hours",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "reminderMode": "Reminder mode",
+    "modeInterval": "Interval",
+    "modeMilestone": "Milestone",
+    "milestoneCheckpoints": "Milestone checkpoints",
+    "checkpointTime": "Time",
+    "checkpointTarget": "Target (mL)",
+    "addCheckpoint": "Add checkpoint",
+    "maxCheckpoints": "Maximum 10 checkpoints",
+    "suggestedConfig": "Suggested setup",
+    "milestoneNote": "Check water progress at set times and send a reminder if behind.",
+    "milestoneBehind": "{{time}} target {{target}} mL, currently {{current}} mL, {{deficit}} mL behind",
+    "milestoneTitle": "Behind on water goal!",
+    "deleteCheckpoint": "Delete",
+    "validationTimeOrder": "Times must be in chronological order",
+    "validationTargetOrder": "Targets must be increasing"
   },
   "subscriptionPage": {
     "currentPlan": "Current Plan",

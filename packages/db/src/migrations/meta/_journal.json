@@ -169,6 +169,13 @@
       "when": 1773384051758,
       "tag": "0023_medical_rafael_vega",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1773492560891,
+      "tag": "0024_flashy_silverclaw",
+      "breakpoints": true
     }
   ]
 }
