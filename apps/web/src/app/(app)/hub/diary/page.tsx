@@ -130,18 +130,51 @@ function DiaryContent() {
 
 export default function DiaryPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="px-4 py-6 space-y-4">
-          <div className="h-10 animate-pulse rounded bg-neutral-100 dark:bg-neutral-900" />
-          <div className="h-24 animate-pulse rounded bg-neutral-100 dark:bg-neutral-900" />
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded bg-neutral-100 dark:bg-neutral-900" />
-          ))}
-        </div>
-      }
-    >
+    <Suspense fallback={<DiarySkeleton />}>
       <DiaryContent />
     </Suspense>
+  );
+}
+
+function DiarySkeleton() {
+  return (
+    <div className="pb-6">
+      {/* Date navigator skeleton */}
+      <div className="flex items-center justify-center gap-4 py-3 px-4">
+        <div className="h-8 w-8 rounded-full bg-neutral-100 dark:bg-neutral-900" />
+        <div className="h-5 w-20 rounded bg-neutral-100 dark:bg-neutral-900" />
+        <div className="h-8 w-8 rounded-full bg-neutral-100 dark:bg-neutral-900" />
+      </div>
+      {/* Daily summary skeleton */}
+      <div className="mx-4 mt-2 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-16 rounded bg-neutral-100 dark:bg-neutral-900" />
+          <div className="h-8 w-32 rounded bg-neutral-100 dark:bg-neutral-900" />
+        </div>
+        <div className="flex justify-between">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex flex-col items-center gap-1">
+              <div className="h-3 w-8 rounded bg-neutral-100 dark:bg-neutral-900" />
+              <div className="h-1 w-16 rounded-full bg-neutral-100 dark:bg-neutral-900" />
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Meal sections skeleton */}
+      <div className="mt-4 border-t border-black/[0.06] dark:border-white/[0.06]">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="mx-4 mt-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 rounded bg-neutral-100 dark:bg-neutral-900" />
+                <div className="h-4 w-10 rounded bg-neutral-100 dark:bg-neutral-900" />
+                <div className="h-3 w-12 rounded bg-neutral-100 dark:bg-neutral-900" />
+              </div>
+            </div>
+            <div className="h-10 rounded border border-dashed border-black/[0.06] dark:border-white/[0.06]" />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
