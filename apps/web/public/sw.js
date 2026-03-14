@@ -1,4 +1,4 @@
-const CACHE_NAME = "open-health-v6";
+const CACHE_NAME = "open-health-v7";
 
 const PRECACHE_URLS = [
   "/manifest.json",
@@ -98,6 +98,30 @@ function networkFirstWithCache(request) {
     .catch(() => caches.match(request).then((cached) => cached || Response.error()));
 }
 
+/**
+ * Stale-while-revalidate: serve from cache immediately, update cache in background.
+ * Next.js _next/static chunks are content-hashed (e.g. chunk-abc123.js),
+ * so stale cache entries naturally expire when new chunks have different URLs.
+ * This gives instant loads on repeat visits without ChunkLoadError risk.
+ */
+function staleWhileRevalidate(request) {
+  return caches.open(CACHE_NAME).then((cache) =>
+    cache.match(request).then((cached) => {
+      const fetchPromise = fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            cache.put(request, response.clone());
+          }
+          return response;
+        })
+        .catch(() => cached || Response.error());
+
+      // Return cached immediately if available, otherwise wait for network
+      return cached || fetchPromise;
+    })
+  );
+}
+
 // Fetch: network-first for navigation, cache-first for static assets
 self.addEventListener("fetch", (event) => {
   const { request } = event;
@@ -143,11 +167,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // JS chunks & _next/static: network-first with cache fallback
-  // Using cache-first here causes ChunkLoadErrors after deployments
-  // because old cached chunks reference other chunks that no longer exist.
+  // JS/CSS chunks (_next/static): stale-while-revalidate
+  // Content-hashed filenames mean stale entries are harmless — new deployments
+  // produce new URLs, so old cached chunks simply stop being requested.
   if (url.pathname.startsWith("/_next/static/")) {
-    event.respondWith(networkFirstWithCache(request));
+    event.respondWith(staleWhileRevalidate(request));
     return;
   }
 
