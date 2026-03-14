@@ -8,6 +8,7 @@ import { ThemeProvider } from "next-themes";
 import { trpc } from "@/lib/trpc-client";
 import { PostHogProvider } from "@/components/posthog-provider";
 import { PostHogPageView } from "@/components/posthog-pageview";
+import { MiniKitProvider } from "@/components/minikit-provider";
 
 // Workaround: React 18/19 types mismatch in monorepo causes children prop errors
 const Theme = ThemeProvider as React.FC<{
@@ -41,15 +42,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <PostHogProvider>
-      <PostHogPageView />
-      <Theme attribute="class" defaultTheme="system" enableSystem={true}>
-        <trpc.Provider client={trpcClient} queryClient={queryClient}>
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </trpc.Provider>
-      </Theme>
-    </PostHogProvider>
+    <MiniKitProvider>
+      <PostHogProvider>
+        <PostHogPageView />
+        <Theme attribute="class" defaultTheme="system" enableSystem={true}>
+          <trpc.Provider client={trpcClient} queryClient={queryClient}>
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
+          </trpc.Provider>
+        </Theme>
+      </PostHogProvider>
+    </MiniKitProvider>
   );
 }
