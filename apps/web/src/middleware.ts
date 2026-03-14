@@ -5,7 +5,7 @@ import { defaultLocale, locales, isValidLocale } from "@/lib/i18n-config";
 const LOCALE_COOKIE = "NEXT_LOCALE";
 
 // Public paths that need locale routing (SEO pages)
-const PUBLIC_PATHS = ["/", "/blog", "/docs", "/privacy"];
+const PUBLIC_PATHS = ["/", "/blog", "/docs", "/privacy", "/pricing"];
 
 function isPublicPath(pathname: string): boolean {
   return PUBLIC_PATHS.some(

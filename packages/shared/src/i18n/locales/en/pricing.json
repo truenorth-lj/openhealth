@@ -1,0 +1,34 @@
+{
+  "title": "Pricing",
+  "subtitle": "Open-source and free to self-host, or let us handle everything.",
+  "selfHosted": {
+    "badge": "Self-Hosted",
+    "price": "Free",
+    "description": "Deploy on your own infrastructure. Full control over your data.",
+    "features": {
+      "allFeatures": "All features included",
+      "ownData": "Complete data ownership",
+      "ownAiKeys": "Use your own AI API keys",
+      "communitySupport": "Community support",
+      "unlimitedUsers": "Unlimited users"
+    },
+    "cta": "View on GitHub →"
+  },
+  "cloud": {
+    "badge": "Cloud",
+    "month": "month",
+    "description": "Zero setup, ready to use. We handle hosting and maintenance.",
+    "features": {
+      "allFeatures": "All features included",
+      "zeroSetup": "Zero setup, instant access",
+      "autoBackup": "Automatic backups",
+      "autoUpdates": "Always on the latest version",
+      "prioritySupport": "Priority support"
+    },
+    "comingSoon": "Coming Soon"
+  },
+  "faq": {
+    "openSource": "Open Health is open-source. The full source code is publicly available.",
+    "tryNow": "Try it free now →"
+  }
+}

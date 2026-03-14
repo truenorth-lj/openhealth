@@ -1,0 +1,34 @@
+{
+  "title": "定價方案",
+  "subtitle": "開源免費自部署，或讓我們幫你搞定一切。",
+  "selfHosted": {
+    "badge": "自部署",
+    "price": "免費",
+    "description": "自行部署，完全掌控你的數據。",
+    "features": {
+      "allFeatures": "所有功能完整開放",
+      "ownData": "數據完全由你掌控",
+      "ownAiKeys": "使用自己的 AI API Key",
+      "communitySupport": "社群支援",
+      "unlimitedUsers": "不限使用人數"
+    },
+    "cta": "查看 GitHub →"
+  },
+  "cloud": {
+    "badge": "雲端託管",
+    "month": "月",
+    "description": "零設定，即開即用，我們幫你維護。",
+    "features": {
+      "allFeatures": "所有功能完整開放",
+      "zeroSetup": "零設定，即開即用",
+      "autoBackup": "自動備份",
+      "autoUpdates": "自動更新至最新版",
+      "prioritySupport": "優先支援"
+    },
+    "comingSoon": "敬請期待"
+  },
+  "faq": {
+    "openSource": "Open Health 是開源專案，原始碼完全公開。",
+    "tryNow": "立即免費試用 →"
+  }
+}

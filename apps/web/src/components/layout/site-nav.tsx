@@ -9,6 +9,7 @@ import { useLocalePath } from "@/hooks/use-locale-path";
 
 const navLinks = [
   { path: "/", labelKey: "nav.home" as const },
+  { path: "/pricing", labelKey: "nav.pricing" as const },
   { path: "/blog", labelKey: "nav.blog" as const },
   { path: "/docs", labelKey: "nav.docs" as const },
 ];
