@@ -78,3 +78,9 @@ debug/
 
 # claude code
 .claude/worktrees/
+
+# OSS sync
+.oss-sync.log
+
+# crash reports
+*.ips
