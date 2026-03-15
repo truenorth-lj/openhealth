@@ -1,7 +1,7 @@
 <p align="center">
   <h1 align="center">Open Health</h1>
   <p align="center">
-    All-in-One Health OS — open-source, self-hostable health tracking platform.
+    Your Open-Source Health AI Agent — mobile-first, personal, and truly yours.
     <br />
     <a href="https://openhealth.blog">Live Demo</a> · <a href="https://openhealth.blog">官方網站</a> · <a href="#self-hosting">Self-Host Guide</a>
   </p>
@@ -12,9 +12,9 @@
   <a href="https://github.com/truenorth-lj/openhealth/stargazers"><img src="https://img.shields.io/github/stars/truenorth-lj/openhealth" alt="GitHub Stars" /></a>
 </p>
 
-Track nutrition, water intake, weight, sleep, exercise, and intermittent fasting — all in one place. Built with Next.js, PostgreSQL, and AI-powered features.
+The first open-source, mobile-first personal health AI agent. It understands your nutrition, sleep, fitness, and weight — and becomes the health companion that knows you best.
 
-> **繁體中文** | Open Health 是一個開源的全方位健康追蹤平台。飲食、飲水、體重、睡眠、運動、間歇斷食，一個平台全部搞定。支援 AI 營養標籤掃描與個人化營養建議。
+> **繁體中文** | Open Health 是第一個開源、行動優先的個人健康 AI Agent。理解你的飲食、睡眠、運動與體重，成為最認識你的健康小助手。
 
 ## Screenshots
 
@@ -33,7 +33,12 @@ Track nutrition, water intake, weight, sleep, exercise, and intermittent fasting
 
 ## Features
 
-### Tracking
+### AI Agent
+- **AI Nutrition Chat** — personalized nutrition advice based on your diary, the agent that knows you best (最認識你的健康 AI)
+- **AI Meal Estimate** — describe a meal, AI estimates calories & macros
+- **Nutrition Label Scanner** — take a photo, AI extracts nutrition data (AI 營養標籤掃描)
+
+### Comprehensive Tracking
 - **Food Diary** — log meals with automatic calorie & macro calculation (自動計算卡路里與三大營養素)
 - **Food Database** — search common foods, create custom foods, save favorites
 - **Water Intake** — daily water tracking with goals and history (飲水紀錄)
@@ -41,11 +46,6 @@ Track nutrition, water intake, weight, sleep, exercise, and intermittent fasting
 - **Sleep Tracking** — bedtime, wake time, and sleep quality (睡眠追蹤)
 - **Intermittent Fasting** — timer with fasting history (間歇斷食計時器)
 - **Exercise** — cardio & strength training log (運動記錄)
-
-### AI-Powered
-- **Nutrition Label Scanner** — take a photo, AI extracts nutrition data (AI 營養標籤掃描)
-- **AI Nutrition Chat** — personalized nutrition advice based on your diary (AI 營養顧問)
-- **AI Meal Estimate** — describe a meal, AI estimates calories & macros
 
 ### Platform
 - **Progress Dashboard** — visualize calories, nutrients, and weight trends
@@ -63,7 +63,7 @@ Track nutrition, water intake, weight, sleep, exercise, and intermittent fasting
 | Database | PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/) |
 | API | [tRPC v11](https://trpc.io/) (reads) + Server Actions (writes) |
 | Auth | [Better Auth](https://www.better-auth.com/) (email/password + OAuth) |
-| AI | Google Gemini 2.5 Flash (OCR, chat) |
+| AI | Google Gemini 2.5 Flash (OCR, chat, agent) |
 | Payments | Stripe |
 | Monorepo | [Turborepo](https://turbo.build/) + pnpm workspaces |
 
@@ -146,8 +146,8 @@ See [`.env.example`](.env.example) for the full list.
 
 ## Roadmap
 
+- [ ] Proactive health insights & weekly AI reports (主動健康洞察)
 - [ ] Barcode scanning for packaged foods (條碼掃描)
-- [ ] Weekly/monthly health reports export (匯出健康報告)
 - [ ] Apple Health / Google Fit sync (第三方健康數據同步)
 - [ ] Multi-language expansion beyond EN/zh-TW
 
@@ -172,4 +172,4 @@ pnpm build
 
 ---
 
-Built with Next.js, PostgreSQL, and AI. Made in Taiwan.
+Open-source Health AI Agent. Made in Taiwan.

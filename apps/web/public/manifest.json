@@ -1,7 +1,7 @@
 {
   "name": "Open Health",
   "short_name": "Open Health",
-  "description": "All-in-one health OS — nutrition, fitness, sleep, weight in one open platform",
+  "description": "Your open-source health AI agent — understands your nutrition, sleep, fitness, and becomes the health companion that knows you best",
   "start_url": "/hub",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -94,7 +94,7 @@ function Hero() {
         className="mt-6 text-lg md:text-xl font-light text-neutral-500 dark:text-neutral-400 tracking-wide animate-fade-in-up"
         style={{ animationDelay: "0.7s" }}
       >
-        All-in-One Health OS
+        Your Open-Source Health AI Agent
       </p>
 
       <p
@@ -226,10 +226,10 @@ function Philosophy() {
 }
 
 const featureEntries = [
-  { num: "01", en: "All-in-One Tracking" },
-  { num: "02", en: "AI-Powered" },
+  { num: "01", en: "Personal Health AI" },
+  { num: "02", en: "Comprehensive Tracking" },
   { num: "03", en: "Data Visualization" },
-  { num: "04", en: "Open Platform" },
+  { num: "04", en: "Open Source" },
 ];
 
 function Features() {

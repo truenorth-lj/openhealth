@@ -59,7 +59,7 @@ export default function ReferralPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Open Health — All-in-One Health OS",
+          title: "Open Health — Your Open-Source Health AI Agent",
           text: t("referralPage.shareText"),
           url: shareUrl,
         });

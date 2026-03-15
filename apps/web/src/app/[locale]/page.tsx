@@ -16,8 +16,8 @@ interface Props {
 
 const descriptions: Record<Locale, string> = {
   "zh-TW":
-    "開放的健康作業系統。飲食、運動、睡眠、體重——所有健康數據整合在一個開源平台。",
-  en: "Open-source Health OS. Diet, exercise, sleep, weight — all health data in one AI-powered platform.",
+    "第一個開源、行動優先的個人健康 AI Agent。理解你的飲食、睡眠、運動與體重，成為最認識你的健康小助手。",
+  en: "The first open-source, mobile-first personal health AI agent. Understands your nutrition, sleep, fitness, and becomes the health companion that knows you best.",
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lang = (locale as Locale) || defaultLocale;
 
   return {
-    title: "Open Health — All-in-One Health OS",
+    title: "Open Health — Your Open-Source Health AI Agent",
     description: descriptions[lang],
     alternates: {
       canonical: BASE_URL,

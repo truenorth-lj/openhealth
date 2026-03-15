@@ -9,15 +9,15 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Open Health — All-in-One Health OS",
+  title: "Open Health — Your Open-Source Health AI Agent",
   description:
-    "開放的健康作業系統。飲食、運動、睡眠、體重——所有健康數據整合在一個開源平台，由 AI 驅動，完全屬於你。",
+    "第一個開源、行動優先的個人健康 AI Agent。理解你的飲食、睡眠、運動與體重，成為最認識你的健康小助手。",
   manifest: "/manifest.json",
   metadataBase: new URL("https://openhealth.blog"),
   openGraph: {
-    title: "Open Health — All-in-One Health OS",
+    title: "Open Health — Your Open-Source Health AI Agent",
     description:
-      "開放的健康作業系統。飲食、運動、睡眠、體重——所有健康數據整合在一個開源平台，由 AI 驅動，完全屬於你。",
+      "第一個開源、行動優先的個人健康 AI Agent。理解你的飲食、睡眠、運動與體重，成為最認識你的健康小助手。",
     url: "https://openhealth.blog",
     siteName: "Open Health",
     locale: "zh_TW",
@@ -25,19 +25,20 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Open Health — All-in-One Health OS",
+    title: "Open Health — Your Open-Source Health AI Agent",
     description:
-      "開放的健康作業系統。飲食、運動、睡眠、體重——所有健康數據整合在一個平台。",
+      "第一個開源、行動優先的個人健康 AI Agent。成為最認識你的健康小助手。",
   },
   keywords: [
-    "health os",
-    "all in one health tracking",
-    "open source health platform",
+    "health AI agent",
+    "personal health AI",
+    "open source health AI",
     "AI health assistant",
     "nutrition tracking",
     "sleep tracking",
     "fitness tracking",
     "self-hosted health",
+    "mobile-first health app",
   ],
   appleWebApp: {
     capable: true,
