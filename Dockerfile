@@ -7,6 +7,8 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY apps/web/package.json apps/web/
+COPY apps/zenlife-web/package.json apps/zenlife-web/
+COPY apps/mobile/package.json apps/mobile/
 COPY packages/shared/package.json packages/shared/
 COPY packages/db/package.json packages/db/
 
@@ -22,9 +24,10 @@ COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_module
 COPY --from=deps /app/packages/db/node_modules ./packages/db/node_modules
 
 COPY apps/web/ apps/web/
+COPY apps/zenlife-web/package.json apps/zenlife-web/
 COPY packages/shared/ packages/shared/
 COPY packages/db/ packages/db/
-COPY turbo.json package.json pnpm-workspace.yaml .npmrc ./
+COPY turbo.json package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
 # Build only the web app
 RUN pnpm build --filter=@open-health/web
