@@ -1,4 +1,4 @@
-const CACHE_NAME = "open-health-v7";
+const CACHE_NAME = "open-health-v8";
 
 const PRECACHE_URLS = [
   "/manifest.json",
@@ -133,14 +133,27 @@ self.addEventListener("fetch", (event) => {
   // API & auth routes: network only (no caching)
   if (url.pathname.startsWith("/api/")) return;
 
-  // Navigation (HTML pages): network-first with offline fallback page
+  // Navigation (HTML pages): stale-while-revalidate for instant reload,
+  // with offline fallback when both cache and network are unavailable.
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request).catch(async () => {
-        const cached = await caches.match(request);
-        if (cached) return cached;
-        return caches.match("/offline.html");
-      })
+      caches.open(CACHE_NAME).then((cache) =>
+        cache.match(request).then((cached) => {
+          const fetchPromise = fetch(request)
+            .then((response) => {
+              if (response.ok) {
+                cache.put(request, response.clone());
+              }
+              return response;
+            })
+            .catch(() =>
+              cached || caches.match("/offline.html").then((r) => r || Response.error())
+            );
+
+          // Return cached HTML instantly if available, otherwise wait for network
+          return cached || fetchPromise;
+        })
+      )
     );
     return;
   }
