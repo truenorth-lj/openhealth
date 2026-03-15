@@ -50,6 +50,7 @@ export const sleepRouter = router({
             movementSamples: input.movementSamples ?? null,
             note: input.note,
             factors: input.factors ?? null,
+            debugMeta: input.debugMeta ?? null,
           })
           .returning();
 

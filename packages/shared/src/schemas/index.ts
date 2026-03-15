@@ -293,6 +293,7 @@ export const saveSleepSessionSchema = z.object({
     .optional(),
   note: z.string().max(500).optional(),
   factors: z.array(z.string()).optional(),
+  debugMeta: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const updateSleepGoalSchema = z.object({

@@ -44,6 +44,8 @@ export const sleepSessions = pgTable(
     movementSamples: jsonb("movement_samples"),
     note: text("note"),
     factors: jsonb("factors").$type<string[]>(),
+    // Client debug metadata — app version, recovery info, sample counts, etc.
+    debugMeta: jsonb("debug_meta"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
