@@ -1,187 +1,175 @@
-# Open Health
+<p align="center">
+  <h1 align="center">Open Health</h1>
+  <p align="center">
+    All-in-One Health OS — open-source, self-hostable health tracking platform.
+    <br />
+    <a href="https://openhealth.blog">Live Demo</a> · <a href="https://openhealth.blog">官方網站</a> · <a href="#self-hosting">Self-Host Guide</a>
+  </p>
+</p>
 
-All-in-One Health OS — 開放的健康作業系統。飲食、運動、睡眠、體重，一個開源平台全部搞定。
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="MIT License" /></a>
+  <a href="https://github.com/truenorth-lj/openhealth/stargazers"><img src="https://img.shields.io/github/stars/truenorth-lj/openhealth" alt="GitHub Stars" /></a>
+</p>
 
-> [openhealth.blog](https://openhealth.blog)
+Track nutrition, water intake, weight, sleep, exercise, and intermittent fasting — all in one place. Built with Next.js, PostgreSQL, and AI-powered features.
+
+> **繁體中文** | Open Health 是一個開源的全方位健康追蹤平台。飲食、飲水、體重、睡眠、運動、間歇斷食，一個平台全部搞定。支援 AI 營養標籤掃描與個人化營養建議。
 
 ## Screenshots
 
 <p align="center">
-  <img src="apps/web/public/screenshots/01-diary.png" alt="飲食日記" width="200" />
-  <img src="apps/web/public/screenshots/02-food-search.png" alt="食物搜尋" width="200" />
-  <img src="apps/web/public/screenshots/03-ai-chat.png" alt="AI 營養顧問" width="200" />
-  <img src="apps/web/public/screenshots/04-progress.png" alt="進度追蹤" width="200" />
+  <img src="apps/web/public/screenshots/en/01-hub.png" alt="Health Hub" width="180" />
+  <img src="apps/web/public/screenshots/en/02-today.png" alt="Today View" width="180" />
+  <img src="apps/web/public/screenshots/en/03-ai-chat.png" alt="AI Nutrition Chat" width="180" />
+  <img src="apps/web/public/screenshots/en/04-food-search.png" alt="Food Search" width="180" />
 </p>
 <p align="center">
-  <img src="apps/web/public/screenshots/06-food-detail.png" alt="食物詳情" width="200" />
-  <img src="apps/web/public/screenshots/07-food-create.png" alt="新增食物" width="200" />
-  <img src="apps/web/public/screenshots/08-ai-estimate.png" alt="AI 飲食估算" width="200" />
-  <img src="apps/web/public/screenshots/09-ai-chat-conversation.png" alt="AI 對話" width="200" />
+  <img src="apps/web/public/screenshots/en/06-food-detail.png" alt="Food Detail" width="180" />
+  <img src="apps/web/public/screenshots/en/08-ai-estimate.png" alt="AI Meal Estimate" width="180" />
+  <img src="apps/web/public/screenshots/en/09-progress.png" alt="Progress Charts" width="180" />
+  <img src="apps/web/public/screenshots/en/10-water.png" alt="Water Tracking" width="180" />
 </p>
 
 ## Features
 
-### 追蹤
-- [x] **飲食日記** — 記錄每餐食物，自動計算卡路里與三大營養素
-- [x] **食物資料庫** — 搜尋常見食物，支援自訂食物與收藏
-- [x] **飲水紀錄** — 追蹤每日飲水量、目標設定、歷史記錄
-- [x] **體重紀錄** — 每日體重記錄與趨勢分析
-- [x] **睡眠追蹤** — 記錄就寢與起床時間、睡眠品質
-- [x] **間歇斷食** — 計時器與斷食歷史記錄
+### Tracking
+- **Food Diary** — log meals with automatic calorie & macro calculation (自動計算卡路里與三大營養素)
+- **Food Database** — search common foods, create custom foods, save favorites
+- **Water Intake** — daily water tracking with goals and history (飲水紀錄)
+- **Weight Tracking** — daily weight log with trend analysis (體重趨勢分析)
+- **Sleep Tracking** — bedtime, wake time, and sleep quality (睡眠追蹤)
+- **Intermittent Fasting** — timer with fasting history (間歇斷食計時器)
+- **Exercise** — cardio & strength training log (運動記錄)
 
-### AI
-- [x] **AI 營養標籤掃描** — 拍照辨識營養標籤，快速輸入食物資料
-- [x] **AI 營養顧問** — 分析飲食紀錄，提供個人化營養建議
+### AI-Powered
+- **Nutrition Label Scanner** — take a photo, AI extracts nutrition data (AI 營養標籤掃描)
+- **AI Nutrition Chat** — personalized nutrition advice based on your diary (AI 營養顧問)
+- **AI Meal Estimate** — describe a meal, AI estimates calories & macros
 
-### 平台
-- [x] **進度追蹤** — 視覺化追蹤熱量、營養素與體重趨勢
-- [x] **深色模式** — 支援淺色與深色主題
-- [x] **Google / Apple OAuth** — 社群帳號快速登入
-- [x] **PWA** — 安裝到主畫面，支援推播通知
-- [x] **Mobile App** — Expo React Native 原生 app（iOS / Android）
-
-## Roadmap
-
-- [ ] **i18n 中英雙語** — 支援繁體中文 / English 切換（見下方實作計畫）
-- [ ] **運動記錄** — 有氧與重訓追蹤
-- [ ] **條碼掃描** — 掃描食品條碼自動帶入營養資訊
-- [ ] **匯出報告** — 匯出每週/每月健康報告
-- [ ] **第三方整合** — Apple Health、Google Fit 資料同步
-
-## i18n Implementation Plan
-
-使用 `react-i18next` + `i18next` 實現中英雙語，翻譯檔集中在 `packages/shared`，Web 與 Mobile 共用。
-
-### Phase 1 — 基礎設施 ✅
-- [x] 安裝 `i18next`、`react-i18next`（web + mobile）、`i18next-browser-languagedetector`（web）
-- [x] 建立 `packages/shared/src/i18n/` 翻譯檔結構（`locales/zh-TW/`、`locales/en/`）
-- [x] 建立共用 i18n config（`supportedLngs`、`fallbackLng`、`resources` 匯出）
-- [x] Web：初始化 i18n（`apps/web/src/lib/i18n.ts`）並整合到 Providers
-- [x] Mobile：初始化 i18n（`apps/mobile/lib/i18n.ts`）並整合到 `_layout.tsx`
-- [x] 加入 TypeScript 型別定義（`i18next.d.ts`）讓 `t()` key 有自動補全
-
-### Phase 2 — 共用元件翻譯 ✅
-- [x] 導航列（Header、BottomNav、Tab Navigator）
-- [ ] 通用 UI：按鈕文字（儲存/取消/刪除/確認）、toast 訊息、空狀態、loading
-- [x] 語言切換 UI（設定頁加入語言選擇）
-
-### Phase 3 — 各模組頁面翻譯（Web）
-- [ ] 日記模組（diary）
-- [ ] 食物模組（food search、detail、create）
-- [ ] 運動模組（exercise）
-- [ ] 睡眠模組（sleep）
-- [ ] 飲水模組（water）
-- [ ] 體重模組（weight）
-- [ ] 進度模組（progress）
-- [ ] 設定模組（settings、profile、referral）
-- [ ] AI 功能（chat、nutrition label scan、estimate）
-
-### Phase 4 — Shared 常數遷移
-- [ ] `NUTRIENT_NAME_ZH`（50+ 營養素）→ `nutrients.json`
-- [ ] `EXERCISE_CATEGORY_LABELS`、`EXERCISE_INTENSITY_LABELS` → `exercise.json`
-- [ ] `SLEEP_PHASE_LABELS`、`SLEEP_FACTORS` → `sleep.json`
-- [ ] `SET_TYPE_LABELS` → `exercise.json`
-- [ ] `NUTRIENT_CATEGORY_LABELS` → `nutrients.json`
-
-### Phase 5 — Mobile 頁面翻譯
-- [ ] Tab 頁面（日記、食物、進度、設定）
-- [ ] 各功能畫面（同 Phase 3 範圍）
-- [ ] `app.config.ts` 權限描述文字
-
-### Phase 6 — 收尾
-- [ ] `date-fns` locale 連動（根據語言切換日期格式）
-- [ ] HTML `lang` 屬性動態更新
-- [ ] SEO metadata 多語言（`layout.tsx` 的 title/description）
-- [ ] 驗證所有頁面中英文顯示正確、無破版
-
-### 技術決策
-- **不做 locale routing**（`/en/diary`）— 這是工具型 app，語言跟隨用戶偏好，不需 SEO 多語言索引
-- **預設語言：zh-TW**，fallback 也是 zh-TW
-- **語言偵測**：Web 用 `localStorage` + `navigator.language`；Mobile 用 RN `NativeModules` + `SecureStore`（不依賴 `expo-localization` 原生模組，避免需要重新 build dev client）
-- **翻譯量估計**：約 800-1200 個 key
+### Platform
+- **Progress Dashboard** — visualize calories, nutrients, and weight trends
+- **Dark Mode** — light and dark theme support
+- **PWA** — install to home screen with push notifications
+- **i18n** — English and Traditional Chinese (繁體中文)
+- **Google / Apple OAuth** — social login support
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Web | Next.js 15, TypeScript, Tailwind CSS v4, shadcn/ui |
-| Mobile | Expo SDK 52, React Native, NativeWind |
-| Backend | tRPC v11, Server Actions, PostgreSQL, Drizzle ORM |
-| Auth | Better Auth (email/password + Google + Apple OAuth) |
-| AI | Google Gemini 2.5 Flash (nutrition label OCR, chat) |
-| Monorepo | Turborepo + pnpm workspaces |
+| Framework | [Next.js 15](https://nextjs.org/) (App Router), TypeScript, React 19 |
+| Styling | [Tailwind CSS v4](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/) |
+| Database | PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/) |
+| API | [tRPC v11](https://trpc.io/) (reads) + Server Actions (writes) |
+| Auth | [Better Auth](https://www.better-auth.com/) (email/password + OAuth) |
+| AI | Google Gemini 2.5 Flash (OCR, chat) |
+| Payments | Stripe |
+| Monorepo | [Turborepo](https://turbo.build/) + pnpm workspaces |
 
 ## Project Structure
 
 ```
-open-health/
-├── apps/
-│   ├── web/          # Next.js web app
-│   └── mobile/       # Expo React Native app
+openhealth/
+├── apps/web/              # Next.js web app
+│   ├── src/
+│   │   ├── app/           # App Router pages
+│   │   ├── components/    # React components
+│   │   ├── server/        # tRPC routers, Server Actions, DB
+│   │   └── lib/           # Utilities, auth, tRPC client
+│   └── public/            # Static assets
 ├── packages/
-│   └── shared/       # Shared types, schemas, utils
-├── scripts/
-│   └── app-store-screenshots/   # App Store screenshot generator
+│   ├── shared/            # Shared types, Zod schemas, i18n, utils
+│   └── db/                # Drizzle schema, migrations
+├── Dockerfile
+├── docker-compose.yml     # One-click self-hosting
 └── turbo.json
 ```
 
 ## Getting Started
 
+### Prerequisites
+
+- Node.js 22+
+- pnpm 10+
+- PostgreSQL 16+
+
+### Local Development
+
 ```bash
+# Clone the repo
+git clone https://github.com/truenorth-lj/openhealth.git
+cd openhealth
+
 # Install dependencies
 pnpm install
 
-# Run all apps
-pnpm dev
+# Set up environment variables
+cp .env.example apps/web/.env.local
+# Edit apps/web/.env.local with your DATABASE_URL and BETTER_AUTH_SECRET
 
-# Run specific app
-pnpm dev:web       # localhost:3001
-pnpm dev:mobile    # Expo dev server
+# Start the dev server
+pnpm dev:web
+# Open http://localhost:3001
 ```
 
-## Scripts
+### Self-Hosting
 
-### App Store Screenshots
-
-Generate iPhone 6.5" display screenshots (1284 x 2778px) for App Store Connect:
+The fastest way to run Open Health is with Docker:
 
 ```bash
-# Prerequisites
-pip install playwright
-playwright install chromium
+git clone https://github.com/truenorth-lj/openhealth.git
+cd openhealth
 
-# Generate screenshots
-python scripts/app-store-screenshots/take-screenshots.py
+# Start PostgreSQL + web app
+docker compose up -d
 
-# Also copy to web/public for landing page
-python scripts/app-store-screenshots/take-screenshots.py --copy-to-web
-
-# Take additional screenshots (food detail, create, AI estimate, AI chat)
-python scripts/app-store-screenshots/take-extra-screenshots.py
+# Open http://localhost:3000
 ```
 
-Output: `scripts/app-store-screenshots/output/`
+That's it. The database migrations run automatically on startup.
 
-| File | Content |
-|------|---------|
-| `01-diary.png` | 飲食日記（含食物紀錄） |
-| `02-food-search.png` | 食物搜尋結果 |
-| `03-ai-chat.png` | AI 營養顧問 |
-| `04-progress.png` | 進度追蹤 |
-| `05-landing.png` | 首頁（未登入） |
-| `06-food-detail.png` | 食物營養詳情 |
-| `07-food-create.png` | 新增自訂食物 |
-| `08-ai-estimate.png` | AI 飲食估算 |
-| `09-ai-chat-conversation.png` | AI 營養顧問對話 |
+#### Environment Variables
 
-Environment variables (optional):
-- `BASE_URL` — target URL (default: `https://openhealth.blog`)
-- `DEMO_EMAIL` / `DEMO_PASSWORD` — demo account credentials
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `BETTER_AUTH_SECRET` | Yes | Random string for session encryption |
+| `BETTER_AUTH_URL` | Yes | Your app's URL |
+| `GOOGLE_CLIENT_ID` / `SECRET` | No | Google OAuth login |
+| `APPLE_CLIENT_ID` / `SECRET` | No | Apple OAuth login |
+| `GOOGLE_AI_API_KEY` | No | Enables AI features (Gemini) |
+| `STRIPE_SECRET_KEY` | No | Enables payment / Pro plan |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | No | Enables push notifications |
 
-## Docs
+See [`.env.example`](.env.example) for the full list.
 
-- [SEO Todo](docs/seo-todo.md) — SEO 待办事项与传播策略
+## Roadmap
+
+- [ ] Barcode scanning for packaged foods (條碼掃描)
+- [ ] Weekly/monthly health reports export (匯出健康報告)
+- [ ] Apple Health / Google Fit sync (第三方健康數據同步)
+- [ ] Multi-language expansion beyond EN/zh-TW
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+```bash
+# Run tests
+pnpm test
+
+# Run linter
+pnpm lint
+
+# Build
+pnpm build
+```
 
 ## License
 
-MIT
+[MIT](LICENSE)
+
+---
+
+Built with Next.js, PostgreSQL, and AI. Made in Taiwan.
