@@ -25,12 +25,13 @@ COPY --from=deps /app/packages/db/node_modules ./packages/db/node_modules
 
 COPY apps/web/ apps/web/
 COPY apps/zenlife-web/package.json apps/zenlife-web/
+COPY apps/mobile/package.json apps/mobile/
 COPY packages/shared/ packages/shared/
 COPY packages/db/ packages/db/
 COPY turbo.json package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
-# Build only the web app
-RUN pnpm build --filter=@open-health/web
+# Build only the web app (use npx turbo directly to avoid pnpm script filter concatenation)
+RUN npx turbo build --filter=@open-health/web
 
 # --- Production ---
 FROM node:22-alpine AS runner
