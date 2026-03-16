@@ -560,7 +560,7 @@ function ScanLabelContent() {
           </form>
 
           <div className="fixed left-0 right-0 z-40 border-t bg-background p-4 bottom-[calc(4rem+env(safe-area-inset-bottom))]">
-            <div className="max-w-lg mx-auto">
+            <div className="max-w-lg lg:max-w-3xl mx-auto">
               <Button
                 type="submit"
                 form="scan-label-form"

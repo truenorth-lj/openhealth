@@ -84,3 +84,6 @@ debug/
 
 # crash reports
 *.ips
+
+# marketing drafts
+marketing/

@@ -157,7 +157,7 @@ function ChatDetail() {
     <div className="flex h-[calc(100vh-8rem)] flex-col">
       {/* Top bar */}
       <div className="border-b border-black/[0.06] dark:border-white/[0.06] px-4 py-2">
-        <div className="mx-auto flex max-w-lg items-center justify-between">
+        <div className="mx-auto flex max-w-lg lg:max-w-3xl items-center justify-between">
           <button
             onClick={() => router.push("/hub/chat")}
             className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-light text-neutral-400 transition-all duration-300 hover:text-foreground"
@@ -190,7 +190,7 @@ function ChatDetail() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="mx-auto max-w-lg space-y-4">
+        <div className="mx-auto max-w-lg lg:max-w-3xl space-y-4">
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
@@ -224,7 +224,7 @@ function ChatDetail() {
 
       {/* Input area */}
       <div className="border-t border-black/[0.06] dark:border-white/[0.06] bg-background px-4 py-3">
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-lg lg:max-w-3xl">
           {isConversationLimitReached || isDailyLimitReached ? (
             <div className="flex flex-col items-center gap-2">
               <p className="text-sm font-light text-neutral-400">

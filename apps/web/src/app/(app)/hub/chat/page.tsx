@@ -94,7 +94,7 @@ export default function ChatPage() {
     <div className="flex h-[calc(100vh-8rem)] flex-col">
       {/* Top bar */}
       <div className="border-b border-black/[0.06] dark:border-white/[0.06] px-4 py-2">
-        <div className="mx-auto flex max-w-lg items-center justify-end">
+        <div className="mx-auto flex max-w-lg lg:max-w-3xl items-center justify-end">
           {dailyRemaining !== null && (
             <span className="text-xs font-light text-neutral-400">
               {t("dailyRemaining", { count: dailyRemaining })}
@@ -105,7 +105,7 @@ export default function ChatPage() {
 
       {/* Main content */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-lg lg:max-w-3xl">
           {/* Empty state with quick prompts */}
           <div className="flex flex-col items-center gap-6 py-8">
             <div className="flex flex-col items-center gap-2">
@@ -174,7 +174,7 @@ export default function ChatPage() {
 
       {/* Input area */}
       <div className="border-t border-black/[0.06] dark:border-white/[0.06] bg-background px-4 py-3">
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto max-w-lg lg:max-w-3xl">
           {sendError && (
             <p className="mb-2 text-center text-sm font-light text-destructive">
               {sendError}
