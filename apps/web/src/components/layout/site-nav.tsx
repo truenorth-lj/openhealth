@@ -12,6 +12,7 @@ const navLinks = [
   { path: "/pricing", labelKey: "nav.pricing" as const },
   { path: "/blog", labelKey: "nav.blog" as const },
   { path: "/docs", labelKey: "nav.docs" as const },
+  { path: "/support", labelKey: "nav.support" as const },
 ];
 
 export function SiteNav() {
