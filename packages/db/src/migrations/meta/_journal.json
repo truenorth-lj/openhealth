@@ -197,6 +197,13 @@
       "when": 1773734421977,
       "tag": "0027_closed_venom",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1773768076454,
+      "tag": "0028_typical_hawkeye",
+      "breakpoints": true
     }
   ]
 }

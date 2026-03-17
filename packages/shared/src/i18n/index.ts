@@ -22,6 +22,7 @@ import zhTWPrivacy from "./locales/zh-TW/privacy.json";
 import zhTWCoach from "./locales/zh-TW/coach.json";
 import zhTWPricing from "./locales/zh-TW/pricing.json";
 import zhTWMeditation from "./locales/zh-TW/meditation.json";
+import zhTWReminders from "./locales/zh-TW/reminders.json";
 
 import enCommon from "./locales/en/common.json";
 import enDiary from "./locales/en/diary.json";
@@ -44,6 +45,7 @@ import enPrivacy from "./locales/en/privacy.json";
 import enCoach from "./locales/en/coach.json";
 import enPricing from "./locales/en/pricing.json";
 import enMeditation from "./locales/en/meditation.json";
+import enReminders from "./locales/en/reminders.json";
 
 export const supportedLngs = ["zh-TW", "en"] as const;
 export type SupportedLanguage = (typeof supportedLngs)[number];
@@ -73,6 +75,7 @@ export const namespaces = [
   "coach",
   "pricing",
   "meditation",
+  "reminders",
 ] as const;
 
 export type Namespace = (typeof namespaces)[number];
@@ -100,6 +103,7 @@ export const resources = {
     coach: zhTWCoach,
     pricing: zhTWPricing,
     meditation: zhTWMeditation,
+    reminders: zhTWReminders,
   },
   en: {
     common: enCommon,
@@ -123,5 +127,6 @@ export const resources = {
     coach: enCoach,
     pricing: enPricing,
     meditation: enMeditation,
+    reminders: enReminders,
   },
 } as const;

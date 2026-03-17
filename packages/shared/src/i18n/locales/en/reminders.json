@@ -1,0 +1,52 @@
+{
+  "title": "Reminders",
+  "noReminders": "No reminders yet",
+  "noRemindersHint": "Tap + to create your first reminder",
+  "createReminder": "New Reminder",
+  "editReminder": "Edit Reminder",
+  "deleteReminder": "Delete Reminder",
+  "deleteConfirmTitle": "Delete reminder?",
+  "deleteConfirmMessage": "This action cannot be undone. Notifications will also be cancelled.",
+  "reminderTitle": "Title",
+  "reminderTitlePlaceholder": "e.g. Take Vitamin B",
+  "reminderType": "Type",
+  "reminderNote": "Note",
+  "reminderNotePlaceholder": "Note will appear in notification",
+  "reminderTime": "Time",
+  "repeatDays": "Repeat",
+  "everyday": "Every day",
+  "weekdays": "Weekdays",
+  "weekends": "Weekends",
+  "enabled": "Enabled",
+  "disabled": "Disabled",
+  "saved": "Reminder saved",
+  "deleted": "Reminder deleted",
+  "saveFailed": "Save failed",
+  "permissionRequired": "Notification permission required",
+  "permissionMessage": "Please allow notifications for Open Health in system settings.",
+  "types": {
+    "water": "Water",
+    "exercise": "Exercise",
+    "meditation": "Meditation",
+    "medication": "Medication",
+    "sleep": "Sleep",
+    "custom": "Custom"
+  },
+  "typeIcons": {
+    "water": "💧",
+    "exercise": "🏃",
+    "meditation": "🧘",
+    "medication": "💊",
+    "sleep": "😴",
+    "custom": "⏰"
+  },
+  "days": {
+    "sun": "Sun",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat"
+  }
+}
