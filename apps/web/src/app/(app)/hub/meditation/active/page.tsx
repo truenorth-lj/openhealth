@@ -49,6 +49,7 @@ export default function ActiveMeditationPage() {
   const {
     musicPlaying,
     bellRinging,
+    warmupBell,
     startMusic,
     stopMusic,
     toggleMusic,
@@ -84,10 +85,14 @@ export default function ActiveMeditationPage() {
     }
   }, [activeSession, isRunning, startSession]);
 
-  // Start music on mount if enabled
+  // Start music on mount if enabled; always warm up the bell for Safari PWA
   useEffect(() => {
-    if (activeSession && musicEnabled && !musicPlaying && !bellRinging) {
-      startMusic(0.4);
+    if (activeSession) {
+      if (musicEnabled && !musicPlaying && !bellRinging) {
+        startMusic(0.4); // startMusic also warms up the bell
+      } else {
+        warmupBell(); // warm up bell even when music is off
+      }
     }
     return () => {
       cleanupAudio();

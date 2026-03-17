@@ -10,6 +10,7 @@ import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { startActivitySession } from "@/server/actions/activity";
 import { formatDuration } from "@/hooks/use-activity-timer";
+import { useMeditationAudio } from "@/hooks/use-meditation-audio";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useTranslation } from "react-i18next";
 import {
@@ -44,6 +45,8 @@ export default function MeditationPage() {
     { enabled: isAuthenticated }
   );
 
+  const { warmupBell } = useMeditationAudio();
+
   const [starting, setStarting] = useState(false);
   const [selectedType, setSelectedType] = useState<string>("mindfulness");
   const [selectedDuration, setSelectedDuration] = useState<number | null>(600);
@@ -54,6 +57,8 @@ export default function MeditationPage() {
       setShowLoginDialog(true);
       return;
     }
+    // Pre-warm bell audio during this user gesture (Safari PWA requires it)
+    warmupBell();
     setStarting(true);
     try {
       const metadata: Record<string, unknown> = {

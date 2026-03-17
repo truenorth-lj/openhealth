@@ -133,7 +133,7 @@ export default function AnalysisPage() {
           >
             {stepsData.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={stepsData}>
+                <LineChart data={stepsData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.06} />
                   <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="currentColor" opacity={0.3} />
                   <YAxis tick={{ fontSize: 11 }} stroke="currentColor" opacity={0.3} width={50} />
@@ -145,14 +145,16 @@ export default function AnalysisPage() {
                       fontWeight: 300,
                     }}
                   />
-                  <Bar
+                  <Line
+                    type="monotone"
                     dataKey="value"
-                    fill="var(--color-primary)"
-                    opacity={0.7}
-                    radius={[2, 2, 0, 0]}
+                    stroke="var(--color-primary)"
+                    strokeWidth={1.5}
+                    dot={false}
+                    activeDot={{ r: 3 }}
                     name={t("stepsName")}
                   />
-                </BarChart>
+                </LineChart>
               </ResponsiveContainer>
             ) : (
               <EmptyState text={t("noStepsRecord")} />

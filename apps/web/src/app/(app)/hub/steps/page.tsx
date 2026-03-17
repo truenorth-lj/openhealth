@@ -10,8 +10,8 @@ import { DateNavigator } from "@/components/diary/date-navigator";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Footprints } from "lucide-react";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -188,7 +188,7 @@ function StepsContent() {
           </div>
           {stepsData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={stepsData}>
+              <LineChart data={stepsData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.06} />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="currentColor" opacity={0.3} />
                 <YAxis tick={{ fontSize: 11 }} stroke="currentColor" opacity={0.3} width={50} />
@@ -200,14 +200,16 @@ function StepsContent() {
                     fontWeight: 300,
                   }}
                 />
-                <Bar
+                <Line
+                  type="monotone"
                   dataKey="value"
-                  fill="var(--color-primary)"
-                  opacity={0.7}
-                  radius={[2, 2, 0, 0]}
+                  stroke="var(--color-primary)"
+                  strokeWidth={1.5}
+                  dot={false}
+                  activeDot={{ r: 3 }}
                   name={t("progress:stepsName")}
                 />
-              </BarChart>
+              </LineChart>
             </ResponsiveContainer>
           ) : (
             <p className="text-sm font-light text-neutral-300 dark:text-neutral-700 text-center py-8">

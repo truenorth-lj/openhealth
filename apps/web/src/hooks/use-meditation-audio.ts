@@ -4,7 +4,12 @@ import { useRef, useCallback, useState, useEffect } from "react";
 
 /**
  * Hook for meditation audio — ambient music + bell alarm.
- * Uses HTML5 Audio API (works in all browsers / PWA).
+ *
+ * Safari PWA blocks `new Audio().play()` unless the Audio element was created
+ * and had `.play()` called during a user-gesture call-stack. `warmupBell()`
+ * should be called during a user interaction (e.g. when the user starts the
+ * session). It creates the bell Audio, plays it silently, then pauses —
+ * "unlocking" it for later programmatic playback when the timer fires.
  */
 export function useMeditationAudio() {
   const musicRef = useRef<HTMLAudioElement | null>(null);
@@ -13,20 +18,43 @@ export function useMeditationAudio() {
   const [musicPlaying, setMusicPlaying] = useState(false);
   const [bellRinging, setBellRinging] = useState(false);
 
-  const startMusic = useCallback((volume = 0.4) => {
-    if (musicRef.current) {
-      musicRef.current.pause();
-    }
-    const audio = new Audio("/meditation-ambient.mp3");
+  /** Pre-create & unlock the bell audio — call during a user gesture. */
+  const warmupBell = useCallback(() => {
+    if (bellRef.current) return;
+    const audio = new Audio("/meditation-bell.mp3");
     audio.loop = true;
-    audio.volume = volume;
-    audio.play().catch(() => {
-      // Autoplay may be blocked — user interaction required
-      console.warn("[meditation-audio] Autoplay blocked");
-    });
-    musicRef.current = audio;
-    setMusicPlaying(true);
+    audio.volume = 0; // silent warmup
+    audio
+      .play()
+      .then(() => {
+        audio.pause();
+        audio.currentTime = 0;
+      })
+      .catch(() => {
+        // Still store it — may work on retry
+      });
+    bellRef.current = audio;
   }, []);
+
+  const startMusic = useCallback(
+    (volume = 0.4) => {
+      if (musicRef.current) {
+        musicRef.current.pause();
+      }
+      const audio = new Audio("/meditation-ambient.mp3");
+      audio.loop = true;
+      audio.volume = volume;
+      audio.play().catch(() => {
+        console.warn("[meditation-audio] Autoplay blocked");
+      });
+      musicRef.current = audio;
+      setMusicPlaying(true);
+
+      // Also warm up the bell while we have a user-gesture context
+      warmupBell();
+    },
+    [warmupBell]
+  );
 
   const stopMusic = useCallback(() => {
     if (musicRef.current) {
@@ -49,9 +77,6 @@ export function useMeditationAudio() {
   );
 
   const startBell = useCallback(() => {
-    if (bellRef.current) {
-      bellRef.current.pause();
-    }
     // Stop music first
     if (musicRef.current) {
       musicRef.current.pause();
@@ -59,13 +84,24 @@ export function useMeditationAudio() {
       musicRef.current = null;
       setMusicPlaying(false);
     }
-    const audio = new Audio("/meditation-bell.mp3");
-    audio.loop = true;
-    audio.volume = 0.8;
-    audio.play().catch(() => {
-      console.warn("[meditation-audio] Bell autoplay blocked");
-    });
-    bellRef.current = audio;
+
+    // Reuse pre-warmed bell (Safari PWA friendly)
+    if (bellRef.current) {
+      bellRef.current.volume = 0.8;
+      bellRef.current.currentTime = 0;
+      bellRef.current.play().catch(() => {
+        console.warn("[meditation-audio] Bell play blocked (warmed)");
+      });
+    } else {
+      // Fallback: create fresh (works on Chrome, may fail on Safari PWA)
+      const audio = new Audio("/meditation-bell.mp3");
+      audio.loop = true;
+      audio.volume = 0.8;
+      audio.play().catch(() => {
+        console.warn("[meditation-audio] Bell autoplay blocked");
+      });
+      bellRef.current = audio;
+    }
     setBellRinging(true);
 
     // Persistent vibration for mobile browsers / PWA
@@ -93,8 +129,8 @@ export function useMeditationAudio() {
   const stopBell = useCallback(() => {
     if (bellRef.current) {
       bellRef.current.pause();
-      bellRef.current.src = "";
-      bellRef.current = null;
+      bellRef.current.currentTime = 0;
+      // Don't clear src — keep it warm for potential re-use
     }
     setBellRinging(false);
     if (vibrationRef.current) {
@@ -109,6 +145,11 @@ export function useMeditationAudio() {
   const cleanup = useCallback(() => {
     stopMusic();
     stopBell();
+    // On full cleanup, release the bell audio
+    if (bellRef.current) {
+      bellRef.current.src = "";
+      bellRef.current = null;
+    }
   }, [stopMusic, stopBell]);
 
   // Cleanup on unmount — stop all audio and vibration
@@ -131,6 +172,7 @@ export function useMeditationAudio() {
   return {
     musicPlaying,
     bellRinging,
+    warmupBell,
     startMusic,
     stopMusic,
     toggleMusic,
