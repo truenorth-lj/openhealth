@@ -4,7 +4,7 @@ import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
-import { resolveEffectivePlan } from "@/server/services/plan";
+import { resolveEffectivePlan, ProRequiredError } from "@/server/services/plan";
 import type { Plan } from "@open-health/shared/types";
 
 export const createTRPCContext = async () => {
@@ -24,12 +24,42 @@ export const createTRPCContext = async () => {
   };
 };
 
-const t = initTRPC.context<typeof createTRPCContext>().create();
+const t = initTRPC.context<typeof createTRPCContext>().create({
+  errorFormatter({ shape, error }) {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        proRequired:
+          error.cause instanceof ProRequiredError
+            ? { feature: error.cause.feature }
+            : undefined,
+      },
+    };
+  },
+});
 
 export const router = t.router;
-export const publicProcedure = t.procedure;
 
-export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
+// Base procedure that converts ProRequiredError → TRPCError FORBIDDEN
+const proGateMiddleware = t.middleware(async ({ next }) => {
+  try {
+    return await next();
+  } catch (error) {
+    if (error instanceof ProRequiredError) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: error.message,
+        cause: error,
+      });
+    }
+    throw error;
+  }
+});
+
+export const publicProcedure = t.procedure.use(proGateMiddleware);
+
+export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   const session = await ctx.getSession();
   if (!session || !session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });

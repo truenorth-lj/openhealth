@@ -113,6 +113,30 @@ export function canAccessFeature(
   return !!PLAN_LIMITS[plan][feature];
 }
 
+/**
+ * Throws a structured error when the user's plan doesn't have access.
+ * For tRPC routers: wrap with TRPCError at call site.
+ * For server actions: throw directly.
+ * Mobile tRPC client detects `cause.type === "PRO_REQUIRED"` for unified paywall UI.
+ */
+export function requireFeature(
+  plan: Plan,
+  feature: keyof (typeof PLAN_LIMITS)["free"]
+): void {
+  if (!canAccessFeature(plan, feature)) {
+    throw new ProRequiredError(feature);
+  }
+}
+
+export class ProRequiredError extends Error {
+  public readonly feature: string;
+  constructor(feature: string) {
+    super("此功能需要 Pro 方案");
+    this.name = "ProRequiredError";
+    this.feature = feature;
+  }
+}
+
 export async function getSessionWithPlan(
   getSessionFn: () => Promise<{ user: { id: string } } | null>
 ): Promise<{ user: { id: string }; plan: Plan }> {

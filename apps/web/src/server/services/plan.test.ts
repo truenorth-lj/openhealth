@@ -6,7 +6,7 @@ vi.mock("@/server/db/schema", () => ({ users: {}, aiUsage: {} }));
 vi.mock("@/lib/date", () => ({ getTaiwanDate: () => "2024-01-01" }));
 vi.mock("nanoid", () => ({ nanoid: () => "mock-id" }));
 
-import { resolveEffectivePlan, getAiLimit, canAccessFeature } from "./plan";
+import { resolveEffectivePlan, getAiLimit, canAccessFeature, requireFeature, ProRequiredError } from "./plan";
 
 describe("resolveEffectivePlan", () => {
   const ONE_DAY_MS = 86_400_000;
@@ -84,5 +84,24 @@ describe("canAccessFeature", () => {
   it("free plan has ai object (truthy)", () => {
     expect(canAccessFeature("free", "ai")).toBe(true);
     expect(canAccessFeature("pro", "ai")).toBe(true);
+  });
+});
+
+describe("requireFeature", () => {
+  it("throws ProRequiredError for free plan gated features", () => {
+    expect(() => requireFeature("free", "exercise")).toThrow(ProRequiredError);
+  });
+
+  it("includes feature name in error", () => {
+    try {
+      requireFeature("free", "exercise");
+    } catch (e) {
+      expect(e).toBeInstanceOf(ProRequiredError);
+      expect((e as ProRequiredError).feature).toBe("exercise");
+    }
+  });
+
+  it("does not throw for pro plan", () => {
+    expect(() => requireFeature("pro", "exercise")).not.toThrow();
   });
 });

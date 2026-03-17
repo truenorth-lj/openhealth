@@ -14,7 +14,7 @@ import {
 } from "@/server/db/schema";
 import { eq, and, sql, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { resolveEffectivePlan, canAccessFeature } from "@/server/services/plan";
+import { resolveEffectivePlan, requireFeature } from "@/server/services/plan";
 import {
   startWorkoutSchema,
   addExerciseToWorkoutSchema,
@@ -40,9 +40,7 @@ async function assertProAccess(userId: string) {
     .then((r) => r[0]);
 
   const plan = userRow ? resolveEffectivePlan(userRow) : "free";
-  if (!canAccessFeature(plan, "exercise")) {
-    throw new Error("重訓記錄為 Pro 功能");
-  }
+  requireFeature(plan, "exercise");
 }
 
 export async function startWorkout(

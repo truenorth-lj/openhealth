@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../trpc";
 import {
   workouts,
@@ -11,15 +10,10 @@ import {
   personalRecords,
 } from "@/server/db/schema";
 import { eq, and, desc, isNull, sql, gte, lte } from "drizzle-orm";
-import { canAccessFeature } from "@/server/services/plan";
+import { requireFeature } from "@/server/services/plan";
 
 function assertExerciseAccess(userPlan: string) {
-  if (!canAccessFeature(userPlan as "free" | "pro", "exercise")) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "重訓記錄為 Pro 功能",
-    });
-  }
+  requireFeature(userPlan as "free" | "pro", "exercise");
 }
 
 export const workoutRouter = router({

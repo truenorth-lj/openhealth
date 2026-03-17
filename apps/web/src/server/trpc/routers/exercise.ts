@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../trpc";
 import { exercises, exerciseLogs, weightLogs } from "@/server/db/schema";
 import { eq, and, desc, ilike, or } from "drizzle-orm";
-import { canAccessFeature } from "@/server/services/plan";
+import { requireFeature } from "@/server/services/plan";
 import { DEFAULT_WEIGHT_KG } from "@open-health/shared/constants";
 import { logExerciseSchema, createCustomExerciseSchema } from "@open-health/shared/schemas";
 
@@ -111,12 +111,7 @@ export const exerciseRouter = router({
   logExercise: protectedProcedure
     .input(logExerciseSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!canAccessFeature(ctx.userPlan, "exercise")) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "運動記錄為 Pro 功能",
-        });
-      }
+      requireFeature(ctx.userPlan, "exercise");
 
       let caloriesBurned = input.caloriesBurned;
 
@@ -194,12 +189,7 @@ export const exerciseRouter = router({
   createCustomExercise: protectedProcedure
     .input(createCustomExerciseSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!canAccessFeature(ctx.userPlan, "exercise")) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "運動記錄為 Pro 功能",
-        });
-      }
+      requireFeature(ctx.userPlan, "exercise");
 
       const [created] = await ctx.db
         .insert(exercises)

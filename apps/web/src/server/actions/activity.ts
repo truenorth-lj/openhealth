@@ -6,7 +6,7 @@ import { db } from "@/server/db";
 import { activitySessions, users } from "@/server/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { resolveEffectivePlan, canAccessFeature } from "@/server/services/plan";
+import { resolveEffectivePlan, requireFeature } from "@/server/services/plan";
 import {
   startActivitySessionSchema,
   completeActivitySessionSchema,
@@ -14,7 +14,9 @@ import {
   logActivitySessionSchema,
 } from "@open-health/shared/schemas";
 
-async function assertProAccess(userId: string) {
+async function assertProAccess(userId: string, activityType?: string) {
+  if (activityType === "meditation") return;
+
   const userRow = await db
     .select({
       plan: users.plan,
@@ -26,17 +28,15 @@ async function assertProAccess(userId: string) {
     .then((r) => r[0]);
 
   const plan = userRow ? resolveEffectivePlan(userRow) : "free";
-  if (!canAccessFeature(plan, "exercise")) {
-    throw new Error("此功能為 Pro 功能");
-  }
+  requireFeature(plan, "exercise");
 }
 
 export async function startActivitySession(
   input: z.infer<typeof startActivitySessionSchema>
 ) {
   const user = await getSession();
-  await assertProAccess(user.id);
   const validated = startActivitySessionSchema.parse(input);
+  await assertProAccess(user.id, validated.type);
 
   // Check if there's already an active session of the same type
   const active = await db
@@ -72,7 +72,6 @@ export async function completeActivitySession(
   input: z.infer<typeof completeActivitySessionSchema>
 ) {
   const user = await getSession();
-  await assertProAccess(user.id);
   const validated = completeActivitySessionSchema.parse(input);
 
   const session = await db
@@ -122,7 +121,6 @@ export async function discardActivitySession(
   input: z.infer<typeof discardActivitySessionSchema>
 ) {
   const user = await getSession();
-  await assertProAccess(user.id);
   const validated = discardActivitySessionSchema.parse(input);
 
   await db
@@ -142,8 +140,8 @@ export async function logActivitySession(
   input: z.infer<typeof logActivitySessionSchema>
 ) {
   const user = await getSession();
-  await assertProAccess(user.id);
   const validated = logActivitySessionSchema.parse(input);
+  await assertProAccess(user.id, validated.type);
 
   const [session] = await db
     .insert(activitySessions)
@@ -164,7 +162,6 @@ export async function logActivitySession(
 
 export async function deleteActivitySession(sessionId: string) {
   const user = await getSession();
-  await assertProAccess(user.id);
 
   await db
     .delete(activitySessions)

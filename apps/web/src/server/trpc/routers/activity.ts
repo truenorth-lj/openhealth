@@ -2,7 +2,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 import { activitySessions } from "@/server/db/schema";
 import { eq, and, desc, isNull, gte, sql, isNotNull } from "drizzle-orm";
-import { canAccessFeature } from "@/server/services/plan";
+import { requireFeature } from "@/server/services/plan";
 import {
   startActivitySessionSchema,
   completeActivitySessionSchema,
@@ -184,8 +184,8 @@ export const activityRouter = router({
   startSession: protectedProcedure
     .input(startActivitySessionSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!canAccessFeature(ctx.userPlan, "exercise")) {
-        throw new Error("此功能為 Pro 功能");
+      if (input.type !== "meditation") {
+        requireFeature(ctx.userPlan, "exercise");
       }
 
       // Check for existing active session of same type
