@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Play, Clock, ChevronRight, BarChart3 } from "lucide-react";
+import { Play, Clock, ChevronRight, BarChart3, Music, Timer } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
@@ -15,8 +15,14 @@ import { useTranslation } from "react-i18next";
 import {
   MEDITATION_TYPES,
   MEDITATION_TYPE_LABELS,
+  MEDITATION_DURATION_PRESETS,
 } from "@open-health/shared/constants";
 import type { MeditationMetadata } from "@open-health/shared/types";
+
+function formatPresetLabel(seconds: number, minuteUnit: string): string {
+  const m = Math.floor(seconds / 60);
+  return `${m} ${minuteUnit}`;
+}
 
 export default function MeditationPage() {
   const router = useRouter();
@@ -40,6 +46,8 @@ export default function MeditationPage() {
 
   const [starting, setStarting] = useState(false);
   const [selectedType, setSelectedType] = useState<string>("mindfulness");
+  const [selectedDuration, setSelectedDuration] = useState<number | null>(600);
+  const [musicEnabled, setMusicEnabled] = useState(true);
 
   const handleStart = async () => {
     if (!isAuthenticated) {
@@ -48,18 +56,22 @@ export default function MeditationPage() {
     }
     setStarting(true);
     try {
-      const metadata: MeditationMetadata = {
-        meditationType: selectedType as MeditationMetadata["meditationType"],
+      const metadata: Record<string, unknown> = {
+        meditationType: selectedType,
         sessionMode: "timer",
+        musicEnabled,
       };
+      if (selectedDuration) {
+        metadata.plannedDurationSec = selectedDuration;
+      }
       await startActivitySession({
         type: "meditation",
-        metadata: metadata as unknown as Record<string, unknown>,
+        metadata,
       });
       router.push("/hub/meditation/active");
       router.refresh();
     } catch {
-      toast.error("無法開始冥想");
+      toast.error(t("meditation:startError"));
     } finally {
       setStarting(false);
     }
@@ -179,6 +191,69 @@ export default function MeditationPage() {
         </div>
       </div>
 
+      {/* Duration presets */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-1.5">
+          <Timer className="h-3 w-3 text-neutral-400" strokeWidth={1.5} />
+          <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+            {t("meditation:timerDuration")}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {MEDITATION_DURATION_PRESETS.map((sec) => (
+            <button
+              key={sec}
+              onClick={() =>
+                setSelectedDuration(selectedDuration === sec ? null : sec)
+              }
+              className={`rounded-lg border px-4 py-2.5 text-sm font-light transition-all ${
+                selectedDuration === sec
+                  ? "border-primary bg-primary/5 text-primary font-medium"
+                  : "border-black/[0.06] dark:border-white/[0.06] text-neutral-500 hover:border-foreground/20"
+              }`}
+            >
+              {formatPresetLabel(sec, t("meditation:minuteUnit"))}
+            </button>
+          ))}
+          <button
+            onClick={() => setSelectedDuration(null)}
+            className={`rounded-lg border px-4 py-2.5 text-sm font-light transition-all ${
+              selectedDuration === null
+                ? "border-primary bg-primary/5 text-primary font-medium"
+                : "border-black/[0.06] dark:border-white/[0.06] text-neutral-500 hover:border-foreground/20"
+            }`}
+          >
+            {t("meditation:unlimitedDuration")}
+          </button>
+        </div>
+      </div>
+
+      {/* Music toggle */}
+      <button
+        onClick={() => setMusicEnabled(!musicEnabled)}
+        className={`w-full flex items-center gap-3 rounded-lg border p-4 transition-all ${
+          musicEnabled
+            ? "border-primary/30 bg-primary/5"
+            : "border-black/[0.06] dark:border-white/[0.06]"
+        }`}
+      >
+        <Music
+          className={`h-5 w-5 ${musicEnabled ? "text-primary" : "text-neutral-400"}`}
+          strokeWidth={1.5}
+        />
+        <div className="flex-1 text-left">
+          <p className="text-sm">{t("meditation:backgroundMusic")}</p>
+          <p className="text-xs text-neutral-400">{t("meditation:backgroundMusicDesc")}</p>
+        </div>
+        <div
+          className={`w-10 h-6 rounded-full flex items-center transition-colors ${
+            musicEnabled ? "bg-primary justify-end" : "bg-neutral-300 dark:bg-neutral-700 justify-start"
+          }`}
+        >
+          <div className="w-5 h-5 rounded-full bg-white mx-0.5" />
+        </div>
+      </button>
+
       {/* Start button */}
       <button
         onClick={handleStart}
@@ -186,7 +261,11 @@ export default function MeditationPage() {
         className="w-full flex items-center justify-center gap-2 py-3.5 rounded-lg bg-primary text-white text-sm font-medium transition-colors hover:bg-primary/90 disabled:opacity-50"
       >
         <Play className="h-4 w-4" strokeWidth={2} />
-        {starting ? "開始中..." : t("meditation:startSession")}
+        {starting
+          ? t("meditation:starting")
+          : selectedDuration
+            ? t("meditation:startWithDuration", { minutes: Math.floor(selectedDuration / 60) })
+            : t("meditation:startSession")}
       </button>
 
       {/* Divider */}

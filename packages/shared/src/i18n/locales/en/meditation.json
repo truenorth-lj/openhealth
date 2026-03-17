@@ -105,5 +105,24 @@
     "3": "😐",
     "4": "🙂",
     "5": "😊"
-  }
+  },
+
+  "timerDuration": "Timer Duration",
+  "unlimitedDuration": "No Limit",
+  "backgroundMusic": "Background Music",
+  "backgroundMusicDesc": "Play ambient sound during meditation",
+  "musicPlaying": "Music Playing",
+  "musicOff": "Music Off",
+  "alarmTitle": "Time's Up",
+  "alarmCompleted": "Meditation complete",
+  "endAndRecord": "End & Record",
+  "dismissAlarmContinue": "Dismiss Alarm, Continue",
+  "remainingTime": "Remaining",
+  "saving": "Saving...",
+  "starting": "Starting...",
+  "startError": "Failed to start meditation",
+  "startWithDuration": "Start · {{minutes}} min",
+  "discardTitle": "Discard Session",
+  "minuteUnit": "min",
+  "streakDays": "Streak"
 }

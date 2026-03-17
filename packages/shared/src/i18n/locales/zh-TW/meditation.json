@@ -105,5 +105,24 @@
     "3": "😐",
     "4": "🙂",
     "5": "😊"
-  }
+  },
+
+  "timerDuration": "時間設定",
+  "unlimitedDuration": "不限時",
+  "backgroundMusic": "背景音樂",
+  "backgroundMusicDesc": "冥想期間播放環境音",
+  "musicPlaying": "音樂播放中",
+  "musicOff": "音樂已關閉",
+  "alarmTitle": "冥想時間到",
+  "alarmCompleted": "冥想已完成",
+  "endAndRecord": "結束並記錄",
+  "dismissAlarmContinue": "關閉鬧鐘，繼續冥想",
+  "remainingTime": "剩餘時間",
+  "saving": "儲存中...",
+  "starting": "開始中...",
+  "startError": "無法開始冥想",
+  "startWithDuration": "開始冥想 · {{minutes}} 分鐘",
+  "discardTitle": "放棄冥想",
+  "minuteUnit": "分鐘",
+  "streakDays": "連續天"
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Square, X } from "lucide-react";
+import { Square, X, Volume2, VolumeX } from "lucide-react";
 import { trpc } from "@/lib/trpc-client";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import {
@@ -15,6 +15,7 @@ import {
   useActivityTimerTick,
   formatDuration,
 } from "@/hooks/use-activity-timer";
+import { useMeditationAudio } from "@/hooks/use-meditation-audio";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useTranslation } from "react-i18next";
 import {
@@ -45,6 +46,19 @@ export default function ActiveMeditationPage() {
   } = useActivityTimerStore();
   useActivityTimerTick();
 
+  const {
+    musicPlaying,
+    bellRinging,
+    startMusic,
+    stopMusic,
+    toggleMusic,
+    startBell,
+    stopBell,
+    cleanup: cleanupAudio,
+  } = useMeditationAudio();
+
+  const bellTriggeredRef = useRef(false);
+
   // Completion form state
   const [showComplete, setShowComplete] = useState(false);
   const [moodBefore, setMoodBefore] = useState<number>(3);
@@ -55,7 +69,11 @@ export default function ActiveMeditationPage() {
   const [saving, setSaving] = useState(false);
   const [discarding, setDiscarding] = useState(false);
 
-  // Start the timer when session data loads
+  const meta = activeSession?.metadata as unknown as MeditationMetadata | null;
+  const plannedDuration = meta?.plannedDurationSec;
+  const musicEnabled = meta?.musicEnabled;
+
+  // Start the timer + music when session data loads
   useEffect(() => {
     if (activeSession && !isRunning) {
       startSession(
@@ -66,9 +84,39 @@ export default function ActiveMeditationPage() {
     }
   }, [activeSession, isRunning, startSession]);
 
+  // Start music on mount if enabled
+  useEffect(() => {
+    if (activeSession && musicEnabled && !musicPlaying && !bellRinging) {
+      startMusic(0.4);
+    }
+    return () => {
+      cleanupAudio();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSession?.id]);
+
+  // Check if timer reached planned duration → trigger bell
+  useEffect(() => {
+    if (
+      plannedDuration &&
+      elapsedSeconds >= plannedDuration &&
+      !bellTriggeredRef.current &&
+      isRunning
+    ) {
+      bellTriggeredRef.current = true;
+      startBell();
+    }
+  }, [elapsedSeconds, plannedDuration, isRunning, startBell]);
+
   const handleComplete = useCallback(() => {
+    stopBell();
+    stopMusic();
     setShowComplete(true);
-  }, []);
+  }, [stopBell, stopMusic]);
+
+  const handleDismissAlarm = useCallback(() => {
+    stopBell();
+  }, [stopBell]);
 
   const handleSave = async () => {
     if (!activeSession) return;
@@ -87,6 +135,7 @@ export default function ActiveMeditationPage() {
         metadata: metadata as Record<string, unknown>,
       });
       stopSession();
+      cleanupAudio();
       await utils.activity.invalidate();
       toast.success(t("meditation:sessionComplete"));
       router.push("/hub/meditation");
@@ -100,10 +149,13 @@ export default function ActiveMeditationPage() {
 
   const handleDiscard = async () => {
     if (!activeSession) return;
+    const confirmed = window.confirm(t("meditation:discardConfirm"));
+    if (!confirmed) return;
     setDiscarding(true);
     try {
       await discardActivitySession({ sessionId: activeSession.id });
       stopSession();
+      cleanupAudio();
       await utils.activity.invalidate();
       router.push("/hub/meditation");
       router.refresh();
@@ -137,7 +189,35 @@ export default function ActiveMeditationPage() {
 
   if (!activeSession) return <LoadingSpinner />;
 
-  const meta = activeSession.metadata as unknown as MeditationMetadata | null;
+  // Alarm ringing overlay
+  if (bellRinging) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 py-6">
+        <p className="text-6xl mb-6">🔔</p>
+        <h1 className="text-xl font-light mb-2">{t("meditation:alarmTitle")}</h1>
+        <p className="text-sm text-neutral-400 mb-8 text-center">
+          {plannedDuration ? formatDuration(plannedDuration) : ""} {t("meditation:alarmCompleted")}
+        </p>
+
+        <button
+          onClick={() => {
+            handleDismissAlarm();
+            handleComplete();
+          }}
+          className="w-full max-w-xs py-4 rounded-lg bg-primary text-white text-base font-medium transition-colors hover:bg-primary/90 mb-3"
+        >
+          {t("meditation:endAndRecord")}
+        </button>
+
+        <button
+          onClick={handleDismissAlarm}
+          className="w-full max-w-xs py-3 rounded-lg border border-black/10 dark:border-white/10 text-sm text-neutral-500 transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900"
+        >
+          {t("meditation:dismissAlarmContinue")}
+        </button>
+      </div>
+    );
+  }
 
   // Completion form
   if (showComplete) {
@@ -268,12 +348,20 @@ export default function ActiveMeditationPage() {
             disabled={saving}
             className="flex-1 py-3 rounded-lg bg-primary text-white text-sm font-medium disabled:opacity-50"
           >
-            {saving ? "儲存中..." : t("meditation:save")}
+            {saving ? t("meditation:saving") : t("meditation:save")}
           </button>
         </div>
       </div>
     );
   }
+
+  // Remaining time for countdown
+  const remainingSeconds = plannedDuration
+    ? Math.max(0, plannedDuration - elapsedSeconds)
+    : null;
+  const progress = plannedDuration
+    ? Math.min(1, elapsedSeconds / plannedDuration)
+    : null;
 
   // Active timer view
   return (
@@ -286,19 +374,53 @@ export default function ActiveMeditationPage() {
       </p>
 
       {/* Timer circle */}
-      <div className="relative flex items-center justify-center w-64 h-64 rounded-full border-2 border-primary/20 mb-8">
+      <div className="relative flex items-center justify-center w-64 h-64 rounded-full border-2 border-primary/20 mb-4">
         <div className="text-center">
-          <p className="text-5xl font-extralight tabular-nums tracking-wider">
-            {formatDuration(elapsedSeconds)}
-          </p>
-          <p className="text-xs text-neutral-400 mt-2">
-            {t("meditation:timer.elapsed")}
-          </p>
+          {plannedDuration ? (
+            <>
+              <p className="text-5xl font-extralight tabular-nums tracking-wider">
+                {formatDuration(remainingSeconds!)}
+              </p>
+              <p className="text-xs text-neutral-400 mt-2">{t("meditation:remainingTime")}</p>
+              <p className="text-[10px] text-neutral-300 dark:text-neutral-700 mt-1">
+                {Math.round((progress ?? 0) * 100)}%
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-5xl font-extralight tabular-nums tracking-wider">
+                {formatDuration(elapsedSeconds)}
+              </p>
+              <p className="text-xs text-neutral-400 mt-2">
+                {t("meditation:timer.elapsed")}
+              </p>
+            </>
+          )}
         </div>
 
         {/* Animated pulse ring */}
-        <div className="absolute inset-0 rounded-full border-2 border-primary/10 animate-ping pointer-events-none" style={{ animationDuration: "4s" }} />
+        <div
+          className="absolute inset-0 rounded-full border-2 border-primary/10 animate-ping pointer-events-none"
+          style={{ animationDuration: "4s" }}
+        />
       </div>
+
+      {/* Music toggle */}
+      <button
+        onClick={() => toggleMusic(0.4)}
+        className="flex items-center gap-2 mb-8 px-4 py-2 rounded-full border border-black/[0.06] dark:border-white/[0.06] transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-900"
+      >
+        {musicPlaying ? (
+          <Volume2 className="h-4 w-4 text-primary" strokeWidth={1.5} />
+        ) : (
+          <VolumeX className="h-4 w-4 text-neutral-400" strokeWidth={1.5} />
+        )}
+        <span
+          className={`text-xs ${musicPlaying ? "text-primary" : "text-neutral-400"}`}
+        >
+          {musicPlaying ? t("meditation:musicPlaying") : t("meditation:musicOff")}
+        </span>
+      </button>
 
       {/* Controls */}
       <div className="flex items-center gap-6">

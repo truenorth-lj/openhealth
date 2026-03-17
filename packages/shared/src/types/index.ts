@@ -100,6 +100,7 @@ export interface MeditationMetadata {
   meditationType: MeditationType;
   sessionMode: MeditationSessionMode;
   plannedDurationSec?: number;
+  musicEnabled?: boolean;
   completed?: boolean;
   moodBefore?: number;
   moodAfter?: number;
