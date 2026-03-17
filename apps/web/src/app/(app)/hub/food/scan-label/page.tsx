@@ -43,6 +43,14 @@ function compressImage(dataUrl: string, maxWidth = 1600, quality = 0.8): Promise
   });
 }
 
+function InferredBadge() {
+  return (
+    <span className="ml-1 inline-flex rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-600 dark:bg-amber-900/40 dark:text-amber-400">
+      AI 推斷
+    </span>
+  );
+}
+
 function ScanLabelContent() {
   const { t } = useTranslation(["food", "common"]);
   const searchParams = useSearchParams();
@@ -86,6 +94,7 @@ function ScanLabelContent() {
   const [vitaminC, setVitaminC] = useState("");
   const [vitaminD, setVitaminD] = useState("");
   const [notes, setNotes] = useState("");
+  const [inferredFields, setInferredFields] = useState<Set<string>>(new Set());
 
   // Auto-trigger camera on mount
   useEffect(() => {
@@ -145,6 +154,17 @@ function ScanLabelContent() {
           setVitaminC(String(data.vitaminCMg ?? ""));
           setVitaminD(String(data.vitaminDMcg ?? ""));
           setNotes(data.notes ?? "");
+          // Map AI inferredFields to form field names
+          const fieldMap: Record<string, string> = {
+            calories: "calories", proteinG: "protein", fatG: "fat", carbsG: "carbs",
+            fiberG: "fiber", sugarG: "sugar", saturatedFatG: "saturatedFat",
+            transFatG: "transFat", cholesterolMg: "cholesterol", sodiumMg: "sodium",
+            calciumMg: "calcium", ironMg: "iron", potassiumMg: "potassium",
+            vitaminAMcg: "vitaminA", vitaminCMg: "vitaminC", vitaminDMcg: "vitaminD",
+          };
+          setInferredFields(new Set(
+            (data.inferredFields ?? []).map((f: string) => fieldMap[f] ?? f)
+          ));
           posthog.capture("ai_label_scanned", { success: true });
           setStage("edit");
         } else {
@@ -410,7 +430,10 @@ function ScanLabelContent() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-1">
-                  <label className="text-sm font-medium">{t("food:caloriesKcalRequired")} *</label>
+                  <label className="text-sm font-medium">
+                    {t("food:caloriesKcalRequired")} *
+                    {inferredFields.has("calories") && <InferredBadge />}
+                  </label>
                   <Input
                     type="number"
                     value={calories}
@@ -421,7 +444,10 @@ function ScanLabelContent() {
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-blue-500">{t("common:macro.protein")} (g)</label>
+                    <label className="text-xs font-medium text-blue-500">
+                      {t("common:macro.protein")} (g)
+                      {inferredFields.has("protein") && <InferredBadge />}
+                    </label>
                     <Input
                       type="number"
                       step="0.1"
@@ -431,7 +457,10 @@ function ScanLabelContent() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-amber-500">{t("common:macro.carbs")} (g)</label>
+                    <label className="text-xs font-medium text-amber-500">
+                      {t("common:macro.carbs")} (g)
+                      {inferredFields.has("carbs") && <InferredBadge />}
+                    </label>
                     <Input
                       type="number"
                       step="0.1"
@@ -441,7 +470,10 @@ function ScanLabelContent() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-medium text-rose-500">{t("common:macro.fat")} (g)</label>
+                    <label className="text-xs font-medium text-rose-500">
+                      {t("common:macro.fat")} (g)
+                      {inferredFields.has("fat") && <InferredBadge />}
+                    </label>
                     <Input
                       type="number"
                       step="0.1"
@@ -456,7 +488,10 @@ function ScanLabelContent() {
                   <p className="text-xs text-muted-foreground mb-2">{t("common:labels.otherNutrients")}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.saturatedFat")} (g)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.saturatedFat")} (g)
+                        {inferredFields.has("saturatedFat") && <InferredBadge />}
+                      </label>
                       <Input
                         type="number"
                         step="0.1"
@@ -466,7 +501,10 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.transFat")} (g)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.transFat")} (g)
+                        {inferredFields.has("transFat") && <InferredBadge />}
+                      </label>
                       <Input
                         type="number"
                         step="0.1"
@@ -476,7 +514,10 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.sugar")} (g)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.sugar")} (g)
+                        {inferredFields.has("sugar") && <InferredBadge />}
+                      </label>
                       <Input
                         type="number"
                         step="0.1"
@@ -486,7 +527,10 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.dietaryFiber")} (g)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.dietaryFiber")} (g)
+                        {inferredFields.has("fiber") && <InferredBadge />}
+                      </label>
                       <Input
                         type="number"
                         step="0.1"
@@ -496,7 +540,10 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.sodium")} (mg)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.sodium")} (mg)
+                        {inferredFields.has("sodium") && <InferredBadge />}
+                      </label>
                       <Input
                         type="number"
                         step="0.1"
@@ -506,7 +553,10 @@ function ScanLabelContent() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.cholesterol")} (mg)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.cholesterol")} (mg)
+                        {inferredFields.has("cholesterol") && <InferredBadge />}
+                      </label>
                       <Input
                         type="number"
                         step="0.1"
@@ -522,27 +572,45 @@ function ScanLabelContent() {
                   <p className="text-xs text-muted-foreground mb-2">{t("common:labels.microNutrients")}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.calcium")} (mg)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.calcium")} (mg)
+                        {inferredFields.has("calcium") && <InferredBadge />}
+                      </label>
                       <Input type="number" step="0.1" value={calcium} onChange={(e) => setCalcium(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.iron")} (mg)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.iron")} (mg)
+                        {inferredFields.has("iron") && <InferredBadge />}
+                      </label>
                       <Input type="number" step="0.1" value={iron} onChange={(e) => setIron(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.potassium")} (mg)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.potassium")} (mg)
+                        {inferredFields.has("potassium") && <InferredBadge />}
+                      </label>
                       <Input type="number" step="0.1" value={potassium} onChange={(e) => setPotassium(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.vitaminA")} (mcg)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.vitaminA")} (mcg)
+                        {inferredFields.has("vitaminA") && <InferredBadge />}
+                      </label>
                       <Input type="number" step="0.1" value={vitaminA} onChange={(e) => setVitaminA(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.vitaminC")} (mg)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.vitaminC")} (mg)
+                        {inferredFields.has("vitaminC") && <InferredBadge />}
+                      </label>
                       <Input type="number" step="0.1" value={vitaminC} onChange={(e) => setVitaminC(e.target.value)} placeholder="-" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-medium">{t("common:nutrientLabels.vitaminD")} (mcg)</label>
+                      <label className="text-xs font-medium">
+                        {t("common:nutrientLabels.vitaminD")} (mcg)
+                        {inferredFields.has("vitaminD") && <InferredBadge />}
+                      </label>
                       <Input type="number" step="0.1" value={vitaminD} onChange={(e) => setVitaminD(e.target.value)} placeholder="-" />
                     </div>
                   </div>

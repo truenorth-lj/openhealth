@@ -25,8 +25,13 @@ const nutritionLabelSchema: Schema = {
     vitaminCMg: { type: SchemaType.NUMBER, description: "維生素C mg", nullable: true },
     vitaminDMcg: { type: SchemaType.NUMBER, description: "維生素D mcg", nullable: true },
     notes: { type: SchemaType.STRING, description: "標籤上的額外資訊，如過敏原警告、素食標示、產地、保存方式等", nullable: true },
+    inferredFields: {
+      type: SchemaType.ARRAY,
+      items: { type: SchemaType.STRING },
+      description: "哪些欄位是 AI 根據食品知識推斷的（不是從標籤上直接讀到的）。欄位名稱使用 camelCase，例如 proteinG, fatG, carbsG, calories 等",
+    },
   },
-  required: ["foodName", "servingSize", "servingUnit", "calories", "proteinG", "fatG", "carbsG"],
+  required: ["foodName", "servingSize", "servingUnit", "calories", "proteinG", "fatG", "carbsG", "inferredFields"],
 };
 
 const LABEL_SYSTEM_PROMPT = `你是一個台灣食品營養標籤辨識專家。請分析圖片中的營養標示，提取以下資訊：
@@ -40,7 +45,8 @@ const LABEL_SYSTEM_PROMPT = `你是一個台灣食品營養標籤辨識專家。
 6. 如果標示上寫的是 kJ（千焦），請轉換為 kcal（除以 4.184）。
 7. 找不到的可選欄位請設為 null。
 8. 台灣營養標示常見格式：每份、每100公克、每日參考值百分比。請優先使用「每份」數值。
-9. notes 欄位：如果標籤上有過敏原警告、素食/純素標示、產地、保存方式等額外資訊，整理成一段簡短文字。沒有就設為 null。`;
+9. notes 欄位：如果標籤上有過敏原警告、素食/純素標示、產地、保存方式等額外資訊，整理成一段簡短文字。沒有就設為 null。
+10. **AI 推斷規則**：如果營養標籤上缺少某些營養素數值（例如只有熱量但沒有蛋白質/脂肪/碳水，或某些數值明顯不合理如雞胸肉 0g 蛋白質），請根據食品名稱和你的營養學知識推斷合理的數值填入。將所有你推斷（而非直接從標籤讀取）的欄位名稱列在 inferredFields 陣列中。如果所有數值都是從標籤直接讀取的，inferredFields 設為空陣列 []。`;
 
 const ESTIMATION_SYSTEM_PROMPT = `你是一個台灣營養學專家。使用者會用文字描述他吃了什麼食物、大概的份量或重量，請根據你的知識估算該食物的營養成分。
 

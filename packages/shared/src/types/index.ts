@@ -61,6 +61,7 @@ export type NutritionRecognitionResult = {
   vitaminCMg?: number | null;
   vitaminDMcg?: number | null;
   notes?: string | null;
+  inferredFields?: string[];
 };
 
 export type OpenFoodFactsResult = {
