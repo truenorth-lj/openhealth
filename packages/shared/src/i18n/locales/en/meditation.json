@@ -1,0 +1,109 @@
+{
+  "title": "Meditation",
+  "startSession": "Start Meditation",
+  "activeSession": "Meditation In Progress",
+  "endSession": "End Meditation",
+  "discardSession": "Discard Session",
+  "discardConfirm": "Are you sure you want to discard this session?",
+  "sessionComplete": "Session Complete",
+  "history": "Meditation History",
+  "noHistory": "No meditation records yet",
+  "stats": "Meditation Stats",
+  "today": "Today",
+  "thisWeek": "This Week",
+  "thisMonth": "This Month",
+  "totalSessions": "Total Sessions",
+  "totalMinutes": "Total Minutes",
+  "avgDuration": "Avg Duration",
+  "currentStreak": "Current Streak",
+  "longestStreak": "Longest Streak",
+
+  "type": "Meditation Type",
+  "types": {
+    "mindfulness": "Mindfulness",
+    "breathing": "Breathing Exercise",
+    "body_scan": "Body Scan",
+    "loving_kindness": "Loving Kindness",
+    "visualization": "Visualization",
+    "walking": "Walking Meditation",
+    "mantra": "Mantra",
+    "focused_attention": "Focused Attention",
+    "open_awareness": "Open Awareness",
+    "sleep": "Sleep Meditation",
+    "gratitude": "Gratitude",
+    "stress_relief": "Stress Relief"
+  },
+
+  "sessionMode": "Session Mode",
+  "sessionModes": {
+    "guided": "Guided",
+    "unguided": "Unguided",
+    "timer": "Timer"
+  },
+
+  "duration": "Duration",
+  "durationPresets": {
+    "5": "5 min",
+    "10": "10 min",
+    "15": "15 min",
+    "20": "20 min",
+    "30": "30 min"
+  },
+
+  "mood": "Mood",
+  "moodBefore": "Mood Before",
+  "moodAfter": "Mood After",
+  "moodLevels": {
+    "1": "Very Bad",
+    "2": "Bad",
+    "3": "Neutral",
+    "4": "Good",
+    "5": "Very Good"
+  },
+
+  "feelings": "Feelings",
+  "feelingsBefore": "Feelings Before",
+  "feelingsAfter": "Feelings After",
+  "feelingTags": {
+    "anxious": "Anxious",
+    "stressed": "Stressed",
+    "sad": "Sad",
+    "angry": "Angry",
+    "tired": "Tired",
+    "restless": "Restless",
+    "scattered": "Scattered",
+    "overwhelmed": "Overwhelmed",
+    "calm": "Calm",
+    "happy": "Happy",
+    "grateful": "Grateful",
+    "focused": "Focused",
+    "energized": "Energized",
+    "peaceful": "Peaceful",
+    "hopeful": "Hopeful",
+    "content": "Content",
+    "relaxed": "Relaxed",
+    "clear": "Clear"
+  },
+
+  "note": "Note",
+  "notePlaceholder": "Record your meditation experience...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "deleteConfirm": "Are you sure you want to delete this record?",
+
+  "timer": {
+    "ready": "Ready?",
+    "tapToStart": "Tap to Start",
+    "elapsed": "Elapsed",
+    "remaining": "Remaining"
+  },
+
+  "moodEmojis": {
+    "1": "😣",
+    "2": "😔",
+    "3": "😐",
+    "4": "🙂",
+    "5": "😊"
+  }
+}

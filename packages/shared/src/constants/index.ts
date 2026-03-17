@@ -312,6 +312,101 @@ export const SLEEP_FACTORS = [
 
 export type SleepFactorId = (typeof SLEEP_FACTORS)[number]["id"];
 
+// Activity sessions (shared exercise + meditation)
+export const ACTIVITY_TYPES = ["exercise", "meditation"] as const;
+
+// Meditation
+export const MEDITATION_TYPES = [
+  "mindfulness",
+  "breathing",
+  "body_scan",
+  "loving_kindness",
+  "visualization",
+  "walking",
+  "mantra",
+  "focused_attention",
+  "open_awareness",
+  "sleep",
+  "gratitude",
+  "stress_relief",
+] as const;
+
+export const MEDITATION_TYPE_LABELS: Record<string, string> = {
+  mindfulness: "正念冥想",
+  breathing: "呼吸練習",
+  body_scan: "身體掃描",
+  loving_kindness: "慈心冥想",
+  visualization: "視覺化冥想",
+  walking: "行走冥想",
+  mantra: "持咒冥想",
+  focused_attention: "專注冥想",
+  open_awareness: "開放覺知",
+  sleep: "助眠冥想",
+  gratitude: "感恩冥想",
+  stress_relief: "減壓冥想",
+};
+
+export const MEDITATION_SESSION_MODES = ["guided", "unguided", "timer"] as const;
+
+export const MEDITATION_SESSION_MODE_LABELS: Record<string, string> = {
+  guided: "引導式",
+  unguided: "自由練習",
+  timer: "計時器",
+};
+
+export const MOOD_LEVELS = [1, 2, 3, 4, 5] as const;
+export const MOOD_LEVEL_LABELS: Record<number, string> = {
+  1: "非常差",
+  2: "不好",
+  3: "一般",
+  4: "不錯",
+  5: "非常好",
+};
+
+export const FEELING_TAGS = [
+  "anxious",
+  "stressed",
+  "sad",
+  "angry",
+  "tired",
+  "restless",
+  "scattered",
+  "overwhelmed",
+  "calm",
+  "happy",
+  "grateful",
+  "focused",
+  "energized",
+  "peaceful",
+  "hopeful",
+  "content",
+  "relaxed",
+  "clear",
+] as const;
+
+export const FEELING_TAG_LABELS: Record<string, string> = {
+  anxious: "焦慮",
+  stressed: "壓力大",
+  sad: "難過",
+  angry: "生氣",
+  tired: "疲倦",
+  restless: "不安",
+  scattered: "心散",
+  overwhelmed: "壓力爆表",
+  calm: "平靜",
+  happy: "開心",
+  grateful: "感恩",
+  focused: "專注",
+  energized: "有活力",
+  peaceful: "祥和",
+  hopeful: "充滿希望",
+  content: "滿足",
+  relaxed: "放鬆",
+  clear: "清晰",
+};
+
+export const MEDITATION_DURATION_PRESETS = [300, 600, 900, 1200, 1800] as const; // 5, 10, 15, 20, 30 min
+
 export const DEFAULT_SLEEP_GOAL_HOURS = 8;
 export const DEFAULT_ALARM_WINDOW_MINUTES = 30;
 export const SLEEP_SAMPLE_INTERVAL_MS = 1000;

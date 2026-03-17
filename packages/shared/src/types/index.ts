@@ -83,6 +83,37 @@ export type OpenFoodFactsResult = {
   imageUrl?: string;
 };
 
+// Activity sessions
+import type {
+  ACTIVITY_TYPES,
+  MEDITATION_TYPES,
+  MEDITATION_SESSION_MODES,
+  FEELING_TAGS,
+} from "../constants";
+
+export type ActivityType = (typeof ACTIVITY_TYPES)[number];
+export type MeditationType = (typeof MEDITATION_TYPES)[number];
+export type MeditationSessionMode = (typeof MEDITATION_SESSION_MODES)[number];
+export type FeelingTag = (typeof FEELING_TAGS)[number];
+
+export interface MeditationMetadata {
+  meditationType: MeditationType;
+  sessionMode: MeditationSessionMode;
+  plannedDurationSec?: number;
+  completed?: boolean;
+  moodBefore?: number;
+  moodAfter?: number;
+  feelingsBefore?: FeelingTag[];
+  feelingsAfter?: FeelingTag[];
+}
+
+export interface ExerciseSessionMetadata {
+  exerciseId?: string;
+  exerciseName?: string;
+  intensity?: string;
+  caloriesBurned?: number;
+}
+
 // Sleep tracking
 import type { SLEEP_PHASES, SLEEP_DETECTION_METHODS } from "../constants";
 

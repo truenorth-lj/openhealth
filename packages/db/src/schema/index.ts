@@ -19,3 +19,4 @@ export * from "./push-subscriptions";
 export * from "./sleep";
 export * from "./workout";
 export * from "./review";
+export * from "./activity";

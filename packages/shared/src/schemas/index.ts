@@ -263,6 +263,46 @@ export const deleteWorkoutTemplateSchema = z.object({
   templateId: z.string().uuid(),
 });
 
+// Activity sessions (shared exercise + meditation)
+export const meditationMetadataSchema = z.object({
+  meditationType: z.enum([
+    "mindfulness", "breathing", "body_scan", "loving_kindness",
+    "visualization", "walking", "mantra", "focused_attention",
+    "open_awareness", "sleep", "gratitude", "stress_relief",
+  ]),
+  sessionMode: z.enum(["guided", "unguided", "timer"]).optional(),
+  plannedDurationSec: z.number().int().min(0).optional(),
+  completed: z.boolean().optional(),
+  moodBefore: z.number().int().min(1).max(5).optional(),
+  moodAfter: z.number().int().min(1).max(5).optional(),
+  feelingsBefore: z.array(z.string()).optional(),
+  feelingsAfter: z.array(z.string()).optional(),
+});
+
+export const startActivitySessionSchema = z.object({
+  type: z.enum(["exercise", "meditation"]),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const completeActivitySessionSchema = z.object({
+  sessionId: z.string().uuid(),
+  note: z.string().max(500).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const discardActivitySessionSchema = z.object({
+  sessionId: z.string().uuid(),
+});
+
+export const logActivitySessionSchema = z.object({
+  type: z.enum(["exercise", "meditation"]),
+  startedAt: z.string().datetime(),
+  completedAt: z.string().datetime(),
+  durationSec: z.number().int().min(1).max(86400),
+  note: z.string().max(500).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+});
+
 export const updateCoachNotesSchema = z.object({
   clientId: z.string(),
   coachNotes: z.string().max(2000).optional(),
