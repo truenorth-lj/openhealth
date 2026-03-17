@@ -19,6 +19,7 @@ import docs from "./locales/zh-TW/docs.json";
 import privacy from "./locales/zh-TW/privacy.json";
 import coach from "./locales/zh-TW/coach.json";
 import pricing from "./locales/zh-TW/pricing.json";
+import meditation from "./locales/zh-TW/meditation.json";
 
 export const zhTWResources = {
   common,
@@ -41,4 +42,5 @@ export const zhTWResources = {
   privacy,
   coach,
   pricing,
+  meditation,
 } as const;

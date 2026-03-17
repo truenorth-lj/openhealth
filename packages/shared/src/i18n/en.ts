@@ -19,6 +19,7 @@ import docs from "./locales/en/docs.json";
 import privacy from "./locales/en/privacy.json";
 import coach from "./locales/en/coach.json";
 import pricing from "./locales/en/pricing.json";
+import meditation from "./locales/en/meditation.json";
 
 export const enResources = {
   common,
@@ -41,4 +42,5 @@ export const enResources = {
   privacy,
   coach,
   pricing,
+  meditation,
 } as const;

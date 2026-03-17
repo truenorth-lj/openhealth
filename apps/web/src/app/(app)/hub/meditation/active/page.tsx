@@ -30,12 +30,13 @@ export default function ActiveMeditationPage() {
   const { t } = useTranslation(["meditation", "common"]);
   const { isAuthenticated } = useAuthGuard();
 
-  const { data: activeSession, isLoading } =
+  const { data: activeSession, isLoading, isFetching } =
     trpc.activity.getActive.useQuery(
       { type: "meditation" },
-      { enabled: isAuthenticated }
+      { enabled: isAuthenticated, staleTime: 0 }
     );
 
+  const utils = trpc.useUtils();
   const {
     elapsedSeconds,
     isRunning,
@@ -86,11 +87,12 @@ export default function ActiveMeditationPage() {
         metadata: metadata as Record<string, unknown>,
       });
       stopSession();
+      await utils.activity.invalidate();
       toast.success(t("meditation:sessionComplete"));
       router.push("/hub/meditation");
       router.refresh();
     } catch {
-      toast.error("儲存失敗");
+      toast.error(t("common:toast.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -102,10 +104,11 @@ export default function ActiveMeditationPage() {
     try {
       await discardActivitySession({ sessionId: activeSession.id });
       stopSession();
+      await utils.activity.invalidate();
       router.push("/hub/meditation");
       router.refresh();
     } catch {
-      toast.error("操作失敗");
+      toast.error(t("common:toast.error"));
     } finally {
       setDiscarding(false);
     }
@@ -123,12 +126,16 @@ export default function ActiveMeditationPage() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  // Only redirect after a fresh fetch confirms no active session
+  const querySettled = isAuthenticated && !isLoading && !isFetching;
 
-  if (!activeSession) {
-    router.push("/hub/meditation");
-    return null;
-  }
+  useEffect(() => {
+    if (querySettled && !activeSession) {
+      router.push("/hub/meditation");
+    }
+  }, [querySettled, activeSession, router]);
+
+  if (!activeSession) return <LoadingSpinner />;
 
   const meta = activeSession.metadata as unknown as MeditationMetadata | null;
 
@@ -290,7 +297,7 @@ export default function ActiveMeditationPage() {
         </div>
 
         {/* Animated pulse ring */}
-        <div className="absolute inset-0 rounded-full border-2 border-primary/10 animate-ping" style={{ animationDuration: "4s" }} />
+        <div className="absolute inset-0 rounded-full border-2 border-primary/10 animate-ping pointer-events-none" style={{ animationDuration: "4s" }} />
       </div>
 
       {/* Controls */}
