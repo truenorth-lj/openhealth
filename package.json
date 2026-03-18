@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "test:integration": "vitest run --config apps/web/vitest.integration.config.ts",
     "dev:zenlife": "turbo dev --filter=@open-health/zenlife-web",
+    "dev:worker": "cd apps/worker && pnpm dev",
     "db:generate": "cd packages/db && source ../../apps/web/.env.local && DATABASE_URL=$DATABASE_URL pnpm db:generate",
     "test:e2e": "cd apps/web && pnpm test:e2e"
   },
