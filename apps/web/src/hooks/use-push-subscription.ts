@@ -48,6 +48,7 @@ export function usePushSubscription() {
 
     const json = subscription.toJSON();
     if (json.endpoint && json.keys) {
+      // Legacy subscribe (writes to push_subscriptions + push_tokens)
       await mutateRef.current({
         endpoint: json.endpoint,
         keys: {

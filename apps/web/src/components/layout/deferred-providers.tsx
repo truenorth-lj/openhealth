@@ -7,16 +7,10 @@ const PwaInstallBanner = dynamic(
   { ssr: false }
 );
 
-const WaterReminderProvider = dynamic(
-  () => import("@/components/water-reminder-provider").then((m) => m.WaterReminderProvider),
-  { ssr: false }
-);
-
 export function DeferredProviders() {
   return (
     <>
       <PwaInstallBanner />
-      <WaterReminderProvider />
     </>
   );
 }

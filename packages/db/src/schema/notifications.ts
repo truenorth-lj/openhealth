@@ -9,6 +9,24 @@ import {
 } from "drizzle-orm/pg-core";
 import { users } from "./users";
 
+export const notificationPreferences = pgTable("notification_preferences", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  dailyDigestEnabled: boolean("daily_digest_enabled").default(true).notNull(),
+  inactiveNudgeEnabled: boolean("inactive_nudge_enabled")
+    .default(true)
+    .notNull(),
+  customRemindersEnabled: boolean("custom_reminders_enabled")
+    .default(true)
+    .notNull(),
+  quietHoursStart: text("quiet_hours_start"), // "23:00"
+  quietHoursEnd: text("quiet_hours_end"), // "07:00"
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
 export const waterReminderSettings = pgTable("water_reminder_settings", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: text("user_id")

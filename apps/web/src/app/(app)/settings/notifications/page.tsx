@@ -5,7 +5,12 @@ import { trpc } from "@/lib/trpc-client";
 import { toast } from "sonner";
 import { ArrowLeft, Droplets, BellRing, Plus, Trash2, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { requestNotificationPermission } from "@/hooks/use-water-reminder";
+function requestNotificationPermission(): Promise<NotificationPermission> {
+  if (!("Notification" in window)) return Promise.resolve("denied" as NotificationPermission);
+  if (Notification.permission === "granted") return Promise.resolve("granted");
+  if (Notification.permission === "denied") return Promise.resolve("denied");
+  return Notification.requestPermission();
+}
 import { NotificationPermissionGuard } from "@/components/notification-permission-guard";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useTranslation } from "react-i18next";

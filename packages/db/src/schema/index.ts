@@ -16,6 +16,7 @@ export * from "./notifications";
 export * from "./coaching";
 export * from "./posture";
 export * from "./push-subscriptions";
+export * from "./push-tokens";
 export * from "./sleep";
 export * from "./workout";
 export * from "./review";
