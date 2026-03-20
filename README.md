@@ -63,7 +63,7 @@ The first open-source, mobile-first personal health AI agent. It understands you
 | Database | PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/) |
 | API | [tRPC v11](https://trpc.io/) (reads) + Server Actions (writes) |
 | Auth | [Better Auth](https://www.better-auth.com/) (email/password + OAuth) |
-| AI | Google Gemini 2.5 Flash (OCR, chat, agent) |
+| AI | Google Gemini 3 Flash (OCR, chat, agent) |
 | Payments | Stripe |
 | Monorepo | [Turborepo](https://turbo.build/) + pnpm workspaces |
 

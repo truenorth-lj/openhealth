@@ -24,7 +24,7 @@ import { blogPosts } from "../src/server/db/schema";
 
 const HUBERMAN_CHANNEL_ID = "UC2D2CMWXMOVWx7giW1n3LIg";
 const MINIMAX_API_URL = "https://api.minimax.io/v1/text/chatcompletion_v2";
-const MINIMAX_MODEL = "MiniMax-M2.5";
+const MINIMAX_MODEL = "MiniMax-M2.7";
 const MAX_RETRIES = 5;
 const RETRY_DELAY_MS = 5000;
 const CHUNK_SIZE = 80000; // ~80K chars per chunk for map-reduce

@@ -101,7 +101,7 @@ export async function POST(req: Request) {
   const messages = await convertToModelMessages(uiMessages);
 
   const result = streamText({
-    model: minimax("MiniMax-M2.5"),
+    model: minimax("MiniMax-M2.7"),
     system: `你是一位專業的台灣健康顧問，名叫「小健」。你的任務是根據使用者的健康數據（飲食、體重、運動、重訓、水分），提供個人化的健康建議。
 
 規則：

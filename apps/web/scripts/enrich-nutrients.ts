@@ -1,6 +1,6 @@
 /**
  * 通用營養素 LLM 估算腳本
- * 使用 MiniMax M2.5 根據商品名稱、分類、熱量來估算巨量營養素
+ * 使用 MiniMax M2.7 根據商品名稱、分類、熱量來估算巨量營養素
  * 支援所有 food source（seven, family, etc.）
  *
  * 用法：
@@ -18,7 +18,7 @@ import { foods, foodNutrients, nutrientDefinitions } from "../src/server/db/sche
 // ---------- Config ----------
 
 const MINIMAX_API_URL = "https://api.minimax.io/v1/text/chatcompletion_v2";
-const MINIMAX_MODEL = "MiniMax-M2.5";
+const MINIMAX_MODEL = "MiniMax-M2.7";
 const BATCH_SIZE = 25;
 const DELAY_MS = 2000;
 const MAX_RETRIES = 3;
@@ -190,7 +190,7 @@ async function main() {
   }
 
   // 4. Process in batches
-  console.log(`2. 使用 MiniMax M2.5 估算營養素（每批 ${BATCH_SIZE} 項）...\n`);
+  console.log(`2. 使用 MiniMax M2.7 估算營養素（每批 ${BATCH_SIZE} 項）...\n`);
 
   let enriched = 0;
   let errors = 0;

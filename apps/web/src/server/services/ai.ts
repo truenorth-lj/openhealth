@@ -106,7 +106,7 @@ export async function recognizeNutritionLabel(
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-3-flash",
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema: nutritionLabelSchema,
@@ -158,7 +158,7 @@ export async function estimateNutritionFromText(
           Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "MiniMax-M2.5",
+          model: "MiniMax-M2.7",
           messages: [
             { role: "system", content: ESTIMATION_SYSTEM_PROMPT },
             { role: "user", content: description },

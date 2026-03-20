@@ -1,6 +1,6 @@
 /**
  * 全家便利商店食品纖維補充腳本
- * 使用 MiniMax M2.5 根據食品名稱、分類、已知營養素來估算膳食纖維
+ * 使用 MiniMax M2.7 根據食品名稱、分類、已知營養素來估算膳食纖維
  * 專門處理「有其他營養素但缺纖維」的食物
  *
  * 用法：
@@ -18,7 +18,7 @@ import { foods, foodNutrients, nutrientDefinitions } from "../src/server/db/sche
 // ---------- Config ----------
 
 const MINIMAX_API_URL = "https://api.minimax.io/v1/text/chatcompletion_v2";
-const MINIMAX_MODEL = "MiniMax-M2.5";
+const MINIMAX_MODEL = "MiniMax-M2.7";
 const BATCH_SIZE = 30;
 const DELAY_MS = 2000;
 const MAX_RETRIES = 3;
@@ -101,7 +101,7 @@ async function main() {
   }
 
   const label = SOURCE_LABELS[source] ?? source;
-  console.log(`=== ${label} 膳食纖維補充 (MiniMax M2.5) ===\n`);
+  console.log(`=== ${label} 膳食纖維補充 (MiniMax M2.7) ===\n`);
 
   const client = postgres(connectionString);
   const db = drizzle(client);
@@ -244,7 +244,7 @@ async function main() {
   }
 
   // 5. Process in batches
-  console.log(`2. 使用 MiniMax M2.5 估算纖維（每批 ${BATCH_SIZE} 項）...\n`);
+  console.log(`2. 使用 MiniMax M2.7 估算纖維（每批 ${BATCH_SIZE} 項）...\n`);
 
   let enriched = 0;
   let errors = 0;

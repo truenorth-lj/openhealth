@@ -154,7 +154,7 @@ async function main() {
   // 3. Setup Gemini
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash-lite", // lite 版額度較高；可改為 gemini-2.5-flash 品質更好
+    model: "gemini-3-flash-lite", // lite 版額度較高；可改為 gemini-3-flash 品質更好
     generationConfig: {
       responseMimeType: "application/json",
       responseSchema,
