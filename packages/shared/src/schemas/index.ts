@@ -265,11 +265,7 @@ export const deleteWorkoutTemplateSchema = z.object({
 
 // Activity sessions (shared exercise + meditation)
 export const meditationMetadataSchema = z.object({
-  meditationType: z.enum([
-    "mindfulness", "breathing", "body_scan", "loving_kindness",
-    "visualization", "walking", "mantra", "focused_attention",
-    "open_awareness", "sleep", "gratitude", "stress_relief",
-  ]),
+  meditationType: z.enum(["mindfulness", "breathing", "body_scan"]),
   sessionMode: z.enum(["guided", "unguided", "timer"]).optional(),
   plannedDurationSec: z.number().int().min(0).optional(),
   completed: z.boolean().optional(),

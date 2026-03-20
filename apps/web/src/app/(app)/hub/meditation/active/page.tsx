@@ -238,9 +238,7 @@ export default function ActiveMeditationPage() {
             {formatDuration(elapsedSeconds)}
           </p>
           <p className="text-xs text-neutral-400 mt-1">
-            {meta?.meditationType
-              ? MEDITATION_TYPE_LABELS[meta.meditationType]
-              : t("meditation:title")}
+            {(meta?.meditationType && MEDITATION_TYPE_LABELS[meta.meditationType]) || t("meditation:title")}
           </p>
         </div>
 
@@ -373,9 +371,7 @@ export default function ActiveMeditationPage() {
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 py-6">
       {/* Meditation type */}
       <p className="text-sm font-light text-neutral-400 mb-2">
-        {meta?.meditationType
-          ? MEDITATION_TYPE_LABELS[meta.meditationType]
-          : t("meditation:title")}
+        {(meta?.meditationType && MEDITATION_TYPE_LABELS[meta.meditationType]) || t("meditation:title")}
       </p>
 
       {/* Timer circle */}

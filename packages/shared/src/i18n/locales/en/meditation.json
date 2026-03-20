@@ -22,16 +22,7 @@
   "types": {
     "mindfulness": "Mindfulness",
     "breathing": "Breathing Exercise",
-    "body_scan": "Body Scan",
-    "loving_kindness": "Loving Kindness",
-    "visualization": "Visualization",
-    "walking": "Walking Meditation",
-    "mantra": "Mantra",
-    "focused_attention": "Focused Attention",
-    "open_awareness": "Open Awareness",
-    "sleep": "Sleep Meditation",
-    "gratitude": "Gratitude",
-    "stress_relief": "Stress Relief"
+    "body_scan": "Body Scan"
   },
 
   "sessionMode": "Session Mode",

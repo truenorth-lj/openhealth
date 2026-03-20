@@ -293,9 +293,7 @@ export default function MeditationPage() {
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-light">
-                      {meta?.meditationType
-                        ? MEDITATION_TYPE_LABELS[meta.meditationType]
-                        : t("meditation:title")}
+                      {(meta?.meditationType && MEDITATION_TYPE_LABELS[meta.meditationType]) || t("meditation:title")}
                     </p>
                     <div className="flex items-center gap-3 mt-0.5">
                       <span className="text-xs text-neutral-400">

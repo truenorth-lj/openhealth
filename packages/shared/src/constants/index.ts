@@ -320,30 +320,12 @@ export const MEDITATION_TYPES = [
   "mindfulness",
   "breathing",
   "body_scan",
-  "loving_kindness",
-  "visualization",
-  "walking",
-  "mantra",
-  "focused_attention",
-  "open_awareness",
-  "sleep",
-  "gratitude",
-  "stress_relief",
 ] as const;
 
 export const MEDITATION_TYPE_LABELS: Record<string, string> = {
   mindfulness: "正念冥想",
   breathing: "呼吸練習",
   body_scan: "身體掃描",
-  loving_kindness: "慈心冥想",
-  visualization: "視覺化冥想",
-  walking: "行走冥想",
-  mantra: "持咒冥想",
-  focused_attention: "專注冥想",
-  open_awareness: "開放覺知",
-  sleep: "助眠冥想",
-  gratitude: "感恩冥想",
-  stress_relief: "減壓冥想",
 };
 
 export const MEDITATION_SESSION_MODES = ["guided", "unguided", "timer"] as const;
