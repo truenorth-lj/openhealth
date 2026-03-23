@@ -19,6 +19,8 @@
   "deleteAccountSuccess": "帳號已刪除",
   "deleteAccountError": "刪除帳號失敗，請稍後再試",
   "achievements": "成就",
+  "privacyPolicy": "隱私政策",
+  "termsOfService": "服務條款",
   "language": "語言",
   "languageZhTW": "繁體中文",
   "languageEn": "English",

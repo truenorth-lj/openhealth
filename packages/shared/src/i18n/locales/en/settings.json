@@ -12,6 +12,8 @@
   "export": "Export Data",
   "comingSoon": "Coming Soon",
   "achievements": "Achievements",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service",
   "deleteAccount": "Delete Account",
   "deleteAccountConfirmTitle": "Delete your account?",
   "deleteAccountConfirmMessage": "This action cannot be undone. All your data (food diary, weight, exercise, conversations, etc.) will be permanently deleted.",

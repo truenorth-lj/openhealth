@@ -216,5 +216,18 @@
     "description": "Unlock all advanced features for better health management",
     "comingSoon": "Coming Soon",
     "paymentDeveloping": "Payment feature is under development, subscription will be available once ready"
+  },
+  "aiConsent": {
+    "title": "AI Data Usage Disclosure",
+    "description": "When using \"Scan Label\" or \"AI Estimate\" features, your data will be sent to third-party AI services for processing. Please read the following:",
+    "dataSharedTitle": "Data Shared",
+    "dataSharedBody": "• Scan Label: Photos of nutrition labels you capture\n• AI Estimate: Food description text you enter",
+    "recipientTitle": "Data Recipients",
+    "recipientBody": "• Google Gemini AI — for nutrition label image recognition\n• MiniMax AI — for text-based nutrition estimation\n\nThese services are provided by Google and MiniMax. Data processing is subject to their respective privacy policies.",
+    "purposeTitle": "Purpose",
+    "purposeBody": "Your data is used solely for analyzing nutritional content and will not be used for any other purpose. Open Health does not store the original images or text sent to AI services.",
+    "privacyPolicyLink": "View Full Privacy Policy",
+    "accept": "I Understand & Agree",
+    "decline": "Don't Use This Feature"
   }
 }

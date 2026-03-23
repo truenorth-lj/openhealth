@@ -216,5 +216,18 @@
     "description": "解鎖所有進階功能，讓健康管理更完整",
     "comingSoon": "敬請期待",
     "paymentDeveloping": "付款功能正在開發中，完成後將開放訂閱"
+  },
+  "aiConsent": {
+    "title": "AI 資料使用說明",
+    "description": "使用「拍照辨識」或「AI 估算」功能時，您的資料將傳送至第三方 AI 服務進行處理。請閱讀以下說明：",
+    "dataSharedTitle": "傳送的資料",
+    "dataSharedBody": "• 拍照辨識：您拍攝的食品營養標示照片\n• AI 估算：您輸入的食物描述文字",
+    "recipientTitle": "資料接收方",
+    "recipientBody": "• Google Gemini AI — 用於營養標示圖片辨識\n• MiniMax AI — 用於文字描述營養估算\n\n這些服務由 Google 和 MiniMax 提供，資料處理受其隱私政策規範。",
+    "purposeTitle": "使用目的",
+    "purposeBody": "您的資料僅用於分析營養成分，不會被用於其他目的。Open Health 不會儲存傳送至 AI 服務的原始圖片或文字。",
+    "privacyPolicyLink": "查看完整隱私政策",
+    "accept": "我了解並同意",
+    "decline": "不使用此功能"
   }
 }

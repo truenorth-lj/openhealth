@@ -19,6 +19,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { eq, and } from "drizzle-orm";
 import postgres from "postgres";
 import { blogPosts } from "../src/server/db/schema";
+import { YoutubeTranscript } from "youtube-transcript";
 
 // ---------- Config ----------
 
@@ -203,53 +204,31 @@ async function fetchChannelVideos(
   return videos;
 }
 
-// ---------- YouTube Transcript (via yt-dlp) ----------
+// ---------- YouTube Transcript (via youtube-transcript) ----------
 
 async function fetchTranscript(videoId: string): Promise<string> {
-  const { execSync } = await import("child_process");
-  const { readFileSync, unlinkSync } = await import("fs");
-  const tmpFile = `/tmp/yt-transcript-${videoId}`;
+  const segments = await YoutubeTranscript.fetchTranscript(videoId, { lang: "en" });
 
-  try {
-    execSync(
-      `yt-dlp --write-auto-sub --sub-lang en --skip-download --sub-format json3 -o "${tmpFile}" "https://www.youtube.com/watch?v=${videoId}"`,
-      { stdio: "pipe", timeout: 60000 }
-    );
-
-    const json3Path = `${tmpFile}.en.json3`;
-    const data = JSON.parse(readFileSync(json3Path, "utf-8"));
-    unlinkSync(json3Path);
-
-    const events: Array<{ tStartMs?: number; segs?: Array<{ utf8: string }> }> =
-      data.events || [];
-    const lines: string[] = [];
-
-    for (const ev of events) {
-      if (ev.segs === undefined) continue;
-      const segText = ev.segs.map((s) => s.utf8).join("");
-      if (segText.trim()) {
-        const ms = ev.tStartMs || 0;
-        const mins = Math.floor(ms / 60000);
-        const secs = Math.floor((ms % 60000) / 1000);
-        const ts = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-        lines.push(`[${ts}] ${segText.trim()}`);
-      }
-    }
-
-    if (lines.length === 0) {
-      throw new Error(`No transcript segments found for video ${videoId}`);
-    }
-
-    return lines.join("\n");
-  } catch (err) {
-    // Clean up temp files on error
-    try {
-      unlinkSync(`${tmpFile}.en.json3`);
-    } catch {
-      // ignore
-    }
-    throw new Error(`Failed to fetch transcript for ${videoId}: ${err}`);
+  if (!segments || segments.length === 0) {
+    throw new Error(`No transcript segments found for video ${videoId}`);
   }
+
+  const lines: string[] = [];
+  for (const seg of segments) {
+    const text = seg.text?.trim();
+    if (!text) continue;
+    const totalSecs = Math.floor(seg.offset / 1000);
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    const ts = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    lines.push(`[${ts}] ${text}`);
+  }
+
+  if (lines.length === 0) {
+    throw new Error(`No transcript segments found for video ${videoId}`);
+  }
+
+  return lines.join("\n");
 }
 
 // ---------- MiniMax AI ----------
