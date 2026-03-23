@@ -263,6 +263,15 @@ export const deleteWorkoutTemplateSchema = z.object({
   templateId: z.string().uuid(),
 });
 
+// Throat exercise metadata
+export const throatExerciseMetadataSchema = z.object({
+  preset: z.enum(["quick", "standard", "full"]),
+  exerciseIds: z.array(z.string()),
+  completedCount: z.number().int().min(0),
+  totalCount: z.number().int().min(1),
+  completed: z.boolean().optional(),
+});
+
 // Activity sessions (shared exercise + meditation)
 export const meditationMetadataSchema = z.object({
   meditationType: z.enum(["mindfulness", "breathing", "body_scan"]),
@@ -276,7 +285,7 @@ export const meditationMetadataSchema = z.object({
 });
 
 export const startActivitySessionSchema = z.object({
-  type: z.enum(["exercise", "meditation"]),
+  type: z.enum(["exercise", "meditation", "throat_exercise"]),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
@@ -291,7 +300,7 @@ export const discardActivitySessionSchema = z.object({
 });
 
 export const logActivitySessionSchema = z.object({
-  type: z.enum(["exercise", "meditation"]),
+  type: z.enum(["exercise", "meditation", "throat_exercise"]),
   startedAt: z.string().datetime(),
   completedAt: z.string().datetime(),
   durationSec: z.number().int().min(1).max(86400),

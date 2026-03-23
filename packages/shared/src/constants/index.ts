@@ -313,7 +313,7 @@ export const SLEEP_FACTORS = [
 export type SleepFactorId = (typeof SLEEP_FACTORS)[number]["id"];
 
 // Activity sessions (shared exercise + meditation)
-export const ACTIVITY_TYPES = ["exercise", "meditation"] as const;
+export const ACTIVITY_TYPES = ["exercise", "meditation", "throat_exercise"] as const;
 
 // Meditation
 export const MEDITATION_TYPES = [
@@ -388,6 +388,62 @@ export const FEELING_TAG_LABELS: Record<string, string> = {
 };
 
 export const MEDITATION_DURATION_PRESETS = [300, 600, 900, 1200, 1800] as const; // 5, 10, 15, 20, 30 min
+
+// Throat Exercise (anti-snoring oropharyngeal training)
+export const THROAT_EXERCISE_TARGETS = [
+  "tongue",
+  "soft_palate",
+  "jaw",
+  "cheek",
+  "throat",
+] as const;
+
+export const THROAT_EXERCISE_TARGET_LABELS: Record<string, string> = {
+  tongue: "舌頭",
+  soft_palate: "軟顎",
+  jaw: "下顎",
+  cheek: "臉頰",
+  throat: "喉嚨",
+};
+
+export interface ThroatExerciseDefinition {
+  id: string;
+  target: (typeof THROAT_EXERCISE_TARGETS)[number];
+  durationSec: number;
+  reps: number;
+  emoji: string;
+}
+
+export const THROAT_EXERCISES: ThroatExerciseDefinition[] = [
+  // Tongue exercises
+  { id: "tongue_slide", target: "tongue", durationSec: 60, reps: 20, emoji: "👅" },
+  { id: "tongue_push_up", target: "tongue", durationSec: 50, reps: 5, emoji: "⬆️" },
+  { id: "tongue_push_down", target: "tongue", durationSec: 50, reps: 5, emoji: "⬇️" },
+  { id: "tongue_stretch", target: "tongue", durationSec: 50, reps: 5, emoji: "😛" },
+  { id: "tongue_curl", target: "tongue", durationSec: 50, reps: 10, emoji: "🌀" },
+  // Soft palate exercises
+  { id: "vowel_pronounce", target: "soft_palate", durationSec: 60, reps: 10, emoji: "🗣️" },
+  { id: "say_ah", target: "soft_palate", durationSec: 50, reps: 10, emoji: "😮" },
+  // Jaw exercises
+  { id: "jaw_open_close", target: "jaw", durationSec: 40, reps: 10, emoji: "😯" },
+  { id: "jaw_side_to_side", target: "jaw", durationSec: 40, reps: 10, emoji: "↔️" },
+  // Cheek exercises
+  { id: "cheek_hook", target: "cheek", durationSec: 40, reps: 10, emoji: "🤏" },
+  { id: "lip_purse", target: "cheek", durationSec: 50, reps: 5, emoji: "😙" },
+  // Throat exercises
+  { id: "throat_humming", target: "throat", durationSec: 90, reps: 3, emoji: "🎵" },
+  { id: "tiger_yell", target: "throat", durationSec: 50, reps: 5, emoji: "🐯" },
+  { id: "balloon_breathing", target: "throat", durationSec: 40, reps: 10, emoji: "🎈" },
+];
+
+export const THROAT_EXERCISE_PRESETS = {
+  quick: { durationMin: 5, exerciseCount: 5 },
+  standard: { durationMin: 10, exerciseCount: 8 },
+  full: { durationMin: 15, exerciseCount: 12 },
+} as const;
+
+export const THROAT_EXERCISE_PRESET_KEYS = ["quick", "standard", "full"] as const;
+export const THROAT_EXERCISE_REST_SEC = 10;
 
 export const DEFAULT_SLEEP_GOAL_HOURS = 8;
 export const DEFAULT_ALARM_WINDOW_MINUTES = 30;

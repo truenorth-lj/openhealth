@@ -1,0 +1,136 @@
+{
+  "title": "Throat Exercise",
+  "subtitle": "Anti-snoring oropharyngeal training",
+  "startSession": "Start Training",
+  "activeSession": "Training in Progress",
+  "endSession": "End Training",
+  "discardSession": "Discard Training",
+  "discardConfirm": "Are you sure you want to discard this training session?",
+  "sessionComplete": "Training Complete",
+  "history": "History",
+  "noHistory": "No training records yet",
+  "today": "Today",
+  "thisWeek": "This Week",
+  "totalMinutes": "Total Min",
+  "currentStreak": "Streak",
+
+  "preset": "Preset",
+  "presets": {
+    "quick": "Quick",
+    "standard": "Standard",
+    "full": "Full"
+  },
+  "presetDesc": {
+    "quick": "5 min · 5 exercises",
+    "standard": "10 min · 8 exercises",
+    "full": "15 min · 12 exercises"
+  },
+
+  "target": "Target",
+  "targets": {
+    "tongue": "Tongue",
+    "soft_palate": "Soft Palate",
+    "jaw": "Jaw",
+    "cheek": "Cheek",
+    "throat": "Throat"
+  },
+
+  "exercises": {
+    "tongue_slide": {
+      "name": "Tongue Slide",
+      "desc": "Place tongue tip behind upper front teeth, slowly slide backward along the palate",
+      "tip": "Keep the tip pressed firmly, go as slowly as possible"
+    },
+    "tongue_push_up": {
+      "name": "Tongue Push Up",
+      "desc": "Press your entire tongue flat against the roof of your mouth",
+      "tip": "Imagine pushing the palate upward"
+    },
+    "tongue_push_down": {
+      "name": "Tongue Push Down",
+      "desc": "Touch lower front teeth with tongue tip, press tongue flat against mouth floor",
+      "tip": "Keep jaw relaxed, only use tongue force"
+    },
+    "tongue_stretch": {
+      "name": "Tongue Stretch",
+      "desc": "Stick your tongue out as far as possible, try to touch your chin",
+      "tip": "Tilt head up for better effect"
+    },
+    "tongue_curl": {
+      "name": "Tongue Curl",
+      "desc": "Curl your tongue into a tube shape and hold",
+      "tip": "If you can't curl, try bringing tongue sides toward center"
+    },
+    "vowel_pronounce": {
+      "name": "Vowel Pronounce",
+      "desc": "Say A-E-I-O-U with exaggerated mouth movements",
+      "tip": "Stretch each vowel, make mouth movements as big as possible"
+    },
+    "say_ah": {
+      "name": "Palate Lift",
+      "desc": "Open mouth wide and say 'ahh' to lift the soft palate",
+      "tip": "Watch in mirror if the uvula lifts"
+    },
+    "jaw_open_close": {
+      "name": "Jaw Open Close",
+      "desc": "Purse lips then slowly open mouth wide, then slowly close",
+      "tip": "Relax facial muscles, move slowly"
+    },
+    "jaw_side_to_side": {
+      "name": "Jaw Side to Side",
+      "desc": "Slowly move your jaw to the left, then to the right",
+      "tip": "Keep range moderate, feel the jaw muscle stretch"
+    },
+    "cheek_hook": {
+      "name": "Cheek Hook",
+      "desc": "Hook finger to pull cheek outward, use facial muscles to pull it back",
+      "tip": "Do one set for each side"
+    },
+    "lip_purse": {
+      "name": "Lip Purse",
+      "desc": "Purse your lips tightly as if whistling, hold with force",
+      "tip": "Feel the tightness in lips and cheeks"
+    },
+    "throat_humming": {
+      "name": "Throat Humming",
+      "desc": "Close mouth and make a sustained humming sound",
+      "tip": "Feel the vibration in your throat, keep it steady"
+    },
+    "tiger_yell": {
+      "name": "Silent Roar",
+      "desc": "Open mouth as wide as possible as if yelling, but make no sound",
+      "tip": "Feel maximum stretch in throat and jaw"
+    },
+    "balloon_breathing": {
+      "name": "Balloon Breathing",
+      "desc": "Inhale through nose, exhale forcefully through mouth as if inflating a balloon",
+      "tip": "Puff cheeks while blowing, keep airflow steady"
+    }
+  },
+
+  "reps": "{{count}} reps",
+  "holdSeconds": "Hold {{seconds}}s",
+  "rest": "Rest",
+  "restDesc": "Relax, prepare for the next exercise",
+  "nextExercise": "Next",
+  "exerciseProgress": "{{current}} / {{total}}",
+  "skip": "Skip",
+  "complete": "Complete Training",
+  "wellDone": "Well Done!",
+  "sessionSummary": "Session Summary",
+  "exercisesCompleted": "Exercises Done",
+  "totalTime": "Total Time",
+  "note": "Note",
+  "notePlaceholder": "Record how you feel about this training...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "saving": "Saving...",
+  "starting": "Starting...",
+  "startError": "Failed to start training",
+  "startWithPreset": "Start · {{minutes}} min",
+  "streakDays": "days",
+
+  "scienceTitle": "Science",
+  "scienceDesc": "Clinically proven oropharyngeal exercises that reduce snoring after 8-12 weeks",
+  "recommendFreq": "Recommended: twice daily, morning and evening"
+}

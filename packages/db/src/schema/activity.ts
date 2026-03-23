@@ -13,6 +13,7 @@ import { users } from "./users";
 export const activityTypeEnum = pgEnum("activity_type", [
   "exercise",
   "meditation",
+  "throat_exercise",
 ]);
 
 export const activitySessions = pgTable(

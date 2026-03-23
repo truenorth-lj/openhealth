@@ -15,7 +15,7 @@ import {
 } from "@open-health/shared/schemas";
 
 async function assertProAccess(userId: string, activityType?: string) {
-  if (activityType === "meditation") return;
+  if (activityType === "meditation" || activityType === "throat_exercise") return;
 
   const userRow = await db
     .select({
@@ -65,6 +65,7 @@ export async function startActivitySession(
     .returning({ id: activitySessions.id });
 
   revalidatePath("/hub/meditation");
+  revalidatePath("/hub/throat-exercise");
   return { sessionId: session.id, alreadyActive: false };
 }
 
@@ -114,6 +115,7 @@ export async function completeActivitySession(
     .where(eq(activitySessions.id, validated.sessionId));
 
   revalidatePath("/hub/meditation");
+  revalidatePath("/hub/throat-exercise");
   return { success: true, durationSec };
 }
 
@@ -133,6 +135,7 @@ export async function discardActivitySession(
     );
 
   revalidatePath("/hub/meditation");
+  revalidatePath("/hub/throat-exercise");
   return { success: true };
 }
 
@@ -157,6 +160,7 @@ export async function logActivitySession(
     .returning({ id: activitySessions.id });
 
   revalidatePath("/hub/meditation");
+  revalidatePath("/hub/throat-exercise");
   return { sessionId: session.id };
 }
 
@@ -173,5 +177,6 @@ export async function deleteActivitySession(sessionId: string) {
     );
 
   revalidatePath("/hub/meditation");
+  revalidatePath("/hub/throat-exercise");
   return { success: true };
 }

@@ -115,6 +115,23 @@ export interface ExerciseSessionMetadata {
   caloriesBurned?: number;
 }
 
+// Throat exercise
+import type {
+  THROAT_EXERCISE_TARGETS,
+  THROAT_EXERCISE_PRESET_KEYS,
+} from "../constants";
+
+export type ThroatExerciseTarget = (typeof THROAT_EXERCISE_TARGETS)[number];
+export type ThroatExercisePreset = (typeof THROAT_EXERCISE_PRESET_KEYS)[number];
+
+export interface ThroatExerciseMetadata {
+  preset: ThroatExercisePreset;
+  exerciseIds: string[];
+  completedCount: number;
+  totalCount: number;
+  completed?: boolean;
+}
+
 // Sleep tracking
 import type { SLEEP_PHASES, SLEEP_DETECTION_METHODS } from "../constants";
 

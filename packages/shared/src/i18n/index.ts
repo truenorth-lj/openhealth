@@ -23,6 +23,7 @@ import zhTWCoach from "./locales/zh-TW/coach.json";
 import zhTWPricing from "./locales/zh-TW/pricing.json";
 import zhTWMeditation from "./locales/zh-TW/meditation.json";
 import zhTWReminders from "./locales/zh-TW/reminders.json";
+import zhTWThroatExercise from "./locales/zh-TW/throat-exercise.json";
 
 import enCommon from "./locales/en/common.json";
 import enDiary from "./locales/en/diary.json";
@@ -46,6 +47,7 @@ import enCoach from "./locales/en/coach.json";
 import enPricing from "./locales/en/pricing.json";
 import enMeditation from "./locales/en/meditation.json";
 import enReminders from "./locales/en/reminders.json";
+import enThroatExercise from "./locales/en/throat-exercise.json";
 
 export const supportedLngs = ["zh-TW", "en"] as const;
 export type SupportedLanguage = (typeof supportedLngs)[number];
@@ -76,6 +78,7 @@ export const namespaces = [
   "pricing",
   "meditation",
   "reminders",
+  "throat-exercise",
 ] as const;
 
 export type Namespace = (typeof namespaces)[number];
@@ -104,6 +107,7 @@ export const resources = {
     pricing: zhTWPricing,
     meditation: zhTWMeditation,
     reminders: zhTWReminders,
+    "throat-exercise": zhTWThroatExercise,
   },
   en: {
     common: enCommon,
@@ -128,5 +132,6 @@ export const resources = {
     pricing: enPricing,
     meditation: enMeditation,
     reminders: enReminders,
+    "throat-exercise": enThroatExercise,
   },
 } as const;
