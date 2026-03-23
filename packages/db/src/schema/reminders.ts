@@ -6,7 +6,9 @@ import {
   timestamp,
   index,
   jsonb,
+  check,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { users } from "./users";
 
 // Custom reminders — user-defined alarms for any purpose
@@ -34,5 +36,6 @@ export const customReminders = pgTable(
   (table) => [
     index("custom_reminders_user_idx").on(table.userId),
     index("custom_reminders_user_enabled_idx").on(table.userId, table.enabled),
+    check("custom_reminders_repeat_days_is_array", sql`jsonb_typeof(${table.repeatDays}) = 'array'`),
   ]
 );

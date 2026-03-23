@@ -211,6 +211,20 @@
       "when": 1773826469473,
       "tag": "0029_ambitious_micromacro",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1774286368526,
+      "tag": "0030_cooing_sunspot",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1774286797940,
+      "tag": "0031_striped_black_bird",
+      "breakpoints": true
     }
   ]
 }
