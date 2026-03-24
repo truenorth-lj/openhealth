@@ -5,7 +5,15 @@ RUN corepack enable && corepack prepare pnpm@10.11.0 --activate
 FROM base AS deps
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+# Generate .npmrc inline (zeabur deploy may not include dotfiles)
+RUN printf '%s\n' \
+  'public-hoist-pattern[]=*@react-native*' \
+  'public-hoist-pattern[]=*expo*' \
+  'public-hoist-pattern[]=*@babel*' \
+  'hoist-pattern[]=!@types/react' \
+  'hoist-pattern[]=!@types/react-dom' > .npmrc
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json apps/web/
 COPY apps/zenlife-web/package.json apps/zenlife-web/
 COPY apps/mobile/package.json apps/mobile/
@@ -18,6 +26,14 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 WORKDIR /app
 
+# Generate .npmrc inline (same as deps stage)
+RUN printf '%s\n' \
+  'public-hoist-pattern[]=*@react-native*' \
+  'public-hoist-pattern[]=*expo*' \
+  'public-hoist-pattern[]=*@babel*' \
+  'hoist-pattern[]=!@types/react' \
+  'hoist-pattern[]=!@types/react-dom' > .npmrc
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
 COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
@@ -28,7 +44,7 @@ COPY apps/zenlife-web/package.json apps/zenlife-web/
 COPY apps/mobile/package.json apps/mobile/
 COPY packages/shared/ packages/shared/
 COPY packages/db/ packages/db/
-COPY turbo.json package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY turbo.json package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Build only the web app (use npx turbo directly to avoid pnpm script filter concatenation)
 RUN npx turbo build --filter=@open-health/web
