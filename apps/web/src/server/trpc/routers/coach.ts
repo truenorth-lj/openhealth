@@ -3,10 +3,13 @@ import { TRPCError } from "@trpc/server";
 import {
   updateCoachNotesSchema,
   connectToCoachSchema,
+  sendCoachMessageSchema,
+  markCoachMessagesReadSchema,
 } from "@open-health/shared/schemas";
 import { protectedProcedure, router } from "../trpc";
 import {
   coachClients,
+  coachMessages,
   users,
   userProfiles,
   userGoals,
@@ -14,8 +17,9 @@ import {
   stepLogs,
   diaryEntries,
 } from "@/server/db/schema";
-import { eq, and, sql, desc } from "drizzle-orm";
+import { eq, and, sql, desc, inArray, isNull } from "drizzle-orm";
 import { calculateBMR, calculateTDEE, getAge } from "@/server/services/bmr";
+import { sendPushToUser } from "@/server/services/push";
 import * as coachingService from "@/server/services/coaching-mutation";
 
 export const coachRouter = router({
@@ -385,6 +389,186 @@ export const coachRouter = router({
         })
         .where(eq(coachClients.id, relation.id));
 
+      return { success: true };
+    }),
+
+  // ─── Coach Messages ───
+
+  sendMessage: protectedProcedure
+    .input(sendCoachMessageSchema)
+    .mutation(async ({ ctx, input }) => {
+      const relation = await ctx.db
+        .select({
+          id: coachClients.id,
+          clientId: coachClients.clientId,
+        })
+        .from(coachClients)
+        .where(
+          and(
+            eq(coachClients.coachId, ctx.user.id),
+            eq(coachClients.clientId, input.clientId),
+            eq(coachClients.status, "active")
+          )
+        )
+        .then((r) => r[0]);
+
+      if (!relation) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "找不到此學員" });
+      }
+
+      const [message] = await ctx.db
+        .insert(coachMessages)
+        .values({
+          coachClientId: relation.id,
+          coachId: ctx.user.id,
+          clientId: input.clientId,
+          content: input.content,
+        })
+        .returning();
+
+      // Send push notification (fire-and-forget)
+      const coachName = ctx.user.name ?? "教練";
+      sendPushToUser(relation.clientId, {
+        type: "coach_message",
+        title: `${coachName} 傳送了訊息`,
+        body:
+          input.content.length > 100
+            ? input.content.slice(0, 100) + "…"
+            : input.content,
+        url: "/settings/coaching",
+      }).catch((err) => console.error("[coach-message] push failed:", err));
+
+      return message;
+    }),
+
+  getClientMessages: protectedProcedure
+    .input(
+      z.object({
+        clientId: z.string(),
+        limit: z.number().int().min(1).max(50).default(20),
+        cursor: z.string().uuid().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      // Verify coach-client relationship
+      const relation = await ctx.db
+        .select({ id: coachClients.id })
+        .from(coachClients)
+        .where(
+          and(
+            eq(coachClients.coachId, ctx.user.id),
+            eq(coachClients.clientId, input.clientId),
+            eq(coachClients.status, "active")
+          )
+        )
+        .then((r) => r[0]);
+
+      if (!relation) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "找不到此學員" });
+      }
+
+      const conditions = [eq(coachMessages.coachClientId, relation.id)];
+      if (input.cursor) {
+        const cursorMsg = await ctx.db
+          .select({ createdAt: coachMessages.createdAt })
+          .from(coachMessages)
+          .where(eq(coachMessages.id, input.cursor))
+          .then((r) => r[0]);
+        if (cursorMsg) {
+          conditions.push(
+            sql`${coachMessages.createdAt} < ${cursorMsg.createdAt}`
+          );
+        }
+      }
+
+      const messages = await ctx.db
+        .select()
+        .from(coachMessages)
+        .where(and(...conditions))
+        .orderBy(desc(coachMessages.createdAt))
+        .limit(input.limit + 1);
+
+      const hasMore = messages.length > input.limit;
+      if (hasMore) messages.pop();
+
+      return {
+        messages,
+        nextCursor: hasMore ? messages[messages.length - 1]?.id : undefined,
+      };
+    }),
+
+  getMyMessages: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().int().min(1).max(50).default(20),
+        cursor: z.string().uuid().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const conditions = [eq(coachMessages.clientId, ctx.user.id)];
+      if (input.cursor) {
+        const cursorMsg = await ctx.db
+          .select({ createdAt: coachMessages.createdAt })
+          .from(coachMessages)
+          .where(eq(coachMessages.id, input.cursor))
+          .then((r) => r[0]);
+        if (cursorMsg) {
+          conditions.push(
+            sql`${coachMessages.createdAt} < ${cursorMsg.createdAt}`
+          );
+        }
+      }
+
+      const messages = await ctx.db
+        .select({
+          id: coachMessages.id,
+          content: coachMessages.content,
+          readAt: coachMessages.readAt,
+          createdAt: coachMessages.createdAt,
+          coachId: coachMessages.coachId,
+          coachName: users.name,
+        })
+        .from(coachMessages)
+        .innerJoin(users, eq(coachMessages.coachId, users.id))
+        .where(and(...conditions))
+        .orderBy(desc(coachMessages.createdAt))
+        .limit(input.limit + 1);
+
+      const hasMore = messages.length > input.limit;
+      if (hasMore) messages.pop();
+
+      return {
+        messages,
+        nextCursor: hasMore ? messages[messages.length - 1]?.id : undefined,
+      };
+    }),
+
+  getUnreadMessageCount: protectedProcedure.query(async ({ ctx }) => {
+    const [result] = await ctx.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(coachMessages)
+      .where(
+        and(
+          eq(coachMessages.clientId, ctx.user.id),
+          isNull(coachMessages.readAt)
+        )
+      );
+    return { count: result?.count ?? 0 };
+  }),
+
+  markMessagesRead: protectedProcedure
+    .input(markCoachMessagesReadSchema)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(coachMessages)
+        .set({ readAt: new Date() })
+        .where(
+          and(
+            eq(coachMessages.clientId, ctx.user.id),
+            inArray(coachMessages.id, input.messageIds),
+            isNull(coachMessages.readAt)
+          )
+        );
       return { success: true };
     }),
 });

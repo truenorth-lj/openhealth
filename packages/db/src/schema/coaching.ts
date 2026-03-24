@@ -9,6 +9,7 @@ import {
   uniqueIndex,
   index,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { users } from "./users";
 
 export const coachClients = pgTable(
@@ -42,5 +43,39 @@ export const coachClients = pgTable(
     ),
     index("coach_clients_coach_idx").on(table.coachId),
     index("coach_clients_client_idx").on(table.clientId),
+  ]
+);
+
+export const coachMessages = pgTable(
+  "coach_messages",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    coachClientId: uuid("coach_client_id")
+      .references(() => coachClients.id, { onDelete: "cascade" })
+      .notNull(),
+    coachId: text("coach_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    clientId: text("client_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    content: text("content").notNull(),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("coach_messages_client_created_idx").on(
+      table.clientId,
+      table.createdAt
+    ),
+    index("coach_messages_coach_client_idx").on(
+      table.coachClientId,
+      table.createdAt
+    ),
+    index("coach_messages_client_unread_idx")
+      .on(table.clientId)
+      .where(sql`read_at IS NULL`),
   ]
 );

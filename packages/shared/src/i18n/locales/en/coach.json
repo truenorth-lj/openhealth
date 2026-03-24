@@ -39,6 +39,20 @@
   "dayFri": "Fri",
   "daySat": "Sat",
   "daySun": "Sun",
+  "messages": {
+    "title": "Messages",
+    "send": "Send",
+    "placeholder": "Write a message for your client...",
+    "noMessages": "No messages yet",
+    "sent": "Sent",
+    "unread": "Unread",
+    "read": "Read",
+    "unreadCount": "{{count}} unread message(s)",
+    "markAllRead": "Mark all read",
+    "coachMessage": "Coach Message",
+    "viewAll": "View all",
+    "fromCoach": "From {{name}}"
+  },
   "sidebar": {
     "clients": "Clients",
     "overview": "Overview",

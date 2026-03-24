@@ -39,6 +39,20 @@
   "dayFri": "五",
   "daySat": "六",
   "daySun": "日",
+  "messages": {
+    "title": "訊息",
+    "send": "傳送",
+    "placeholder": "輸入給學員的訊息...",
+    "noMessages": "尚無訊息",
+    "sent": "已傳送",
+    "unread": "未讀",
+    "read": "已讀",
+    "unreadCount": "{{count}} 則未讀訊息",
+    "markAllRead": "全部已讀",
+    "coachMessage": "教練訊息",
+    "viewAll": "查看全部",
+    "fromCoach": "來自 {{name}}"
+  },
   "sidebar": {
     "clients": "學員",
     "overview": "總覽",

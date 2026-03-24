@@ -317,6 +317,15 @@ export const updateCoachNotesSchema = z.object({
   fatPct: z.number().min(0).max(100).nullable().optional(),
 });
 
+export const sendCoachMessageSchema = z.object({
+  clientId: z.string(),
+  content: z.string().min(1).max(1000),
+});
+
+export const markCoachMessagesReadSchema = z.object({
+  messageIds: z.array(z.string().uuid()).min(1).max(100),
+});
+
 // Sleep tracking
 export const saveSleepSessionSchema = z.object({
   startTime: z.string().datetime(),

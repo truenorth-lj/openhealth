@@ -6,6 +6,7 @@ import { trpc } from "@/lib/trpc-client";
 import { useSession } from "@/lib/auth-client";
 import { ClientInfoHeader } from "@/components/coach/client-info-header";
 import { CoachNotesEditor } from "@/components/coach/coach-notes-editor";
+import { CoachMessageComposer } from "@/components/coach/coach-message-composer";
 import { WeekNavigator } from "@/components/coach/week-navigator";
 import { WeeklyDataTable } from "@/components/coach/weekly-data-table";
 
@@ -90,6 +91,14 @@ export default function ClientDetailPage({
           initialCarbsPct={detail.coaching.carbsPct}
           initialFatPct={detail.coaching.fatPct}
         />
+      </div>
+
+      {/* Messages to Client */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          {t("messages.title")}
+        </p>
+        <CoachMessageComposer clientId={clientId} />
       </div>
 
       {/* Weekly Data */}
