@@ -7,15 +7,21 @@ export async function register() {
       const { db } = await import("./server/db");
       // Path is relative to CWD. Migration files are included in standalone build
       // via outputFileTracingIncludes in next.config.ts.
-      try {
-        await migrate(db, { migrationsFolder: "./node_modules/@open-health/db/src/migrations" });
-        // Auto-seed preset exercises if table is empty
-        await seedPresetExercises(db);
-      } catch (err) {
-        console.error("[migration] Failed to run migrations:", err);
-        // Report to Sentry but don't crash the server — existing tables still work
-        const Sentry = await import("@sentry/nextjs");
-        Sentry.captureException(err);
+      const MAX_RETRIES = 3;
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          await migrate(db, { migrationsFolder: "./node_modules/@open-health/db/src/migrations" });
+          await seedPresetExercises(db);
+          break;
+        } catch (err) {
+          console.error(`[migration] Attempt ${attempt}/${MAX_RETRIES} failed:`, err);
+          if (attempt < MAX_RETRIES) {
+            await new Promise((r) => setTimeout(r, attempt * 1000));
+          } else {
+            const Sentry = await import("@sentry/nextjs");
+            Sentry.captureException(err);
+          }
+        }
       }
     }
   }
