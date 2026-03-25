@@ -11,9 +11,19 @@ export async function updateGoals(
   input: z.infer<typeof updateGoalsSchema>
 ) {
   const user = await getSession();
-  const validated = updateGoalsSchema.parse(input);
-  await updateGoalsService(db, user.id, validated);
+
+  const result = updateGoalsSchema.safeParse(input);
+  if (!result.success) {
+    return { success: false as const, error: result.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  try {
+    await updateGoalsService(db, user.id, result.data);
+  } catch (e) {
+    console.error("[updateGoals] DB error:", e);
+    return { success: false as const, error: "Failed to save goals" };
+  }
 
   revalidatePath("/settings/goals");
-  return { success: true };
+  return { success: true as const };
 }

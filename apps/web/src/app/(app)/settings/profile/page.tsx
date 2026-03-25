@@ -19,6 +19,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
   const [name, setName] = useState("");
   const [sex, setSex] = useState("");
@@ -40,8 +41,9 @@ export default function ProfilePage() {
 
   const handleSave = () => {
     setSaved(false);
+    setError("");
     startTransition(async () => {
-      await updateProfile({
+      const result = await updateProfile({
         name,
         sex: sex ? (sex as "male" | "female" | "other") : null,
         heightCm: heightCm ? Number(heightCm) : null,
@@ -55,6 +57,10 @@ export default function ProfilePage() {
               | "extremely_active")
           : null,
       });
+      if (!result.success) {
+        setError(result.error);
+        return;
+      }
       posthog.capture("profile_updated");
       setSaved(true);
       router.refresh();
@@ -165,6 +171,10 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {error && (
+        <p className="text-sm text-destructive font-light">{error}</p>
+      )}
 
       <button
         className="w-full py-2.5 text-sm font-light border border-black/[0.06] dark:border-white/[0.06] rounded-md transition-all duration-300 hover:border-foreground/20 disabled:opacity-30"

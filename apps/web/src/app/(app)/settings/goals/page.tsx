@@ -54,26 +54,26 @@ export default function GoalsPage() {
 
   const handleSave = () => {
     startTransition(async () => {
-      try {
-        await updateGoals({
-          calorieTarget: calorieTarget ? Number(calorieTarget) : null,
-          proteinG: proteinG ? Number(proteinG) : null,
-          carbsG: carbsG ? Number(carbsG) : null,
-          fatG: fatG ? Number(fatG) : null,
-          fiberG: fiberG ? Number(fiberG) : null,
-        });
-        if (waterTargetMl) {
-          const wml = parseInt(waterTargetMl, 10);
-          if (!isNaN(wml) && wml >= 500 && wml <= 10000) {
-            setWaterGoal.mutate({ dailyTargetMl: wml });
-          }
-        }
-        posthog.capture("goals_updated", { calorie_target: calorieTarget ? Number(calorieTarget) : null });
-        toast.success(t("settings:goalsPage.goalsSaved"));
-        router.refresh();
-      } catch {
-        toast.error(t("settings:goalsPage.goalsSaveFailed"));
+      const result = await updateGoals({
+        calorieTarget: calorieTarget ? Number(calorieTarget) : null,
+        proteinG: proteinG ? Number(proteinG) : null,
+        carbsG: carbsG ? Number(carbsG) : null,
+        fatG: fatG ? Number(fatG) : null,
+        fiberG: fiberG ? Number(fiberG) : null,
+      });
+      if (!result.success) {
+        toast.error(result.error || t("settings:goalsPage.goalsSaveFailed"));
+        return;
       }
+      if (waterTargetMl) {
+        const wml = parseInt(waterTargetMl, 10);
+        if (!isNaN(wml) && wml >= 500 && wml <= 10000) {
+          setWaterGoal.mutate({ dailyTargetMl: wml });
+        }
+      }
+      posthog.capture("goals_updated", { calorie_target: calorieTarget ? Number(calorieTarget) : null });
+      toast.success(t("settings:goalsPage.goalsSaved"));
+      router.refresh();
     });
   };
 

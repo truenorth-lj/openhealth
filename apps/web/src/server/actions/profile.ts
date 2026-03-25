@@ -11,9 +11,19 @@ export async function updateProfile(
   input: z.infer<typeof updateProfileSchema>
 ) {
   const user = await getSession();
-  const validated = updateProfileSchema.parse(input);
-  await updateProfileService(db, user.id, validated);
+
+  const result = updateProfileSchema.safeParse(input);
+  if (!result.success) {
+    return { success: false as const, error: result.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  try {
+    await updateProfileService(db, user.id, result.data);
+  } catch (e) {
+    console.error("[updateProfile] DB error:", e);
+    return { success: false as const, error: "Failed to save profile" };
+  }
 
   revalidatePath("/settings/profile");
-  return { success: true };
+  return { success: true as const };
 }
