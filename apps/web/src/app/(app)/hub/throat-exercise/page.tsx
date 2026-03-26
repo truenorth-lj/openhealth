@@ -24,6 +24,8 @@ import {
   THROAT_EXERCISES,
 } from "@open-health/shared/constants";
 import type { ThroatExerciseMetadata } from "@open-health/shared/types";
+import Image from "next/image";
+import { EXERCISE_IMAGES } from "./exercise-images";
 
 function pickExercises(count: number): string[] {
   // Pick a balanced set from all target groups
@@ -248,6 +250,37 @@ export default function ThroatExercisePage() {
                 )}
               </div>
             </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Exercise preview carousel */}
+      <div className="space-y-3">
+        <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
+          {t("throat-exercise:target")}
+        </p>
+        <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+          {THROAT_EXERCISES.map((ex) => (
+            <div key={ex.id} className="flex flex-col items-center gap-1.5 shrink-0">
+              {EXERCISE_IMAGES[ex.id] ? (
+                <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-black/[0.06] dark:border-white/[0.06]">
+                  <Image
+                    src={EXERCISE_IMAGES[ex.id]}
+                    alt={t(`throat-exercise:exercises.${ex.id}.name`)}
+                    fill
+                    sizes="64px"
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-16 h-16 rounded-xl border border-black/[0.06] dark:border-white/[0.06] flex items-center justify-center text-2xl">
+                  {ex.emoji}
+                </div>
+              )}
+              <span className="text-[9px] text-neutral-400 text-center w-16 leading-tight truncate">
+                {t(`throat-exercise:exercises.${ex.id}.name`)}
+              </span>
+            </div>
           ))}
         </div>
       </div>

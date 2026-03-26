@@ -1,0 +1,16 @@
+export const EXERCISE_IMAGES: Record<string, string> = {
+  tongue_slide: "/images/throat-exercises/tongue_slide.png",
+  tongue_push_up: "/images/throat-exercises/tongue_push_up.png",
+  tongue_push_down: "/images/throat-exercises/tongue_push_down.png",
+  tongue_stretch: "/images/throat-exercises/tongue_stretch.png",
+  tongue_curl: "/images/throat-exercises/tongue_curl.png",
+  vowel_pronounce: "/images/throat-exercises/vowel_pronounce.png",
+  say_ah: "/images/throat-exercises/say_ah.png",
+  jaw_open_close: "/images/throat-exercises/jaw_open_close.png",
+  jaw_side_to_side: "/images/throat-exercises/jaw_side_to_side.png",
+  cheek_hook: "/images/throat-exercises/cheek_hook.png",
+  lip_purse: "/images/throat-exercises/lip_purse.png",
+  throat_humming: "/images/throat-exercises/throat_humming.png",
+  tiger_yell: "/images/throat-exercises/tiger_yell.png",
+  balloon_breathing: "/images/throat-exercises/balloon_breathing.png",
+};

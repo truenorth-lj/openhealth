@@ -19,6 +19,8 @@ import {
   THROAT_EXERCISE_REST_SEC,
 } from "@open-health/shared/constants";
 import type { ThroatExerciseMetadata } from "@open-health/shared/types";
+import Image from "next/image";
+import { EXERCISE_IMAGES } from "../exercise-images";
 
 type Phase = "exercise" | "rest" | "complete";
 
@@ -283,6 +285,17 @@ export default function ActiveThroatExercisePage() {
             <p className="text-xs text-neutral-400 mb-1">
               {t("throat-exercise:nextExercise")}
             </p>
+            {EXERCISE_IMAGES[nextExercise.id] ? (
+              <div className="relative w-16 h-16 mx-auto mb-1 rounded-lg overflow-hidden">
+                <Image
+                  src={EXERCISE_IMAGES[nextExercise.id]}
+                  alt={t(`throat-exercise:exercises.${nextExercise.id}.name`)}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
+                />
+              </div>
+            ) : null}
             <p className="text-sm">
               {nextExercise.emoji}{" "}
               {t(`throat-exercise:exercises.${nextExercise.id}.name`)}
@@ -321,8 +334,21 @@ export default function ActiveThroatExercisePage() {
         {THROAT_EXERCISE_TARGET_LABELS[currentExercise.target]}
       </span>
 
-      {/* Exercise emoji & name */}
-      <p className="text-5xl mb-3">{currentExercise.emoji}</p>
+      {/* Exercise illustration */}
+      {EXERCISE_IMAGES[currentExercise.id] ? (
+        <div className="relative w-48 h-48 mb-3 rounded-2xl overflow-hidden animate-pulse-slow">
+          <Image
+            src={EXERCISE_IMAGES[currentExercise.id]}
+            alt={t(`throat-exercise:exercises.${currentExercise.id}.name`)}
+            fill
+            sizes="192px"
+            className="object-cover"
+            priority
+          />
+        </div>
+      ) : (
+        <p className="text-5xl mb-3">{currentExercise.emoji}</p>
+      )}
       <h2 className="text-lg font-light mb-1">
         {t(`throat-exercise:exercises.${currentExercise.id}.name`)}
       </h2>
