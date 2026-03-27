@@ -15,7 +15,8 @@
     "./i18n/zh-TW": "./src/i18n/zh-TW.ts",
     "./i18n/en": "./src/i18n/en.ts",
     "./posture": "./src/posture/index.ts",
-    "./water-milestone": "./src/water-milestone/index.ts"
+    "./water-milestone": "./src/water-milestone/index.ts",
+    "./hub": "./src/hub/index.ts"
   },
   "scripts": {
     "test": "vitest run"

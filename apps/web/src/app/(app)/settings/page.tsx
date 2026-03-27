@@ -14,6 +14,7 @@ import {
   Globe,
   Trash2,
   Crown,
+  LayoutGrid,
 } from "lucide-react";
 import { deleteAccount } from "@/server/actions/account";
 import Link from "next/link";
@@ -26,6 +27,7 @@ const menuItems = [
   { href: "/settings/profile", labelKey: "settings:profile" as const, icon: User },
   { href: "/settings/subscription", labelKey: "settings:subscription" as const, icon: Crown },
   { href: "/settings/coaching", labelKey: "settings:coaching" as const, icon: GraduationCap },
+  { href: "/settings/hub-config", labelKey: "settings:hubConfig" as const, icon: LayoutGrid },
 ];
 
 const themeOptions = [

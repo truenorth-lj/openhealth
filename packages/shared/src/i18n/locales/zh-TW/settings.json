@@ -170,6 +170,17 @@
     "applyFailed": "套用失敗",
     "applyFailedRetry": "套用失敗，請稍後再試"
   },
+  "hubConfig": "自訂總覽",
+  "hubConfigPage": {
+    "title": "自訂總覽",
+    "description": "選擇要在總覽頁面顯示的項目",
+    "reset": "恢復預設",
+    "save": "儲存",
+    "saving": "儲存中...",
+    "saved": "已儲存",
+    "resetConfirm": "確定要恢復預設？",
+    "resetDone": "已恢復預設"
+  },
   "rewardsPage": {
     "title": "分潤獎勵",
     "pleaseLogin": "請先登入以查看分潤獎勵。",

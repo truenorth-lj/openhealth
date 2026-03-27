@@ -29,14 +29,6 @@ import {
   Download,
   MessageCircle,
 } from "lucide-react";
-
-function LineIcon({ className, strokeWidth: _sw }: { className?: string; strokeWidth?: number }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-      <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.271.173-.508.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M12 1c-6.627 0-12 4.208-12 9.399 0 4.662 4.131 8.564 9.713 9.301.378.082.89.258 1.019.592.118.303.077.778.038 1.085l-.164 1.025c-.045.303-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.006 24 11.792 24 9.399 24 5.208 18.627 1 12 1" />
-    </svg>
-  );
-}
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -45,84 +37,99 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTranslation } from "react-i18next";
+import { trpc } from "@/lib/trpc-client";
+import {
+  resolveHubItems,
+  groupHubItemsBySection,
+  LINE_COMMUNITY_URL,
+  type HubItemDefinition,
+  type HubItemKey,
+} from "@open-health/shared/hub";
 
-interface HubItem {
-  href: string;
-  labelKey: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
-  implemented: boolean;
-  badgeKey?: string;
-  platform?: "web" | "mobile";
-  external?: boolean;
+function LineIcon({ className, strokeWidth: _sw }: { className?: string; strokeWidth?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.271.173-.508.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M12 1c-6.627 0-12 4.208-12 9.399 0 4.662 4.131 8.564 9.713 9.301.378.082.89.258 1.019.592.118.303.077.778.038 1.085l-.164 1.025c-.045.303-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.006 24 11.792 24 9.399 24 5.208 18.627 1 12 1" />
+    </svg>
+  );
 }
 
-interface HubSection {
-  titleKey: string;
-  items: HubItem[];
-}
+// Map item keys to icons (web-specific, includes lucide icons)
+const ICON_MAP: Record<HubItemKey, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
+  diary: UtensilsCrossed,
+  exercise: Activity,
+  workout: Dumbbell,
+  meditation: Brain,
+  throatExercise: Mic,
+  water: Droplets,
+  fasting: Timer,
+  sleep: Moon,
+  weight: Scale,
+  steps: Footprints,
+  postureDetection: Headphones,
+  posture: AlarmClock,
+  reminders: Bell,
+  aiAdvisor: Bot,
+  progress: TrendingUp,
+  goals: Target,
+  scanLabel: Camera,
+  foodDatabase: Apple,
+  achievements: Trophy,
+  referral: Gift,
+  subscription: CreditCard,
+  profile: User,
+  notifications: Bell,
+  coaching: GraduationCap,
+  settings: Settings2,
+  export: Download,
+  lineCommunity: LineIcon,
+  reportIssue: MessageCircle,
+};
 
-const sections: HubSection[] = [
-  {
-    titleKey: "hub.sections.tracking",
-    items: [
-      { href: "/hub/diary", labelKey: "hub.items.diary", icon: UtensilsCrossed, implemented: true },
-      { href: "/hub/exercise", labelKey: "hub.items.exercise", icon: Activity, implemented: true },
-      { href: "/hub/workout", labelKey: "hub.items.workout", icon: Dumbbell, implemented: true, badgeKey: "hub.badges.new" },
-      { href: "/hub/meditation", labelKey: "hub.items.meditation", icon: Brain, implemented: true, badgeKey: "hub.badges.new" },
-      { href: "/hub/throat-exercise", labelKey: "hub.items.throatExercise", icon: Mic, implemented: true, badgeKey: "hub.badges.new" },
-      { href: "/hub/water", labelKey: "hub.items.water", icon: Droplets, implemented: true },
-      { href: "/hub/fasting", labelKey: "hub.items.fasting", icon: Timer, implemented: true },
-      { href: "", labelKey: "hub.items.sleep", icon: Moon, implemented: true, badgeKey: "hub.badges.new", platform: "mobile" },
-      { href: "/hub/weight", labelKey: "hub.items.weight", icon: Scale, implemented: true },
-      { href: "/hub/steps", labelKey: "hub.items.steps", icon: Footprints, implemented: true },
-      { href: "", labelKey: "hub.items.postureDetection", icon: Headphones, implemented: true, badgeKey: "hub.badges.new", platform: "mobile" },
-      { href: "/hub/posture", labelKey: "hub.items.posture", icon: AlarmClock, implemented: true, badgeKey: "hub.badges.new" },
-    ],
-  },
-  {
-    titleKey: "hub.sections.tools",
-    items: [
-      { href: "/hub/chat", labelKey: "hub.items.aiAdvisor", icon: Bot, implemented: true, badgeKey: "hub.badges.new" },
-      { href: "/hub/progress", labelKey: "hub.items.progress", icon: TrendingUp, implemented: true },
-      { href: "/settings/goals", labelKey: "hub.items.goals", icon: Target, implemented: true },
-      { href: "/hub/food/scan-label", labelKey: "hub.items.scanLabel", icon: Camera, implemented: true },
-      { href: "/hub/food", labelKey: "hub.items.foodDatabase", icon: Apple, implemented: true },
-    ],
-  },
-  {
-    titleKey: "hub.sections.life",
-    items: [
-      { href: "/achievements", labelKey: "hub.items.achievements", icon: Trophy, implemented: false, badgeKey: "hub.badges.coming" },
-    ],
-  },
-  {
-    titleKey: "hub.sections.account",
-    items: [
-      { href: "/settings/referral", labelKey: "hub.items.referral", icon: Gift, implemented: true },
-      { href: "/settings/subscription", labelKey: "hub.items.subscription", icon: CreditCard, implemented: true },
-      { href: "/settings/profile", labelKey: "hub.items.profile", icon: User, implemented: true },
-      { href: "/settings/notifications", labelKey: "hub.items.notifications", icon: Bell, implemented: true },
-      { href: "/settings/coaching", labelKey: "hub.items.coaching", icon: GraduationCap, implemented: true },
-      { href: "/settings", labelKey: "hub.items.settings", icon: Settings2, implemented: true },
-    ],
-  },
-  {
-    titleKey: "hub.sections.dataManagement",
-    items: [
-      { href: "/settings/export", labelKey: "hub.items.export", icon: Download, implemented: true },
-    ],
-  },
-  {
-    titleKey: "hub.sections.community",
-    items: [
-      { href: "https://line.me/ti/g2/yoiSxP0jx7pJDEFjQtFLu87dwRsKIGnFIIkV3g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", labelKey: "hub.items.lineCommunity", icon: LineIcon, implemented: true, external: true },
-      { href: "https://line.me/ti/g2/yoiSxP0jx7pJDEFjQtFLu87dwRsKIGnFIIkV3g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default", labelKey: "hub.items.reportIssue", icon: MessageCircle, implemented: true, external: true },
-    ],
-  },
-];
+// Map item keys to web routes
+const ROUTE_MAP: Record<HubItemKey, string> = {
+  diary: "/hub/diary",
+  exercise: "/hub/exercise",
+  workout: "/hub/workout",
+  meditation: "/hub/meditation",
+  throatExercise: "/hub/throat-exercise",
+  water: "/hub/water",
+  fasting: "/hub/fasting",
+  sleep: "",
+  weight: "/hub/weight",
+  steps: "/hub/steps",
+  postureDetection: "",
+  posture: "/hub/posture",
+  reminders: "/hub/reminders",
+  aiAdvisor: "/hub/chat",
+  progress: "/hub/progress",
+  goals: "/settings/goals",
+  scanLabel: "/hub/food/scan-label",
+  foodDatabase: "/hub/food",
+  achievements: "/achievements",
+  referral: "/settings/referral",
+  subscription: "/settings/subscription",
+  profile: "/settings/profile",
+  notifications: "/settings/notifications",
+  coaching: "/settings/coaching",
+  settings: "/settings",
+  export: "/settings/export",
+  lineCommunity: LINE_COMMUNITY_URL,
+  reportIssue: LINE_COMMUNITY_URL,
+};
+
+// Platform overrides for web (items that are mobile-only on web)
+const WEB_PLATFORM_OVERRIDES: Partial<Record<HubItemKey, "mobile">> = {
+  sleep: "mobile",
+  postureDetection: "mobile",
+};
 
 export default function HubPage() {
   const { t } = useTranslation("common");
+  const { data: userConfig } = trpc.hub.getConfig.useQuery();
+
+  const items = resolveHubItems(userConfig);
+  const sections = groupHubItemsBySection(items);
 
   return (
     <div className="px-4 py-6 space-y-8">
@@ -130,16 +137,16 @@ export default function HubPage() {
 
       <TooltipProvider>
         {sections.map((section) => (
-          <div key={section.titleKey} className="space-y-4">
+          <div key={section.sectionKey} className="space-y-4">
             <p className="text-[10px] tracking-[0.3em] uppercase text-neutral-400 dark:text-neutral-600">
-              {t(section.titleKey)}
+              {t(section.sectionKey)}
             </p>
             <div className={cn(
               "grid gap-3",
               section.items.length <= 3 ? "grid-cols-3" : section.items.length <= 4 ? "grid-cols-4" : "grid-cols-3"
             )}>
               {section.items.map((item) => (
-                <HubIcon key={`${item.href}-${item.labelKey}`} item={item} />
+                <HubIcon key={item.key} item={item} />
               ))}
             </div>
           </div>
@@ -149,24 +156,29 @@ export default function HubPage() {
   );
 }
 
-function HubIcon({ item }: { item: HubItem }) {
+function HubIcon({ item }: { item: HubItemDefinition }) {
   const { t } = useTranslation("common");
-  const isDisabled = !item.implemented || item.platform === "mobile";
-  const tooltipText = item.platform === "mobile"
+  const Icon = ICON_MAP[item.key];
+  const href = ROUTE_MAP[item.key];
+  const platform = WEB_PLATFORM_OVERRIDES[item.key] ?? item.platform;
+  const isExternal = item.external;
+  const isDisabled = !item.implemented || platform === "mobile";
+
+  const tooltipText = platform === "mobile"
     ? t("hub.tooltips.mobileOnly")
     : !item.implemented
       ? t("hub.tooltips.comingSoon")
       : "";
 
-  const badgeText = item.platform === "mobile"
+  const badgeText = platform === "mobile"
     ? t("hub.badges.app")
-    : item.platform === "web"
+    : platform === "web"
       ? t("hub.badges.web")
       : item.badgeKey
         ? t(item.badgeKey)
         : undefined;
 
-  const badgeStyle = item.platform === "mobile" || item.platform === "web"
+  const badgeStyle = platform === "mobile" || platform === "web"
     ? "bg-neutral-200 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400"
     : item.badgeKey === "hub.badges.new"
       ? "bg-primary text-primary-foreground"
@@ -175,7 +187,7 @@ function HubIcon({ item }: { item: HubItem }) {
   const content = (
     <div className="flex flex-col items-center gap-2">
       <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl border border-black/[0.06] dark:border-white/[0.06] transition-all duration-300 group-hover:border-foreground/20 group-hover:shadow-sm">
-        <item.icon className="h-5 w-5 text-neutral-500 dark:text-neutral-400" strokeWidth={1.5} />
+        <Icon className="h-5 w-5 text-neutral-500 dark:text-neutral-400" strokeWidth={1.5} />
         {badgeText && (
           <span className={cn(
             "absolute -top-1.5 -right-1.5 px-1.5 py-0.5 text-[9px] font-medium rounded-full",
@@ -206,16 +218,16 @@ function HubIcon({ item }: { item: HubItem }) {
     );
   }
 
-  if (item.external) {
+  if (isExternal) {
     return (
-      <a href={item.href} target="_blank" rel="noopener noreferrer" className="group flex justify-center">
+      <a href={href} target="_blank" rel="noopener noreferrer" className="group flex justify-center">
         {content}
       </a>
     );
   }
 
   return (
-    <Link href={item.href} className="group flex justify-center">
+    <Link href={href} className="group flex justify-center">
       {content}
     </Link>
   );

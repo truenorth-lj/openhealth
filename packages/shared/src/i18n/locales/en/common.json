@@ -217,6 +217,10 @@
     "comingSoon": "Coming Soon",
     "paymentDeveloping": "Payment feature is under development, subscription will be available once ready"
   },
+  "whatsNew": {
+    "title": "What's New",
+    "gotIt": "Got it"
+  },
   "aiConsent": {
     "title": "AI Data Usage Disclosure",
     "description": "When using \"Scan Label\" or \"AI Estimate\" features, your data will be sent to third-party AI services for processing. Please read the following:",

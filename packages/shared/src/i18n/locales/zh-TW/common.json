@@ -217,6 +217,10 @@
     "comingSoon": "敬請期待",
     "paymentDeveloping": "付款功能正在開發中，完成後將開放訂閱"
   },
+  "whatsNew": {
+    "title": "最新功能",
+    "gotIt": "了解"
+  },
   "aiConsent": {
     "title": "AI 資料使用說明",
     "description": "使用「拍照辨識」或「AI 估算」功能時，您的資料將傳送至第三方 AI 服務進行處理。請閱讀以下說明：",

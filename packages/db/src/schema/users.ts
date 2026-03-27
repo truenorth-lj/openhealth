@@ -94,6 +94,17 @@ export const userProfiles = pgTable("user_profiles", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const hubConfig = pgTable("hub_config", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: text("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .unique()
+    .notNull(),
+  config: jsonb("config").$type<Record<string, { visible: boolean; order?: number }>>().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export const userGoals = pgTable("user_goals", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: text("user_id")

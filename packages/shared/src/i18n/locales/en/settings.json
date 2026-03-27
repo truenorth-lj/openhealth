@@ -170,6 +170,17 @@
     "applyFailed": "Application failed",
     "applyFailedRetry": "Application failed, please try again later"
   },
+  "hubConfig": "Customize Hub",
+  "hubConfigPage": {
+    "title": "Customize Hub",
+    "description": "Choose which items to show on the Hub page",
+    "reset": "Reset to Default",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "resetConfirm": "Reset to defaults?",
+    "resetDone": "Reset to defaults"
+  },
   "rewardsPage": {
     "title": "Revenue Share",
     "pleaseLogin": "Please sign in to view revenue share.",
