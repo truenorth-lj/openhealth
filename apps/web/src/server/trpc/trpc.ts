@@ -1,4 +1,5 @@
 import { initTRPC, TRPCError } from "@trpc/server";
+import * as Sentry from "@sentry/nextjs";
 import { headers } from "next/headers";
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
@@ -41,6 +42,27 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 
 export const router = t.router;
 
+// Report unexpected errors to Sentry (skip expected client errors like UNAUTHORIZED)
+const sentryMiddleware = t.middleware(async ({ next, path, type }) => {
+  const result = await next();
+  if (!result.ok) {
+    const error = result.error;
+    const isExpected =
+      error.code === "UNAUTHORIZED" ||
+      error.code === "FORBIDDEN" ||
+      error.code === "BAD_REQUEST" ||
+      error.code === "NOT_FOUND";
+    if (!isExpected) {
+      const cause = error.cause;
+      const toCapture = cause instanceof Error ? cause : error;
+      Sentry.captureException(toCapture, {
+        tags: { "trpc.path": path, "trpc.type": type },
+      });
+    }
+  }
+  return result;
+});
+
 // Base procedure that converts ProRequiredError → TRPCError FORBIDDEN
 const proGateMiddleware = t.middleware(async ({ next }) => {
   try {
@@ -57,7 +79,7 @@ const proGateMiddleware = t.middleware(async ({ next }) => {
   }
 });
 
-export const publicProcedure = t.procedure.use(proGateMiddleware);
+export const publicProcedure = t.procedure.use(sentryMiddleware).use(proGateMiddleware);
 
 export const protectedProcedure = publicProcedure.use(async ({ ctx, next }) => {
   const session = await ctx.getSession();

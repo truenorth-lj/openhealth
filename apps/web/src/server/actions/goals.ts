@@ -4,6 +4,7 @@ import { z } from "zod";
 import { updateGoalsSchema } from "@open-health/shared/schemas";
 import { getSession } from "@/server/lib/get-session";
 import { db } from "@/server/db";
+import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { updateGoals as updateGoalsService } from "@/server/services/user-mutation";
 
@@ -20,6 +21,7 @@ export async function updateGoals(
   try {
     await updateGoalsService(db, user.id, result.data);
   } catch (e) {
+    Sentry.captureException(e, { tags: { action: "updateGoals" } });
     console.error("[updateGoals] DB error:", e);
     return { success: false as const, error: "Failed to save goals" };
   }
