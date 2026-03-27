@@ -7,16 +7,10 @@ const PwaInstallBanner = dynamic(
   { ssr: false }
 );
 
-const WhatsNewModal = dynamic(
-  () => import("@/components/whats-new-modal").then((m) => m.WhatsNewModal),
-  { ssr: false }
-);
-
 export function DeferredProviders() {
   return (
     <>
       <PwaInstallBanner />
-      <WhatsNewModal />
     </>
   );
 }
