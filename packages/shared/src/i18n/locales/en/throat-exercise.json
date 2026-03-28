@@ -113,6 +113,7 @@
   "rest": "Rest",
   "restDesc": "Relax, prepare for the next exercise",
   "nextExercise": "Next",
+  "skipRest": "Skip Rest",
   "exerciseProgress": "{{current}} / {{total}}",
   "skip": "Skip",
   "complete": "Complete Training",

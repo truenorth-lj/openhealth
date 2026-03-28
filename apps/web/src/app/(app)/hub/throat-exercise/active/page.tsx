@@ -302,6 +302,18 @@ export default function ActiveThroatExercisePage() {
             </p>
           </div>
         )}
+
+        {/* Skip rest button */}
+        <button
+          onClick={() => {
+            setCurrentIndex((i) => i + 1);
+            setPhase("exercise");
+          }}
+          className="mt-6 flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          <SkipForward className="h-4 w-4" strokeWidth={2} />
+          {t("throat-exercise:skipRest")}
+        </button>
       </div>
     );
   }

@@ -113,6 +113,7 @@
   "rest": "休息",
   "restDesc": "放鬆，準備下一個動作",
   "nextExercise": "下一個",
+  "skipRest": "跳過休息",
   "exerciseProgress": "第 {{current}} / {{total}} 個",
   "skip": "跳過",
   "complete": "完成訓練",
