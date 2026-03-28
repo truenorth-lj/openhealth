@@ -109,6 +109,7 @@
   },
 
   "reps": "{{count}} 次",
+  "seconds": "秒",
   "holdSeconds": "持續 {{seconds}} 秒",
   "rest": "休息",
   "restDesc": "放鬆，準備下一個動作",

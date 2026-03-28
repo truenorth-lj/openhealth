@@ -386,39 +386,20 @@ export default function ActiveThroatExercisePage() {
         </div>
       </div>
 
-      {/* Timer + tip section */}
-      <div className="flex-1 flex flex-col items-center justify-center">
-        {/* Countdown circle */}
-        <div className="relative flex items-center justify-center w-44 h-44">
-          <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-            <circle
-              cx="50"
-              cy="50"
-              r="46"
-              fill="none"
-              stroke="currentColor"
-              className="text-neutral-200 dark:text-neutral-800"
-              strokeWidth="3"
+      {/* Timer section */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6">
+        <p className="text-6xl font-extralight tabular-nums">{countdown}</p>
+        <p className="text-sm text-neutral-400 mt-1">
+          {t("throat-exercise:seconds")} · {t("throat-exercise:reps", { count: currentExercise.reps })}
+        </p>
+
+        {/* Timer progress bar */}
+        <div className="w-full max-w-xs mt-4">
+          <div className="h-2 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-1000 linear"
+              style={{ width: `${timerPct}%` }}
             />
-            <circle
-              cx="50"
-              cy="50"
-              r="46"
-              fill="none"
-              stroke="currentColor"
-              className="text-primary"
-              strokeWidth="3"
-              strokeDasharray={`${2 * Math.PI * 46}`}
-              strokeDashoffset={`${2 * Math.PI * 46 * (1 - timerPct / 100)}`}
-              strokeLinecap="round"
-              style={{ transition: "stroke-dashoffset 1s linear" }}
-            />
-          </svg>
-          <div className="text-center">
-            <p className="text-5xl font-extralight tabular-nums">{countdown}</p>
-            <p className="text-[10px] text-neutral-400 mt-1">
-              {t("throat-exercise:reps", { count: currentExercise.reps })}
-            </p>
           </div>
         </div>
 

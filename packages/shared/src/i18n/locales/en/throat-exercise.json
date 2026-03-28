@@ -109,6 +109,7 @@
   },
 
   "reps": "{{count}} reps",
+  "seconds": "sec",
   "holdSeconds": "Hold {{seconds}}s",
   "rest": "Rest",
   "restDesc": "Relax, prepare for the next exercise",
