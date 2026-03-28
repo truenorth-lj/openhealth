@@ -251,69 +251,79 @@ export default function ActiveThroatExercisePage() {
     const nextExercise = THROAT_EXERCISES.find((e) => e.id === nextExerciseId);
 
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 py-6">
+      <div className="flex flex-col min-h-[70vh] px-4 py-6">
         {/* Progress bar */}
-        <div className="w-full max-w-xs mb-8">
+        <div className="w-full max-w-md mx-auto">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-neutral-400">
+              {t("throat-exercise:exerciseProgress", {
+                current: currentIndex + 1,
+                total: exerciseIds.length,
+              })}
+            </p>
+            <p className="text-xs text-neutral-400">{t("throat-exercise:rest")}</p>
+          </div>
           <div className="h-1 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
             <div
               className="h-full rounded-full bg-primary transition-all duration-500"
               style={{ width: `${progressPct}%` }}
             />
           </div>
-          <p className="text-xs text-neutral-400 text-center mt-2">
-            {t("throat-exercise:exerciseProgress", {
-              current: currentIndex + 1,
-              total: exerciseIds.length,
-            })}
+        </div>
+
+        {/* Centered content */}
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <p className="text-4xl mb-2">😌</p>
+          <h2 className="text-lg font-light mb-1">{t("throat-exercise:rest")}</h2>
+          <p className="text-sm text-neutral-400 mb-8">
+            {t("throat-exercise:restDesc")}
           </p>
-        </div>
 
-        <p className="text-4xl mb-4">😌</p>
-        <h2 className="text-lg font-light mb-1">{t("throat-exercise:rest")}</h2>
-        <p className="text-sm text-neutral-400 mb-6">
-          {t("throat-exercise:restDesc")}
-        </p>
-
-        {/* Countdown */}
-        <div className="relative flex items-center justify-center w-32 h-32 rounded-full border-2 border-neutral-200 dark:border-neutral-700 mb-6">
-          <p className="text-4xl font-extralight tabular-nums">{countdown}</p>
-        </div>
-
-        {/* Next exercise preview */}
-        {nextExercise && (
-          <div className="text-center">
-            <p className="text-xs text-neutral-400 mb-1">
-              {t("throat-exercise:nextExercise")}
-            </p>
-            {EXERCISE_IMAGES[nextExercise.id] ? (
-              <div className="relative w-16 h-16 mx-auto mb-1 rounded-lg overflow-hidden">
-                <Image
-                  src={EXERCISE_IMAGES[nextExercise.id]}
-                  alt={t(`throat-exercise:exercises.${nextExercise.id}.name`)}
-                  fill
-                  sizes="64px"
-                  className="object-cover"
-                />
-              </div>
-            ) : null}
-            <p className="text-sm">
-              {nextExercise.emoji}{" "}
-              {t(`throat-exercise:exercises.${nextExercise.id}.name`)}
-            </p>
+          {/* Countdown */}
+          <div className="relative flex items-center justify-center w-36 h-36 rounded-full border-2 border-neutral-200 dark:border-neutral-700 mb-8">
+            <p className="text-5xl font-extralight tabular-nums">{countdown}</p>
           </div>
-        )}
 
-        {/* Skip rest button */}
-        <button
-          onClick={() => {
-            setCurrentIndex((i) => i + 1);
-            setPhase("exercise");
-          }}
-          className="mt-6 flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
-        >
-          <SkipForward className="h-4 w-4" strokeWidth={2} />
-          {t("throat-exercise:skipRest")}
-        </button>
+          {/* Next exercise preview card */}
+          {nextExercise && (
+            <div className="w-full max-w-sm rounded-2xl bg-neutral-50 dark:bg-neutral-900 overflow-hidden">
+              <div className="flex items-center p-3 gap-3">
+                {EXERCISE_IMAGES[nextExercise.id] ? (
+                  <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0">
+                    <Image
+                      src={EXERCISE_IMAGES[nextExercise.id]}
+                      alt={t(`throat-exercise:exercises.${nextExercise.id}.name`)}
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-14 h-14 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                    <span className="text-2xl">{nextExercise.emoji}</span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] text-neutral-400 mb-0.5">
+                    {t("throat-exercise:nextExercise")}
+                  </p>
+                  <p className="text-sm font-medium truncate">
+                    {t(`throat-exercise:exercises.${nextExercise.id}.name`)}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setCurrentIndex((i) => i + 1);
+                    setPhase("exercise");
+                  }}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 transition-colors"
+                >
+                  <SkipForward className="h-4 w-4" strokeWidth={2} />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
@@ -324,119 +334,132 @@ export default function ActiveThroatExercisePage() {
     : 0;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 py-6">
+    <div className="flex flex-col min-h-[70vh] px-4 py-6">
       {/* Progress bar */}
-      <div className="w-full max-w-xs mb-6">
+      <div className="w-full max-w-md mx-auto">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs text-neutral-400">
+            {t("throat-exercise:exerciseProgress", {
+              current: currentIndex + 1,
+              total: exerciseIds.length,
+            })}
+          </p>
+          <span className="inline-block px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px]">
+            {THROAT_EXERCISE_TARGET_LABELS[currentExercise.target]}
+          </span>
+        </div>
         <div className="h-1 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
           <div
             className="h-full rounded-full bg-primary transition-all duration-500"
             style={{ width: `${progressPct}%` }}
           />
         </div>
-        <p className="text-xs text-neutral-400 text-center mt-2">
-          {t("throat-exercise:exerciseProgress", {
-            current: currentIndex + 1,
-            total: exerciseIds.length,
-          })}
+      </div>
+
+      {/* Exercise info card */}
+      <div className="w-full max-w-md mx-auto mt-4">
+        <div className="rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-800/50">
+          {EXERCISE_IMAGES[currentExercise.id] ? (
+            <div className="relative w-full bg-neutral-200 dark:bg-neutral-700/50" style={{ aspectRatio: "2.2" }}>
+              <Image
+                src={EXERCISE_IMAGES[currentExercise.id]}
+                alt={t(`throat-exercise:exercises.${currentExercise.id}.name`)}
+                fill
+                sizes="448px"
+                className="object-contain"
+                priority
+              />
+            </div>
+          ) : (
+            <div className="w-full flex items-center justify-center" style={{ aspectRatio: "2.2" }}>
+              <p className="text-5xl">{currentExercise.emoji}</p>
+            </div>
+          )}
+          <div className="px-4 py-3">
+            <h2 className="text-base font-medium">
+              {t(`throat-exercise:exercises.${currentExercise.id}.name`)}
+            </h2>
+            <p className="text-xs text-neutral-400 mt-1">
+              {t(`throat-exercise:exercises.${currentExercise.id}.desc`)}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Timer + tip section */}
+      <div className="flex-1 flex flex-col items-center justify-center">
+        {/* Countdown circle */}
+        <div className="relative flex items-center justify-center w-44 h-44">
+          <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+            <circle
+              cx="50"
+              cy="50"
+              r="46"
+              fill="none"
+              stroke="currentColor"
+              className="text-neutral-200 dark:text-neutral-800"
+              strokeWidth="3"
+            />
+            <circle
+              cx="50"
+              cy="50"
+              r="46"
+              fill="none"
+              stroke="currentColor"
+              className="text-primary"
+              strokeWidth="3"
+              strokeDasharray={`${2 * Math.PI * 46}`}
+              strokeDashoffset={`${2 * Math.PI * 46 * (1 - timerPct / 100)}`}
+              strokeLinecap="round"
+              style={{ transition: "stroke-dashoffset 1s linear" }}
+            />
+          </svg>
+          <div className="text-center">
+            <p className="text-5xl font-extralight tabular-nums">{countdown}</p>
+            <p className="text-[10px] text-neutral-400 mt-1">
+              {t("throat-exercise:reps", { count: currentExercise.reps })}
+            </p>
+          </div>
+        </div>
+
+        <p className="text-xs text-primary/70 text-center max-w-xs mt-4">
+          {t(`throat-exercise:exercises.${currentExercise.id}.tip`)}
         </p>
       </div>
 
-      {/* Target badge */}
-      <span className="inline-block px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] mb-3">
-        {THROAT_EXERCISE_TARGET_LABELS[currentExercise.target]}
-      </span>
+      {/* Controls - anchored at bottom */}
+      <div className="flex flex-col items-center pb-2">
+        <div className="flex items-center gap-6">
+          {/* Discard */}
+          <button
+            onClick={handleDiscard}
+            disabled={discarding}
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-destructive/30 text-destructive/70 hover:bg-destructive/10 transition-colors disabled:opacity-50"
+          >
+            <X className="h-5 w-5" strokeWidth={1.5} />
+          </button>
 
-      {/* Exercise illustration */}
-      {EXERCISE_IMAGES[currentExercise.id] ? (
-        <div className="relative w-48 h-48 mb-3 rounded-2xl overflow-hidden animate-pulse-slow">
-          <Image
-            src={EXERCISE_IMAGES[currentExercise.id]}
-            alt={t(`throat-exercise:exercises.${currentExercise.id}.name`)}
-            fill
-            sizes="192px"
-            className="object-cover"
-            priority
-          />
+          {/* Skip / Complete early */}
+          <button
+            onClick={handleSkip}
+            className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 transition-colors"
+          >
+            <SkipForward className="h-6 w-6" strokeWidth={2} />
+          </button>
+
+          {/* Finish early */}
+          <button
+            onClick={handleFinishEarly}
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-black/10 dark:border-white/10 text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
+          >
+            <Check className="h-5 w-5" strokeWidth={1.5} />
+          </button>
         </div>
-      ) : (
-        <p className="text-5xl mb-3">{currentExercise.emoji}</p>
-      )}
-      <h2 className="text-lg font-light mb-1">
-        {t(`throat-exercise:exercises.${currentExercise.id}.name`)}
-      </h2>
-      <p className="text-sm text-neutral-400 text-center max-w-xs mb-2">
-        {t(`throat-exercise:exercises.${currentExercise.id}.desc`)}
-      </p>
-      <p className="text-xs text-primary/70 text-center max-w-xs mb-6">
-        {t(`throat-exercise:exercises.${currentExercise.id}.tip`)}
-      </p>
-
-      {/* Countdown circle */}
-      <div className="relative flex items-center justify-center w-40 h-40 mb-6">
-        <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
-          <circle
-            cx="50"
-            cy="50"
-            r="46"
-            fill="none"
-            stroke="currentColor"
-            className="text-neutral-200 dark:text-neutral-800"
-            strokeWidth="3"
-          />
-          <circle
-            cx="50"
-            cy="50"
-            r="46"
-            fill="none"
-            stroke="currentColor"
-            className="text-primary"
-            strokeWidth="3"
-            strokeDasharray={`${2 * Math.PI * 46}`}
-            strokeDashoffset={`${2 * Math.PI * 46 * (1 - timerPct / 100)}`}
-            strokeLinecap="round"
-            style={{ transition: "stroke-dashoffset 1s linear" }}
-          />
-        </svg>
-        <div className="text-center">
-          <p className="text-4xl font-extralight tabular-nums">{countdown}</p>
-          <p className="text-[10px] text-neutral-400 mt-1">
-            {t("throat-exercise:reps", { count: currentExercise.reps })}
-          </p>
+        <div className="flex items-center gap-4 mt-3 text-xs text-neutral-400">
+          <span>{t("throat-exercise:skip")}</span>
+          <span>·</span>
+          <span>{t("throat-exercise:complete")}</span>
         </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex items-center gap-6">
-        {/* Discard */}
-        <button
-          onClick={handleDiscard}
-          disabled={discarding}
-          className="flex h-12 w-12 items-center justify-center rounded-full border border-destructive/30 text-destructive/70 hover:bg-destructive/10 transition-colors disabled:opacity-50"
-        >
-          <X className="h-5 w-5" strokeWidth={1.5} />
-        </button>
-
-        {/* Skip / Complete early */}
-        <button
-          onClick={handleSkip}
-          className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white hover:bg-primary/90 transition-colors"
-        >
-          <SkipForward className="h-6 w-6" strokeWidth={2} />
-        </button>
-
-        {/* Finish early */}
-        <button
-          onClick={handleFinishEarly}
-          className="flex h-12 w-12 items-center justify-center rounded-full border border-black/10 dark:border-white/10 text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
-        >
-          <Check className="h-5 w-5" strokeWidth={1.5} />
-        </button>
-      </div>
-
-      <div className="flex items-center gap-4 mt-4 text-xs text-neutral-400">
-        <span>{t("throat-exercise:skip")}</span>
-        <span>·</span>
-        <span>{t("throat-exercise:complete")}</span>
       </div>
     </div>
   );
