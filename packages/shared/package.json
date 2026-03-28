@@ -16,7 +16,9 @@
     "./i18n/en": "./src/i18n/en.ts",
     "./posture": "./src/posture/index.ts",
     "./water-milestone": "./src/water-milestone/index.ts",
-    "./hub": "./src/hub/index.ts"
+    "./hub": "./src/hub/index.ts",
+    "./changelog": "./src/changelog/index.ts",
+    "./changelog": "./src/changelog/index.ts"
   },
   "scripts": {
     "test": "vitest run"
