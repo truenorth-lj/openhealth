@@ -196,7 +196,61 @@ export async function estimateNutritionFromText(
       jsonStr = jsonMatch[1].trim();
     }
 
-    const data = JSON.parse(jsonStr);
+    let data = JSON.parse(jsonStr);
+
+    // MiniMax may return an array when user describes multiple foods — merge into one
+    if (Array.isArray(data)) {
+      if (data.length === 0) {
+        return { success: false, error: "AI 回傳格式不完整" };
+      }
+      if (data.length === 1) {
+        data = data[0];
+      } else {
+        // Merge multiple items into a combined food entry
+        const names = data.map((d: Record<string, unknown>) => d.foodName).filter(Boolean);
+        const notes = data
+          .map((d: Record<string, unknown>) => d.notes)
+          .filter(Boolean)
+          .join("；");
+        const sumNum = (key: string) => {
+          const vals = data
+            .map((d: Record<string, unknown>) => d[key])
+            .filter((v: unknown): v is number => typeof v === "number");
+          return vals.length > 0 ? vals.reduce((a: number, b: number) => a + b, 0) : null;
+        };
+        data = {
+          foodName: names.join(" + "),
+          brand: null,
+          servingSize: sumNum("servingSize") ?? 100,
+          servingUnit: data[0].servingUnit || "g",
+          calories: sumNum("calories"),
+          proteinG: sumNum("proteinG"),
+          fatG: sumNum("fatG"),
+          carbsG: sumNum("carbsG"),
+          sodiumMg: sumNum("sodiumMg"),
+          sugarG: sumNum("sugarG"),
+          fiberG: sumNum("fiberG"),
+          saturatedFatG: sumNum("saturatedFatG"),
+          transFatG: sumNum("transFatG"),
+          cholesterolMg: sumNum("cholesterolMg"),
+          calciumMg: sumNum("calciumMg"),
+          ironMg: sumNum("ironMg"),
+          potassiumMg: sumNum("potassiumMg"),
+          vitaminAMcg: sumNum("vitaminAMcg"),
+          vitaminCMg: sumNum("vitaminCMg"),
+          vitaminDMcg: sumNum("vitaminDMcg"),
+          notes: notes || null,
+          inferredFields: [
+            ...new Set(
+              data.flatMap(
+                (d: Record<string, unknown>) =>
+                  (d.inferredFields as string[]) ?? []
+              )
+            ),
+          ],
+        };
+      }
+    }
 
     if (!data.foodName || data.calories == null) {
       return { success: false, error: "AI 回傳格式不完整" };
