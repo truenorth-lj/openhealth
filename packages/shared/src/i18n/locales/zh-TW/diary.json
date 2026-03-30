@@ -16,5 +16,20 @@
   "selectTrackedNutrients": "選擇追蹤營養素",
   "saveCount": "儲存 ({{count}})",
   "exerciseLabel": "運動",
-  "calorieIntake": "熱量攝取"
+  "calorieIntake": "熱量攝取",
+  "water": "水分",
+  "weight": "體重",
+  "steps": "步數",
+  "stepsUnit": "步",
+  "aiAdvisor": "AI 營養顧問",
+  "aiAdvisorDesc": "分析飲食、規劃餐點",
+  "weekSummary": "週總覽",
+  "weekSummaryTitle": "近 7 天總覽",
+  "noRecordsInPeriod": "這段期間沒有飲食記錄",
+  "date": "日期",
+  "average": "平均",
+  "nutrientDetails": "{{date}} 營養素詳情",
+  "noTrackedNutrients": "尚未設定追蹤營養素",
+  "goToSettings": "前往設定",
+  "weightTrendDays": "{{days}}天"
 }

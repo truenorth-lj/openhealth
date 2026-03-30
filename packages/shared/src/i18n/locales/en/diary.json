@@ -16,5 +16,20 @@
   "selectTrackedNutrients": "Select Tracked Nutrients",
   "saveCount": "Save ({{count}})",
   "exerciseLabel": "Exercise",
-  "calorieIntake": "Calorie Intake"
+  "calorieIntake": "Calorie Intake",
+  "water": "Water",
+  "weight": "Weight",
+  "steps": "Steps",
+  "stepsUnit": "steps",
+  "aiAdvisor": "AI Nutrition Advisor",
+  "aiAdvisorDesc": "Analyze diet, plan meals",
+  "weekSummary": "Weekly Overview",
+  "weekSummaryTitle": "Last 7 Days Overview",
+  "noRecordsInPeriod": "No food records for this period",
+  "date": "Date",
+  "average": "Average",
+  "nutrientDetails": "{{date}} Nutrient Details",
+  "noTrackedNutrients": "No tracked nutrients set up",
+  "goToSettings": "Go to Settings",
+  "weightTrendDays": "{{days}}d"
 }
