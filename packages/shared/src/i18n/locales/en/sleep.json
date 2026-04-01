@@ -1,9 +1,23 @@
 {
-  "title": "Sleep Tracking",
+  "title": "Sleep",
   "bedtime": "Bedtime",
   "wakeTime": "Wake Time",
   "duration": "Sleep Duration",
   "quality": "Sleep Quality",
   "hours": "hours",
-  "noEntries": "No sleep entries for today"
+  "noEntries": "No sleep entries for today",
+  "modes": {
+    "smart": "Smart Wake",
+    "smartDesc": "Wake during light sleep",
+    "fixed": "Fixed Alarm",
+    "fixedDesc": "Wake at set time",
+    "none": "Sleep Analysis",
+    "noneDesc": "No alarm"
+  },
+  "smartWakeHint": "Wakes you during light sleep",
+  "fixedAlarmHint": "Alarm will ring at {{time}}",
+  "windowMinutes": "{{minutes}} min",
+  "noAlarm": "No alarm",
+  "sleepAnalysisOnly": "Sleep quality analysis only",
+  "start": "Start"
 }

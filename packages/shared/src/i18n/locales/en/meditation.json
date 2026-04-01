@@ -115,5 +115,11 @@
   "startWithDuration": "Start · {{minutes}} min",
   "discardTitle": "Discard Session",
   "minuteUnit": "min",
-  "streakDays": "Streak"
+  "streakDays": "Streak",
+  "loading": "Loading...",
+  "saveError": "Failed to save",
+  "error": "Error",
+  "durationCompleted": "{{duration}} meditation complete",
+  "defaultLabel": "Meditation",
+  "startMeditation": "Start Meditation"
 }

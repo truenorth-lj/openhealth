@@ -40,6 +40,12 @@
   "snoozeTimeLabel": "Snooze reminder time (minutes)",
   "managePostureTypes": "Manage Posture Types",
   "saving": "Saving...",
+  "switchFailed": "Switch failed",
+  "stopFailed": "Stop failed",
+  "saveFailed": "Failed to save",
+  "deleteFailed": "Failed to delete",
+  "snoozed": "Snoozed for {{minutes}} min",
+  "defaultSuggestedBreak": "Change posture, stretch a bit",
   "notification": {
     "needPermission": "Notification Permission Required",
     "enableHint": "Tap the button below to allow notifications for reminder functionality.",

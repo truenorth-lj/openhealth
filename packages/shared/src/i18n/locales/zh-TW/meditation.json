@@ -115,5 +115,11 @@
   "startWithDuration": "開始冥想 · {{minutes}} 分鐘",
   "discardTitle": "放棄冥想",
   "minuteUnit": "分鐘",
-  "streakDays": "連續天"
+  "streakDays": "連續天",
+  "loading": "載入中...",
+  "saveError": "儲存失敗",
+  "error": "錯誤",
+  "durationCompleted": "{{duration}} 冥想已完成",
+  "defaultLabel": "冥想",
+  "startMeditation": "開始冥想"
 }

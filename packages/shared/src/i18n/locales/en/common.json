@@ -39,7 +39,8 @@
     "referralCodePlaceholder": "Referral code (optional)",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
-    "pleaseLoginFirst": "Please sign in first"
+    "pleaseLoginFirst": "Please sign in first",
+    "fillAllFields": "Please fill in all fields"
   },
   "theme": {
     "label": "Appearance",

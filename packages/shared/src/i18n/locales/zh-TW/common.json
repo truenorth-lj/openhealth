@@ -39,7 +39,8 @@
     "referralCodePlaceholder": "推薦碼（選填）",
     "noAccount": "還沒有帳號？",
     "hasAccount": "已有帳號？",
-    "pleaseLoginFirst": "請先登入"
+    "pleaseLoginFirst": "請先登入",
+    "fillAllFields": "請填寫所有欄位"
   },
   "theme": {
     "label": "外觀",

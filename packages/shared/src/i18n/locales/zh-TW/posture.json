@@ -40,6 +40,12 @@
   "snoozeTimeLabel": "延後提醒時間（分鐘）",
   "managePostureTypes": "管理姿勢類型",
   "saving": "儲存中...",
+  "switchFailed": "切換失敗",
+  "stopFailed": "停止失敗",
+  "saveFailed": "儲存失敗",
+  "deleteFailed": "刪除失敗",
+  "snoozed": "已延後 {{minutes}} 分鐘提醒",
+  "defaultSuggestedBreak": "變換姿勢、活動一下",
   "notification": {
     "needPermission": "需要通知權限",
     "enableHint": "點擊下方按鈕允許通知，才能使用提醒功能。",
