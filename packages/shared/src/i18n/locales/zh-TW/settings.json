@@ -44,7 +44,13 @@
     "extremelyActive": "極高活動",
     "saved": "已儲存",
     "saving": "儲存中...",
-    "signOut": "登出"
+    "signOut": "登出",
+    "defaultName": "使用者",
+    "sedentaryDesc": "幾乎不運動",
+    "lightlyActiveDesc": "每週 1-3 天",
+    "moderatelyActiveDesc": "每週 3-5 天",
+    "veryActiveDesc": "每週 6-7 天",
+    "extremelyActiveDesc": "體力勞動 / 運動員"
   },
   "goalsPage": {
     "calorieGoal": "每日卡路里目標",
@@ -58,7 +64,9 @@
     "saveGoals": "儲存目標",
     "goalsSaved": "目標已儲存",
     "goalsSaveFailed": "儲存失敗，請稍後再試",
-    "macroTotalCalc": "巨量營養素合計：{{total}} kcal (目標: {{target}} kcal)"
+    "macroTotalCalc": "巨量營養素合計：{{total}} kcal (目標: {{target}} kcal)",
+    "macroDiff": "與卡路里目標相差 {{diff}} kcal",
+    "trackedNutrientsDesc": "選擇在日記中顯示的營養素"
   },
   "coachingPage": {
     "joinCoach": "加入教練",
@@ -69,7 +77,14 @@
     "linkedCoaches": "已連結教練",
     "noCoach": "尚未加入任何教練",
     "since": "{{date}} 起",
-    "unlink": "取消連結"
+    "unlink": "取消連結",
+    "joinFailed": "加入失敗",
+    "unlinked": "已取消連結",
+    "unlinkFailed": "取消失敗",
+    "unlinkConfirm": "確定要取消與此教練的連結嗎？",
+    "coachMessages": "教練訊息",
+    "noMessages": "尚無訊息",
+    "loadMore": "查看更多"
   },
   "notificationsPage": {
     "waterReminder": "喝水提醒",
@@ -170,6 +185,11 @@
     "applyFailed": "套用失敗",
     "applyFailedRetry": "套用失敗，請稍後再試"
   },
+  "trackedNutrientsSaved": "已更新追蹤營養素",
+  "trackedNutrientsMax": "最多追蹤 {{max}} 種營養素",
+  "trackedNutrientsDescription": "選擇要在日記中顯示的營養素（最多 {{max}} 種）",
+  "trackedNutrientsSelected": "已選擇 {{count}} / {{max}}",
+  "dailyRecommended": "每日建議 {{value}}",
   "hubConfig": "自訂總覽",
   "hubConfigPage": {
     "title": "自訂總覽",

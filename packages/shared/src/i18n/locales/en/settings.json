@@ -44,7 +44,13 @@
     "extremelyActive": "Extremely Active",
     "saved": "Saved",
     "saving": "Saving...",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "defaultName": "User",
+    "sedentaryDesc": "Little to no exercise",
+    "lightlyActiveDesc": "1-3 days/week",
+    "moderatelyActiveDesc": "3-5 days/week",
+    "veryActiveDesc": "6-7 days/week",
+    "extremelyActiveDesc": "Physical labor / athlete"
   },
   "goalsPage": {
     "calorieGoal": "Daily Calorie Goal",
@@ -58,7 +64,9 @@
     "saveGoals": "Save Goals",
     "goalsSaved": "Goals saved",
     "goalsSaveFailed": "Failed to save, please try again later",
-    "macroTotalCalc": "Macronutrient total: {{total}} kcal (target: {{target}} kcal)"
+    "macroTotalCalc": "Macronutrient total: {{total}} kcal (target: {{target}} kcal)",
+    "macroDiff": "Differs from calorie target by {{diff}} kcal",
+    "trackedNutrientsDesc": "Choose which nutrients to show in diary"
   },
   "coachingPage": {
     "joinCoach": "Join Coach",
@@ -69,7 +77,14 @@
     "linkedCoaches": "Linked Coaches",
     "noCoach": "No coach linked yet",
     "since": "Since {{date}}",
-    "unlink": "Unlink"
+    "unlink": "Unlink",
+    "joinFailed": "Failed to join",
+    "unlinked": "Unlinked",
+    "unlinkFailed": "Failed to unlink",
+    "unlinkConfirm": "Are you sure you want to unlink this coach?",
+    "coachMessages": "Coach Messages",
+    "noMessages": "No messages",
+    "loadMore": "Load more"
   },
   "notificationsPage": {
     "waterReminder": "Water Reminder",
@@ -170,6 +185,11 @@
     "applyFailed": "Application failed",
     "applyFailedRetry": "Application failed, please try again later"
   },
+  "trackedNutrientsSaved": "Tracked nutrients updated",
+  "trackedNutrientsMax": "Maximum {{max}} tracked nutrients",
+  "trackedNutrientsDescription": "Choose which nutrients to show in diary (max {{max}})",
+  "trackedNutrientsSelected": "{{count}} / {{max}} selected",
+  "dailyRecommended": "Daily recommended {{value}}",
   "hubConfig": "Customize Hub",
   "hubConfigPage": {
     "title": "Customize Hub",

@@ -28,6 +28,7 @@
     "googleLoginFailed": "Google sign in failed, please try again later",
     "appleLoginFailed": "Apple sign in failed, please try again later",
     "useGoogleLogin": "Sign in with Google",
+    "useGoogleSignUp": "Sign up with Google",
     "useAppleLogin": "Sign in with Apple",
     "loggingIn": "Signing in...",
     "registering": "Signing up...",

@@ -86,5 +86,22 @@
   "deepNutrients": "深度營養素",
   "deepNutrientsHint": "纖維、鈉、反式脂肪、維生素等（選填）",
   "otherNutrients": "其他營養素",
-  "examples": ["一碗白飯", "滷雞腿便當", "一碗涼麵，大概 400g", "珍珠奶茶 大杯 700ml", "水煎包 3 個"]
+  "examples": ["一碗白飯", "滷雞腿便當", "一碗涼麵，大概 400g", "珍珠奶茶 大杯 700ml", "水煎包 3 個"],
+  "addingFromDiary": "從日記新增中",
+  "loggedServings": "已記錄 {{count}} 份",
+  "editFood": "編輯食物",
+  "saveChanges": "儲存變更",
+  "alternateServings": "其他份量",
+  "logServings": "記錄 {{count}} 份",
+  "logToDiary": "記錄到日記",
+  "enterFoodName": "請輸入食物名稱",
+  "createdAndLogged": "已建立並記錄",
+  "foodCreated": "已建立食物",
+  "createAndLog1": "建立並記錄 1 份",
+  "saveFood": "儲存食物",
+  "cameraPermRequired": "需要相機權限",
+  "cameraPermMessage": "請在設定中開啟相機權限",
+  "galleryPermRequired": "需要相簿權限",
+  "galleryPermMessage": "請在設定中開啟相簿權限",
+  "unknownFood": "未知食品"
 }

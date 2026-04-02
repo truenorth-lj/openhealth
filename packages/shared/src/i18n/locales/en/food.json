@@ -86,5 +86,22 @@
   "deepNutrients": "Detailed Nutrients",
   "deepNutrientsHint": "Fiber, sodium, trans fat, vitamins, etc. (optional)",
   "otherNutrients": "Other Nutrients",
-  "examples": ["A bowl of rice", "Braised chicken leg bento", "Cold noodles, about 400g", "Bubble milk tea, large 700ml", "Pan-fried buns x3"]
+  "examples": ["A bowl of rice", "Braised chicken leg bento", "Cold noodles, about 400g", "Bubble milk tea, large 700ml", "Pan-fried buns x3"],
+  "addingFromDiary": "Adding from diary",
+  "loggedServings": "Logged {{count}} servings",
+  "editFood": "Edit Food",
+  "saveChanges": "Save Changes",
+  "alternateServings": "Alternate Servings",
+  "logServings": "Log {{count}} servings",
+  "logToDiary": "Log to Diary",
+  "enterFoodName": "Please enter food name",
+  "createdAndLogged": "Created and logged",
+  "foodCreated": "Food created",
+  "createAndLog1": "Create & log 1 serving",
+  "saveFood": "Save Food",
+  "cameraPermRequired": "Camera permission required",
+  "cameraPermMessage": "Please enable camera permission in Settings",
+  "galleryPermRequired": "Photo library permission required",
+  "galleryPermMessage": "Please enable photo library permission in Settings",
+  "unknownFood": "Unknown Food"
 }
