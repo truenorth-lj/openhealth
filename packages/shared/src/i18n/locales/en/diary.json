@@ -31,5 +31,21 @@
   "nutrientDetails": "{{date}} Nutrient Details",
   "noTrackedNutrients": "No tracked nutrients set up",
   "goToSettings": "Go to Settings",
-  "weightTrendDays": "{{days}}d"
+  "weightTrendDays": "{{days}}d",
+  "consumed": "Consumed",
+  "remaining": "Remaining",
+  "target": "Target",
+  "deleted": "Deleted",
+  "deleteFailed": "Failed to delete",
+  "mealCopied": "Meal copied",
+  "copyFailed": "Failed to copy",
+  "deleteConfirmTitle": "Confirm Delete",
+  "deleteConfirmFood": "Are you sure you want to delete \"{{name}}\"?",
+  "addFood": "Add Food",
+  "copyMealToDate": "Copy {{meal}} to another date",
+  "targetDate": "Target date (yyyy-MM-dd)",
+  "copy": "Copy",
+  "copying": "Copying...",
+  "invalidDateFormat": "Please enter a valid date format",
+  "updateFailed": "Failed to update"
 }
