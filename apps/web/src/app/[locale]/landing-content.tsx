@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalePath } from "@/hooks/use-locale-path";
 
@@ -226,6 +226,117 @@ function Philosophy() {
       <p className="mt-6 text-neutral-300 dark:text-neutral-700 font-light text-xs md:text-sm tracking-wide">
         {t("philosophy.tagline")}
       </p>
+    </section>
+  );
+}
+
+// ── Showcase Slides ─────────────────────────────────────────────
+type ShowcaseSlide = {
+  num: string;
+  screenshot: { "zh-TW": string; en: string };
+};
+
+const showcaseSlides: ShowcaseSlide[] = [
+  { num: "01", screenshot: { "zh-TW": "/screenshots/10-today.png", en: "/screenshots/en/02-today.png" } },
+  { num: "02", screenshot: { "zh-TW": "/screenshots/03-ai-chat.png", en: "/screenshots/en/03-ai-chat.png" } },
+  { num: "03", screenshot: { "zh-TW": "/screenshots/01-diary.png", en: "/screenshots/en/05-diary.png" } },
+  { num: "04", screenshot: { "zh-TW": "/screenshots/02-food-search.png", en: "/screenshots/en/04-food-search.png" } },
+  { num: "05", screenshot: { "zh-TW": "/screenshots/17-progress.png", en: "/screenshots/en/09-progress.png" } },
+  { num: "06", screenshot: { "zh-TW": "/screenshots/14-water.png", en: "/screenshots/en/10-water.png" } },
+  { num: "07", screenshot: { "zh-TW": "/screenshots/12-workout-home.png", en: "/screenshots/en/13-workout-home.png" } },
+];
+
+function AppShowcase() {
+  const { t, i18n } = useTranslation("landing");
+  const lang = i18n.language === "en" ? "en" : "zh-TW";
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      const scrollLeft = el.scrollLeft;
+      const cardWidth = el.querySelector<HTMLElement>("[data-slide]")?.offsetWidth ?? 280;
+      const gap = 16;
+      const idx = Math.round(scrollLeft / (cardWidth + gap));
+      setActiveIndex(Math.min(idx, showcaseSlides.length - 1));
+    };
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <section className="py-24 md:py-32">
+      <div className="max-w-4xl mx-auto px-6 mb-12">
+        <p className="text-[10px] tracking-[0.4em] text-neutral-400 dark:text-neutral-600 uppercase">
+          {t("showcase.sectionLabel")}
+        </p>
+      </div>
+
+      {/* Horizontal scroll carousel */}
+      <div
+        ref={scrollRef}
+        className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-6 md:px-[max(1.5rem,calc((100vw-56rem)/2+1.5rem))] pb-8 scrollbar-hide"
+      >
+        {showcaseSlides.map((slide, index) => (
+          <div
+            key={slide.num}
+            data-slide
+            className="snap-center flex-shrink-0 w-[260px] md:w-[300px] animate-fade-in-up"
+            style={{ animationDelay: `${(index + 1) * 0.1}s` }}
+          >
+            {/* Phone frame */}
+            <div className="relative bg-neutral-950 dark:bg-neutral-900 rounded-[2.5rem] p-[6px] shadow-xl shadow-black/10 dark:shadow-black/30">
+              {/* Notch */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90px] h-[22px] bg-neutral-950 dark:bg-neutral-900 rounded-b-2xl z-10" />
+              {/* Screen */}
+              <div className="relative rounded-[2.2rem] overflow-hidden bg-white aspect-[9/19.5]">
+                <Image
+                  src={slide.screenshot[lang]}
+                  alt={t(`showcase.slide${slide.num}Label`)}
+                  fill
+                  className="object-cover object-top"
+                  sizes="300px"
+                />
+              </div>
+            </div>
+            {/* Caption */}
+            <div className="mt-4 text-center">
+              <p className="text-[10px] tracking-[0.2em] text-green-600 dark:text-green-400 uppercase font-mono">
+                {t(`showcase.slide${slide.num}Label`)}
+              </p>
+              <p className="mt-1 text-lg font-light text-black dark:text-white leading-snug">
+                {t(`showcase.slide${slide.num}Headline1`)}
+                <br />
+                {t(`showcase.slide${slide.num}Headline2`)}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-2 mt-4">
+        {showcaseSlides.map((slide, i) => (
+          <button
+            key={slide.num}
+            onClick={() => {
+              const el = scrollRef.current;
+              if (!el) return;
+              const cards = el.querySelectorAll<HTMLElement>("[data-slide]");
+              if (!cards[i]) return;
+              cards[i].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+            }}
+            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+              i === activeIndex
+                ? "bg-green-600 dark:bg-green-400 w-4"
+                : "bg-neutral-300 dark:bg-neutral-700"
+            }`}
+            aria-label={`Slide ${i + 1}`}
+          />
+        ))}
+      </div>
     </section>
   );
 }
@@ -457,6 +568,10 @@ export function LandingContent({ posts }: { posts: BlogPost[] }) {
   return (
     <>
       <Hero />
+
+      <div className="w-12 h-[1px] bg-black/[0.06] dark:bg-white/[0.06] mx-auto" />
+
+      <AppShowcase />
 
       <div className="w-12 h-[1px] bg-black/[0.06] dark:bg-white/[0.06] mx-auto" />
 
