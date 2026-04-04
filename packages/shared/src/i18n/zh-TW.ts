@@ -21,6 +21,7 @@ import coach from "./locales/zh-TW/coach.json";
 import pricing from "./locales/zh-TW/pricing.json";
 import meditation from "./locales/zh-TW/meditation.json";
 import throatExercise from "./locales/zh-TW/throat-exercise.json";
+import documents from "./locales/zh-TW/documents.json";
 
 export const zhTWResources = {
   common,
@@ -45,4 +46,5 @@ export const zhTWResources = {
   pricing,
   meditation,
   "throat-exercise": throatExercise,
+  documents,
 } as const;

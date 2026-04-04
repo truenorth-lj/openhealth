@@ -232,6 +232,13 @@
       "when": 1774334472207,
       "tag": "0032_chilly_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1775144364002,
+      "tag": "0033_light_carnage",
+      "breakpoints": true
     }
   ]
 }

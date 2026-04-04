@@ -22,3 +22,4 @@ export * from "./workout";
 export * from "./review";
 export * from "./activity";
 export * from "./reminders";
+export * from "./health-documents";

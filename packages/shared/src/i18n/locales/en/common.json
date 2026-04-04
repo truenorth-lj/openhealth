@@ -187,7 +187,8 @@
       "settings": "Settings",
       "export": "Export Data",
       "lineCommunity": "Line Community",
-      "reportIssue": "Report Issue"
+      "reportIssue": "Report Issue",
+      "documents": "Health Vault"
     },
     "badges": {
       "new": "New",

@@ -449,3 +449,15 @@ export const DEFAULT_SLEEP_GOAL_HOURS = 8;
 export const DEFAULT_ALARM_WINDOW_MINUTES = 30;
 export const SLEEP_SAMPLE_INTERVAL_MS = 1000;
 export const SLEEP_EPOCH_DURATION_MS = 60_000;
+
+export const HEALTH_DOCUMENT_CATEGORIES = [
+  "checkup",
+  "blood_donation",
+  "medical_visit",
+  "prescription",
+  "vaccination",
+  "lab_report",
+  "other",
+] as const;
+
+export type HealthDocumentCategory = (typeof HEALTH_DOCUMENT_CATEGORIES)[number];

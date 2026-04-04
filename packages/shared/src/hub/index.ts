@@ -15,6 +15,7 @@ export const HUB_ITEM_KEYS = [
   "posture",
   "reminders",
   // Tools
+  "documents",
   "aiAdvisor",
   "progress",
   "goals",
@@ -88,6 +89,7 @@ export const DEFAULT_HUB_ITEMS: HubItemDefinition[] = [
   { key: "posture", sectionKey: "hub.sections.tracking", labelKey: "hub.items.posture", badgeKey: "hub.badges.new", implemented: true, defaultOrder: 11 },
   { key: "reminders", sectionKey: "hub.sections.tracking", labelKey: "hub.items.reminders", badgeKey: "hub.badges.new", implemented: true, defaultOrder: 12 },
   // Tools
+  { key: "documents", sectionKey: "hub.sections.tools", labelKey: "hub.items.documents", badgeKey: "hub.badges.new", implemented: true, defaultOrder: 5 },
   { key: "aiAdvisor", sectionKey: "hub.sections.tools", labelKey: "hub.items.aiAdvisor", badgeKey: "hub.badges.new", implemented: true, defaultOrder: 0 },
   { key: "progress", sectionKey: "hub.sections.tools", labelKey: "hub.items.progress", implemented: true, defaultOrder: 1 },
   { key: "goals", sectionKey: "hub.sections.tools", labelKey: "hub.items.goals", implemented: true, defaultOrder: 2 },

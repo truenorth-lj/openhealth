@@ -28,6 +28,7 @@ import {
   GraduationCap,
   Download,
   MessageCircle,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -56,6 +57,7 @@ function LineIcon({ className, strokeWidth: _sw }: { className?: string; strokeW
 
 // Map item keys to icons (web-specific, includes lucide icons)
 const ICON_MAP: Record<HubItemKey, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
+  documents: FileText,
   diary: UtensilsCrossed,
   exercise: Activity,
   workout: Dumbbell,
@@ -88,6 +90,7 @@ const ICON_MAP: Record<HubItemKey, React.ComponentType<{ className?: string; str
 
 // Map item keys to web routes
 const ROUTE_MAP: Record<HubItemKey, string> = {
+  documents: "/hub/documents",
   diary: "/hub/diary",
   exercise: "/hub/exercise",
   workout: "/hub/workout",
