@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocalePath } from "@/hooks/use-locale-path";
 
@@ -230,155 +230,91 @@ function Philosophy() {
   );
 }
 
-// ── Showcase Slides ─────────────────────────────────────────────
-type ShowcaseSlide = {
-  num: string;
+// ── Feature rows with screenshots ───────────────────────────────
+type FeatureRow = {
+  featureNum: string;
+  en: string;
   screenshot: { "zh-TW": string; en: string };
 };
 
-const showcaseSlides: ShowcaseSlide[] = [
-  { num: "01", screenshot: { "zh-TW": "/screenshots/10-today.png", en: "/screenshots/en/02-today.png" } },
-  { num: "02", screenshot: { "zh-TW": "/screenshots/03-ai-chat.png", en: "/screenshots/en/03-ai-chat.png" } },
-  { num: "03", screenshot: { "zh-TW": "/screenshots/01-diary.png", en: "/screenshots/en/05-diary.png" } },
-  { num: "04", screenshot: { "zh-TW": "/screenshots/02-food-search.png", en: "/screenshots/en/04-food-search.png" } },
-  { num: "05", screenshot: { "zh-TW": "/screenshots/17-progress.png", en: "/screenshots/en/09-progress.png" } },
-  { num: "06", screenshot: { "zh-TW": "/screenshots/14-water.png", en: "/screenshots/en/10-water.png" } },
-  { num: "07", screenshot: { "zh-TW": "/screenshots/12-workout-home.png", en: "/screenshots/en/13-workout-home.png" } },
+const featureRows: FeatureRow[] = [
+  {
+    featureNum: "01",
+    en: "Personal Health AI",
+    screenshot: { "zh-TW": "/screenshots/03-ai-chat.png", en: "/screenshots/en/03-ai-chat.png" },
+  },
+  {
+    featureNum: "02",
+    en: "Comprehensive Tracking",
+    screenshot: { "zh-TW": "/screenshots/10-today.png", en: "/screenshots/en/02-today.png" },
+  },
+  {
+    featureNum: "03",
+    en: "Data Visualization",
+    screenshot: { "zh-TW": "/screenshots/17-progress.png", en: "/screenshots/en/09-progress.png" },
+  },
+  {
+    featureNum: "04",
+    en: "Open Source",
+    screenshot: { "zh-TW": "/screenshots/01-diary.png", en: "/screenshots/en/05-diary.png" },
+  },
 ];
 
-function AppShowcase() {
+function FeatureShowcase() {
   const { t, i18n } = useTranslation("landing");
   const lang = i18n.language === "en" ? "en" : "zh-TW";
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const handleScroll = () => {
-      const scrollLeft = el.scrollLeft;
-      const cardWidth = el.querySelector<HTMLElement>("[data-slide]")?.offsetWidth ?? 280;
-      const gap = 16;
-      const idx = Math.round(scrollLeft / (cardWidth + gap));
-      setActiveIndex(Math.min(idx, showcaseSlides.length - 1));
-    };
-    el.addEventListener("scroll", handleScroll, { passive: true });
-    return () => el.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
-    <section className="py-24 md:py-32">
-      <div className="max-w-4xl mx-auto px-6 mb-12">
-        <p className="text-[10px] tracking-[0.4em] text-neutral-400 dark:text-neutral-600 uppercase">
-          {t("showcase.sectionLabel")}
-        </p>
-      </div>
-
-      {/* Horizontal scroll carousel */}
-      <div
-        ref={scrollRef}
-        className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory px-6 md:px-[max(1.5rem,calc((100vw-56rem)/2+1.5rem))] pb-8 scrollbar-hide"
-      >
-        {showcaseSlides.map((slide, index) => (
-          <div
-            key={slide.num}
-            data-slide
-            className="snap-center flex-shrink-0 w-[260px] md:w-[300px] animate-fade-in-up"
-            style={{ animationDelay: `${(index + 1) * 0.1}s` }}
-          >
-            {/* Phone frame */}
-            <div className="relative bg-neutral-950 dark:bg-neutral-900 rounded-[2.5rem] p-[6px] shadow-xl shadow-black/10 dark:shadow-black/30">
-              {/* Notch */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90px] h-[22px] bg-neutral-950 dark:bg-neutral-900 rounded-b-2xl z-10" />
-              {/* Screen */}
-              <div className="relative rounded-[2.2rem] overflow-hidden bg-white aspect-[9/19.5]">
-                <Image
-                  src={slide.screenshot[lang]}
-                  alt={t(`showcase.slide${slide.num}Label`)}
-                  fill
-                  className="object-cover object-top"
-                  sizes="300px"
-                />
-              </div>
-            </div>
-            {/* Caption */}
-            <div className="mt-4 text-center">
-              <p className="text-[10px] tracking-[0.2em] text-green-600 dark:text-green-400 uppercase font-mono">
-                {t(`showcase.slide${slide.num}Label`)}
-              </p>
-              <p className="mt-1 text-lg font-light text-black dark:text-white leading-snug">
-                {t(`showcase.slide${slide.num}Headline1`)}
-                <br />
-                {t(`showcase.slide${slide.num}Headline2`)}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Dot indicators */}
-      <div className="flex justify-center gap-2 mt-4">
-        {showcaseSlides.map((slide, i) => (
-          <button
-            key={slide.num}
-            onClick={() => {
-              const el = scrollRef.current;
-              if (!el) return;
-              const cards = el.querySelectorAll<HTMLElement>("[data-slide]");
-              if (!cards[i]) return;
-              cards[i].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-            }}
-            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-              i === activeIndex
-                ? "bg-green-600 dark:bg-green-400 w-4"
-                : "bg-neutral-300 dark:bg-neutral-700"
-            }`}
-            aria-label={`Slide ${i + 1}`}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-const featureEntries = [
-  { num: "01", en: "Personal Health AI" },
-  { num: "02", en: "Comprehensive Tracking" },
-  { num: "03", en: "Data Visualization" },
-  { num: "04", en: "Open Source" },
-];
-
-function Features() {
-  const { t } = useTranslation("landing");
-
-  return (
-    <section id="features" className="max-w-4xl mx-auto px-6 py-32">
+    <section id="features" className="max-w-5xl mx-auto px-6 py-24 md:py-32">
       <p className="text-[10px] tracking-[0.4em] text-neutral-400 dark:text-neutral-600 uppercase mb-20">
         Features
       </p>
 
-      <div>
-        {featureEntries.map((f) => (
-          <div
-            key={f.num}
-            className="group grid grid-cols-1 md:grid-cols-[60px_1fr] gap-4 md:gap-12 py-10 md:py-14 border-t border-black/[0.06] dark:border-white/[0.06] last:border-b"
-          >
-            <span className="text-xs font-mono text-neutral-300 dark:text-neutral-700 pt-1">
-              {f.num}
-            </span>
-            <div>
-              <h3 className="text-xl md:text-2xl font-light text-black dark:text-white group-hover:tracking-wide transition-all duration-500">
-                {t(`features.title${f.num}`)}
-              </h3>
-              <p className="text-[10px] tracking-[0.2em] text-neutral-300 dark:text-neutral-700 mt-1 font-mono uppercase">
-                {f.en}
-              </p>
-              <p className="mt-5 text-neutral-500 font-light leading-relaxed text-sm max-w-lg">
-                {t(`features.desc${f.num}`)}
-              </p>
+      <div className="space-y-24 md:space-y-32">
+        {featureRows.map((f, index) => {
+          const isReversed = index % 2 === 1;
+
+          return (
+            <div
+              key={f.featureNum}
+              className={`flex flex-col ${isReversed ? "md:flex-row-reverse" : "md:flex-row"} items-center gap-12 md:gap-16 lg:gap-20`}
+            >
+              {/* Phone mockup */}
+              <div className="w-[220px] md:w-[260px] flex-shrink-0">
+                <div className="relative bg-neutral-950 dark:bg-neutral-900 rounded-[2.5rem] p-[6px] shadow-2xl shadow-black/15 dark:shadow-black/40">
+                  {/* Notch */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80px] h-[20px] bg-neutral-950 dark:bg-neutral-900 rounded-b-2xl z-10" />
+                  {/* Screen */}
+                  <div className="relative rounded-[2.2rem] overflow-hidden bg-white aspect-[9/19.5]">
+                    <Image
+                      src={f.screenshot[lang]}
+                      alt={t(`features.title${f.featureNum}`)}
+                      fill
+                      className="object-cover object-top"
+                      sizes="260px"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Text content */}
+              <div className="flex-1 text-center md:text-left">
+                <span className="text-xs font-mono text-neutral-300 dark:text-neutral-700">
+                  {f.featureNum}
+                </span>
+                <h3 className="mt-3 text-2xl md:text-3xl font-light text-black dark:text-white leading-snug">
+                  {t(`features.title${f.featureNum}`)}
+                </h3>
+                <p className="text-[10px] tracking-[0.2em] text-neutral-300 dark:text-neutral-700 mt-2 font-mono uppercase">
+                  {f.en}
+                </p>
+                <p className="mt-6 text-neutral-500 font-light leading-relaxed text-sm md:text-base max-w-md mx-auto md:mx-0">
+                  {t(`features.desc${f.featureNum}`)}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
@@ -571,12 +507,8 @@ export function LandingContent({ posts }: { posts: BlogPost[] }) {
 
       <div className="w-12 h-[1px] bg-black/[0.06] dark:bg-white/[0.06] mx-auto" />
 
-      <AppShowcase />
-
-      <div className="w-12 h-[1px] bg-black/[0.06] dark:bg-white/[0.06] mx-auto" />
-
       <Philosophy />
-      <Features />
+      <FeatureShowcase />
       <BlogPreview posts={posts} />
       <Footer />
     </>
