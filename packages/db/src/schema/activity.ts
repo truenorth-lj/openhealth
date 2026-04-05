@@ -14,6 +14,7 @@ export const activityTypeEnum = pgEnum("activity_type", [
   "exercise",
   "meditation",
   "throat_exercise",
+  "eye_exercise",
 ]);
 
 export const activitySessions = pgTable(

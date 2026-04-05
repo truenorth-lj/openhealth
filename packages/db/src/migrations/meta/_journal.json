@@ -239,6 +239,13 @@
       "when": 1775144364002,
       "tag": "0033_light_carnage",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1775366162422,
+      "tag": "0034_gifted_true_believers",
+      "breakpoints": true
     }
   ]
 }
