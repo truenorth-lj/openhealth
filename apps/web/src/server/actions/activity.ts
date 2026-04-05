@@ -15,7 +15,7 @@ import {
 } from "@open-health/shared/schemas";
 
 async function assertProAccess(userId: string, activityType?: string) {
-  if (activityType === "meditation" || activityType === "throat_exercise") return;
+  if (activityType === "meditation" || activityType === "throat_exercise" || activityType === "eye_exercise") return;
 
   const userRow = await db
     .select({
@@ -66,6 +66,7 @@ export async function startActivitySession(
 
   revalidatePath("/hub/meditation");
   revalidatePath("/hub/throat-exercise");
+  revalidatePath("/hub/eye-exercise");
   return { sessionId: session.id, alreadyActive: false };
 }
 
@@ -116,6 +117,7 @@ export async function completeActivitySession(
 
   revalidatePath("/hub/meditation");
   revalidatePath("/hub/throat-exercise");
+  revalidatePath("/hub/eye-exercise");
   return { success: true, durationSec };
 }
 
@@ -136,6 +138,7 @@ export async function discardActivitySession(
 
   revalidatePath("/hub/meditation");
   revalidatePath("/hub/throat-exercise");
+  revalidatePath("/hub/eye-exercise");
   return { success: true };
 }
 
@@ -161,6 +164,7 @@ export async function logActivitySession(
 
   revalidatePath("/hub/meditation");
   revalidatePath("/hub/throat-exercise");
+  revalidatePath("/hub/eye-exercise");
   return { sessionId: session.id };
 }
 
@@ -178,5 +182,6 @@ export async function deleteActivitySession(sessionId: string) {
 
   revalidatePath("/hub/meditation");
   revalidatePath("/hub/throat-exercise");
+  revalidatePath("/hub/eye-exercise");
   return { success: true };
 }

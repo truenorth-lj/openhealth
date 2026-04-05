@@ -313,7 +313,7 @@ export const SLEEP_FACTORS = [
 export type SleepFactorId = (typeof SLEEP_FACTORS)[number]["id"];
 
 // Activity sessions (shared exercise + meditation)
-export const ACTIVITY_TYPES = ["exercise", "meditation", "throat_exercise"] as const;
+export const ACTIVITY_TYPES = ["exercise", "meditation", "throat_exercise", "eye_exercise"] as const;
 
 // Meditation
 export const MEDITATION_TYPES = [
@@ -444,6 +444,57 @@ export const THROAT_EXERCISE_PRESETS = {
 
 export const THROAT_EXERCISE_PRESET_KEYS = ["quick", "standard", "full"] as const;
 export const THROAT_EXERCISE_REST_SEC = 10;
+
+// Eye Exercise (oculomotor training)
+export const EYE_EXERCISE_TARGETS = [
+  "extraocular",
+  "ciliary",
+  "convergence",
+  "relaxation",
+] as const;
+
+export const EYE_EXERCISE_TARGET_LABELS: Record<string, string> = {
+  extraocular: "外眼肌",
+  ciliary: "睫狀肌",
+  convergence: "輻輳",
+  relaxation: "放鬆",
+};
+
+export interface EyeExerciseDefinition {
+  id: string;
+  target: (typeof EYE_EXERCISE_TARGETS)[number];
+  durationSec: number;
+  reps: number;
+  emoji: string;
+}
+
+export const EYE_EXERCISES: EyeExerciseDefinition[] = [
+  // Extraocular muscle exercises (saccades & smooth pursuit)
+  { id: "horizontal_saccades", target: "extraocular", durationSec: 30, reps: 20, emoji: "↔️" },
+  { id: "vertical_saccades", target: "extraocular", durationSec: 30, reps: 20, emoji: "↕️" },
+  { id: "diagonal_saccades", target: "extraocular", durationSec: 30, reps: 20, emoji: "↗️" },
+  { id: "smooth_pursuit_circle", target: "extraocular", durationSec: 60, reps: 5, emoji: "🔄" },
+  { id: "smooth_pursuit_figure8", target: "extraocular", durationSec: 60, reps: 5, emoji: "♾️" },
+  // Ciliary muscle exercises (accommodation / focusing)
+  { id: "near_far_focus", target: "ciliary", durationSec: 120, reps: 20, emoji: "🔭" },
+  { id: "focus_shift", target: "ciliary", durationSec: 60, reps: 15, emoji: "🎯" },
+  // Convergence exercises
+  { id: "pencil_pushup", target: "convergence", durationSec: 60, reps: 15, emoji: "✏️" },
+  { id: "convergence_hold", target: "convergence", durationSec: 60, reps: 10, emoji: "👀" },
+  // Relaxation exercises
+  { id: "palming", target: "relaxation", durationSec: 120, reps: 1, emoji: "🤲" },
+  { id: "slow_blink", target: "relaxation", durationSec: 60, reps: 20, emoji: "😌" },
+  { id: "twenty_twenty", target: "relaxation", durationSec: 20, reps: 1, emoji: "🌳" },
+];
+
+export const EYE_EXERCISE_PRESETS = {
+  quick: { durationMin: 5, exerciseCount: 4 },
+  standard: { durationMin: 10, exerciseCount: 7 },
+  full: { durationMin: 15, exerciseCount: 11 },
+} as const;
+
+export const EYE_EXERCISE_PRESET_KEYS = ["quick", "standard", "full"] as const;
+export const EYE_EXERCISE_REST_SEC = 10;
 
 export const DEFAULT_SLEEP_GOAL_HOURS = 8;
 export const DEFAULT_ALARM_WINDOW_MINUTES = 30;

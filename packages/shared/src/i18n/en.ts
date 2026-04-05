@@ -21,6 +21,7 @@ import coach from "./locales/en/coach.json";
 import pricing from "./locales/en/pricing.json";
 import meditation from "./locales/en/meditation.json";
 import throatExercise from "./locales/en/throat-exercise.json";
+import eyeExercise from "./locales/en/eye-exercise.json";
 import documents from "./locales/en/documents.json";
 
 export const enResources = {
@@ -46,5 +47,6 @@ export const enResources = {
   pricing,
   meditation,
   "throat-exercise": throatExercise,
+  "eye-exercise": eyeExercise,
   documents,
 } as const;

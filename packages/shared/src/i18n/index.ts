@@ -24,6 +24,7 @@ import zhTWPricing from "./locales/zh-TW/pricing.json";
 import zhTWMeditation from "./locales/zh-TW/meditation.json";
 import zhTWReminders from "./locales/zh-TW/reminders.json";
 import zhTWThroatExercise from "./locales/zh-TW/throat-exercise.json";
+import zhTWEyeExercise from "./locales/zh-TW/eye-exercise.json";
 import zhTWSteps from "./locales/zh-TW/steps.json";
 import zhTWDocuments from "./locales/zh-TW/documents.json";
 
@@ -50,6 +51,7 @@ import enPricing from "./locales/en/pricing.json";
 import enMeditation from "./locales/en/meditation.json";
 import enReminders from "./locales/en/reminders.json";
 import enThroatExercise from "./locales/en/throat-exercise.json";
+import enEyeExercise from "./locales/en/eye-exercise.json";
 import enSteps from "./locales/en/steps.json";
 import enDocuments from "./locales/en/documents.json";
 
@@ -83,6 +85,7 @@ export const namespaces = [
   "meditation",
   "reminders",
   "throat-exercise",
+  "eye-exercise",
   "steps",
   "documents",
 ] as const;
@@ -114,6 +117,7 @@ export const resources = {
     meditation: zhTWMeditation,
     reminders: zhTWReminders,
     "throat-exercise": zhTWThroatExercise,
+    "eye-exercise": zhTWEyeExercise,
     steps: zhTWSteps,
     documents: zhTWDocuments,
   },
@@ -141,6 +145,7 @@ export const resources = {
     meditation: enMeditation,
     reminders: enReminders,
     "throat-exercise": enThroatExercise,
+    "eye-exercise": enEyeExercise,
     steps: enSteps,
     documents: enDocuments,
   },

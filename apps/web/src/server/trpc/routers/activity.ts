@@ -11,7 +11,7 @@ import {
 
 export const activityRouter = router({
   getActive: protectedProcedure
-    .input(z.object({ type: z.enum(["exercise", "meditation", "throat_exercise"]) }))
+    .input(z.object({ type: z.enum(["exercise", "meditation", "throat_exercise", "eye_exercise"]) }))
     .query(async ({ ctx, input }) => {
       const session = await ctx.db
         .select()
@@ -32,7 +32,7 @@ export const activityRouter = router({
   getHistory: protectedProcedure
     .input(
       z.object({
-        type: z.enum(["exercise", "meditation", "throat_exercise"]),
+        type: z.enum(["exercise", "meditation", "throat_exercise", "eye_exercise"]),
         limit: z.number().int().min(1).max(100).optional(),
         cursor: z.string().uuid().optional(),
       })
@@ -77,7 +77,7 @@ export const activityRouter = router({
   getStats: protectedProcedure
     .input(
       z.object({
-        type: z.enum(["exercise", "meditation", "throat_exercise"]),
+        type: z.enum(["exercise", "meditation", "throat_exercise", "eye_exercise"]),
         period: z.enum(["week", "month", "all"]).optional(),
       })
     )
@@ -153,7 +153,7 @@ export const activityRouter = router({
   getDay: protectedProcedure
     .input(
       z.object({
-        type: z.enum(["exercise", "meditation", "throat_exercise"]),
+        type: z.enum(["exercise", "meditation", "throat_exercise", "eye_exercise"]),
         date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
       })
     )
@@ -184,7 +184,7 @@ export const activityRouter = router({
   startSession: protectedProcedure
     .input(startActivitySessionSchema)
     .mutation(async ({ ctx, input }) => {
-      if (input.type !== "meditation" && input.type !== "throat_exercise") {
+      if (input.type !== "meditation" && input.type !== "throat_exercise" && input.type !== "eye_exercise") {
         requireFeature(ctx.userPlan, "exercise");
       }
 

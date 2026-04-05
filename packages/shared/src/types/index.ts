@@ -132,6 +132,23 @@ export interface ThroatExerciseMetadata {
   completed?: boolean;
 }
 
+// Eye exercise
+import type {
+  EYE_EXERCISE_TARGETS,
+  EYE_EXERCISE_PRESET_KEYS,
+} from "../constants";
+
+export type EyeExerciseTarget = (typeof EYE_EXERCISE_TARGETS)[number];
+export type EyeExercisePreset = (typeof EYE_EXERCISE_PRESET_KEYS)[number];
+
+export interface EyeExerciseMetadata {
+  preset: EyeExercisePreset;
+  exerciseIds: string[];
+  completedCount: number;
+  totalCount: number;
+  completed?: boolean;
+}
+
 // Sleep tracking
 import type { SLEEP_PHASES, SLEEP_DETECTION_METHODS } from "../constants";
 

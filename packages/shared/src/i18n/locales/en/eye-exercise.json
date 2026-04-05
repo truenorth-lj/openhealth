@@ -1,0 +1,127 @@
+{
+  "title": "Eye Exercise",
+  "subtitle": "Evidence-based oculomotor training",
+  "startSession": "Start Training",
+  "activeSession": "Training in Progress",
+  "endSession": "End Training",
+  "discardSession": "Discard Training",
+  "discardConfirm": "Are you sure you want to discard this training session?",
+  "sessionComplete": "Training Complete",
+  "history": "History",
+  "noHistory": "No training records yet",
+  "today": "Today",
+  "thisWeek": "This Week",
+  "totalMinutes": "Total Min",
+  "currentStreak": "Streak",
+
+  "preset": "Preset",
+  "presets": {
+    "quick": "Quick",
+    "standard": "Standard",
+    "full": "Full"
+  },
+  "presetDesc": {
+    "quick": "5 min · 4 exercises",
+    "standard": "10 min · 7 exercises",
+    "full": "15 min · 11 exercises"
+  },
+
+  "target": "Target",
+  "targets": {
+    "extraocular": "Extraocular",
+    "ciliary": "Ciliary",
+    "convergence": "Convergence",
+    "relaxation": "Relaxation"
+  },
+
+  "exercises": {
+    "horizontal_saccades": {
+      "name": "Horizontal Saccades",
+      "desc": "Keep head still, quickly shift gaze between two targets placed horizontally",
+      "tip": "Keep head completely still, move only eyes — aim for speed and accuracy"
+    },
+    "vertical_saccades": {
+      "name": "Vertical Saccades",
+      "desc": "Keep head still, quickly shift gaze between two targets placed vertically",
+      "tip": "Briefly fixate on each target to confirm clear vision"
+    },
+    "diagonal_saccades": {
+      "name": "Diagonal Saccades",
+      "desc": "Keep head still, quickly shift gaze along diagonal directions",
+      "tip": "Practice both diagonals: upper-left to lower-right, then upper-right to lower-left"
+    },
+    "smooth_pursuit_circle": {
+      "name": "Circle Pursuit",
+      "desc": "Hold a pen at arm's length, slowly trace a circle — follow smoothly with eyes",
+      "tip": "Keep head still, tracking should be smooth not jerky. Do both clockwise and counter-clockwise"
+    },
+    "smooth_pursuit_figure8": {
+      "name": "Figure-8 Pursuit",
+      "desc": "Hold a pen at arm's length, slowly trace a horizontal figure-8 (∞) — follow smoothly",
+      "tip": "Go as slowly as possible, focus on smooth tracking"
+    },
+    "near_far_focus": {
+      "name": "Near-Far Focus",
+      "desc": "Alternate focus between a near target (40cm text) and a far target (6 meters away)",
+      "tip": "Wait until each target is fully clear before switching — trains ciliary muscle flexibility"
+    },
+    "focus_shift": {
+      "name": "Focus Shift",
+      "desc": "Place thumb at 30cm, other hand at 60cm, rapidly alternate focus between them",
+      "tip": "Gradually increase speed while maintaining clarity"
+    },
+    "pencil_pushup": {
+      "name": "Pencil Push-Up",
+      "desc": "Hold pencil at arm's length, focus on tip, slowly bring toward nose until image doubles",
+      "tip": "Track where the image starts to blur — goal is to maintain single vision within 6cm"
+    },
+    "convergence_hold": {
+      "name": "Convergence Hold",
+      "desc": "Place target 10-15cm from nose, maintain single clear image",
+      "tip": "If image doubles, move target slightly farther and gradually work closer"
+    },
+    "palming": {
+      "name": "Palming",
+      "desc": "Rub palms together to warm them, gently cup over closed eyes and relax",
+      "tip": "Don't press on eyeballs — feel the warmth and darkness relax your eyes"
+    },
+    "slow_blink": {
+      "name": "Slow Blink",
+      "desc": "Slowly and fully close your eyes, then open — spread tear film evenly",
+      "tip": "Hold eyes closed for 1-2 seconds each time — helps with screen-induced dry eye"
+    },
+    "twenty_twenty": {
+      "name": "20-20-20 Rule",
+      "desc": "Look at something 6 meters (20 feet) away for 20 seconds",
+      "tip": "Do this every 20 minutes of screen time — the simplest effective eye care habit"
+    }
+  },
+
+  "reps": "{{count}} reps",
+  "seconds": "sec",
+  "holdSeconds": "Hold {{seconds}}s",
+  "rest": "Rest",
+  "restDesc": "Relax your eyes, prepare for the next exercise",
+  "nextExercise": "Next",
+  "skipRest": "Skip Rest",
+  "exerciseProgress": "{{current}} / {{total}}",
+  "skip": "Skip",
+  "complete": "Complete Training",
+  "wellDone": "Well Done!",
+  "sessionSummary": "Session Summary",
+  "exercisesCompleted": "Exercises Done",
+  "totalTime": "Total Time",
+  "note": "Note",
+  "notePlaceholder": "Record how you feel about this training...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "saving": "Saving...",
+  "starting": "Starting...",
+  "startError": "Failed to start training",
+  "startWithPreset": "Start · {{minutes}} min",
+  "streakDays": "days",
+
+  "scienceTitle": "Science",
+  "scienceDesc": "Oculomotor exercises based on CITT clinical trials and IMI white papers — reduces digital eye strain and convergence insufficiency",
+  "recommendFreq": "Recommended: twice daily, morning and evening"
+}

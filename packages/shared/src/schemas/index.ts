@@ -285,7 +285,7 @@ export const meditationMetadataSchema = z.object({
 });
 
 export const startActivitySessionSchema = z.object({
-  type: z.enum(["exercise", "meditation", "throat_exercise"]),
+  type: z.enum(["exercise", "meditation", "throat_exercise", "eye_exercise"]),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
@@ -300,7 +300,7 @@ export const discardActivitySessionSchema = z.object({
 });
 
 export const logActivitySessionSchema = z.object({
-  type: z.enum(["exercise", "meditation", "throat_exercise"]),
+  type: z.enum(["exercise", "meditation", "throat_exercise", "eye_exercise"]),
   startedAt: z.string().datetime(),
   completedAt: z.string().datetime(),
   durationSec: z.number().int().min(1).max(86400),
